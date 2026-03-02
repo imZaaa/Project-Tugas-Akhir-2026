@@ -27,7 +27,7 @@ class M_supplier extends CI_Model {
     }
 
     public function insert($data) {
-        return $this->db->insert($this->table, $data);
+        return $this->db->insert($this->table, $data);  
     }
 
     public function update($id, $data) {
