@@ -403,24 +403,15 @@ Admin (jika perlu hapus)
 
 ---
 
-## Kontributor
+## Dibuat oleh
 
-**Mahasiswa:**
+| Nama | Instagram | Study |
+|Rheza Rifalsya Hermawan|@zx_zaaa|Management Informathics|
 
-| Nama | NIM | Program Studi |
-|---|---|---|
-| *(isi nama)* | *(isi NIM)* | *(isi prodi)* |
+**Instansi:**
 
-**Dosen Pembimbing:** *(isi nama dosen)*
-
-**Instansi:** *(isi nama universitas)*
-
----
+Politeknik LP3i Jakarta
 
 ## Lisensi
 
 Proyek ini dibuat untuk keperluan Tugas Akhir dan bersifat open source di bawah lisensi [MIT](LICENSE).
-
----
-
-*Dibuat untuk PT Pordjo Steelindo Perkasa — Kaliabang*
