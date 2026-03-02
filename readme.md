@@ -406,6 +406,7 @@ Admin (jika perlu hapus)
 ## Dibuat oleh
 
 | Nama | Instagram | Study |
+---         ---      ---
 |Rheza Rifalsya Hermawan|@zx_zaaa|Management Informathics|
 
 **Instansi:**
