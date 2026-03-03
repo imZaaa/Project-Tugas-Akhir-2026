@@ -52,13 +52,13 @@ class Penjualan extends CI_Controller {
         $harga_juals    = $this->input->post('harga_jual', TRUE);
 
         if (empty($kode_transaksi) || empty($bayar)) {
-            $this->session->set_flashdata('error', 'Kode transaksi dan jumlah bayar wajib diisi!');
+            $this->session->set_flashdata('error', 'Kode transaksi dan nominal pembayaran wajib diisi.');
             redirect('kasir/penjualan/create');
             return;
         }
 
         if (empty($id_products) || !is_array($id_products)) {
-            $this->session->set_flashdata('error', 'Minimal 1 produk harus ditambahkan!');
+            $this->session->set_flashdata('error', 'Minimal satu produk harus ditambahkan.');
             redirect('kasir/penjualan/create');
             return;
         }
@@ -76,7 +76,7 @@ class Penjualan extends CI_Controller {
             if (!$produk || $produk['stok'] < $qty) {
                 $nama = $produk ? $produk['nama_produk'] : 'Unknown';
                 $sisa = $produk ? $produk['stok'] : 0;
-                $this->session->set_flashdata('error', 'Stok "' . $nama . '" tidak cukup! Sisa: ' . $sisa . ', diminta: ' . $qty);
+                $this->session->set_flashdata('error', 'Stok "' . $nama . '" tidak mencukupi. Sisa stok: ' . $sisa . ', jumlah yang diminta: ' . $qty);
                 redirect('kasir/penjualan/create');
                 return;
             }
@@ -90,13 +90,13 @@ class Penjualan extends CI_Controller {
         }
 
         if (empty($items)) {
-            $this->session->set_flashdata('error', 'Data produk tidak valid, periksa kembali!');
+            $this->session->set_flashdata('error', 'Data produk tidak valid, harap periksa kembali.');
             redirect('kasir/penjualan/create');
             return;
         }
 
         if ($bayar < $total_harga) {
-            $this->session->set_flashdata('error', 'Jumlah bayar (Rp ' . number_format($bayar, 0, ',', '.') . ') kurang dari total belanja (Rp ' . number_format($total_harga, 0, ',', '.') . ')!');
+            $this->session->set_flashdata('error', 'Nominal pembayaran (Rp ' . number_format($bayar, 0, ',', '.') . ') kurang dari total belanja (Rp ' . number_format($total_harga, 0, ',', '.') . ').');
             redirect('kasir/penjualan/create');
             return;
         }
@@ -119,10 +119,10 @@ class Penjualan extends CI_Controller {
         $id_sale = $this->M_sale->simpan_transaksi($header, $items);
 
         if ($id_sale) {
-            $this->session->set_flashdata('success', 'Transaksi berhasil disimpan! Kode: ' . $kode_transaksi);
+            $this->session->set_flashdata('success', 'Transaksi berhasil disimpan dengan kode transaksi: ' . $kode_transaksi);
             redirect('kasir/penjualan/detail/' . $id_sale);
         } else {
-            $this->session->set_flashdata('error', 'Transaksi gagal disimpan. Silakan coba lagi.');
+            $this->session->set_flashdata('error', 'Transaksi gagal disimpan. Silakan coba kembali.');
             redirect('kasir/penjualan/create');
         }
     }

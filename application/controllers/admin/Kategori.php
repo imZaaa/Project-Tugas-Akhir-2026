@@ -26,15 +26,15 @@ class Kategori extends CI_Controller {
     public function tambah() {
         $nama = $this->input->post('nama_kategori', TRUE);
         if (empty($nama)) {
-            $this->session->set_flashdata('error', 'Nama kategori wajib diisi!');
+            $this->session->set_flashdata('error', 'Nama kategori wajib diisi.');
             redirect('admin/kategori'); return;
         }
         if ($this->M_kategori->nama_exists($nama)) {
-            $this->session->set_flashdata('error', 'Kategori "' . $nama . '" sudah ada!');
+            $this->session->set_flashdata('error', 'Kategori "' . $nama . '" sudah terdaftar.');
             redirect('admin/kategori'); return;
         }
         if ($this->M_kategori->insert(['nama_kategori' => $nama])) {
-            $this->session->set_flashdata('success', 'Kategori "' . $nama . '" berhasil ditambahkan!');
+            $this->session->set_flashdata('success', 'Kategori "' . $nama . '" berhasil ditambahkan.');
         } else {
             $this->session->set_flashdata('error', 'Gagal menambahkan kategori.');
         }
@@ -45,11 +45,11 @@ class Kategori extends CI_Controller {
         $id   = $this->input->post('id_category', TRUE);
         $nama = $this->input->post('nama_kategori', TRUE);
         if (empty($id) || empty($nama)) {
-            $this->session->set_flashdata('error', 'Data tidak lengkap!');
+            $this->session->set_flashdata('error', 'Data tidak lengkap.');
             redirect('admin/kategori'); return;
         }
         if ($this->M_kategori->update($id, ['nama_kategori' => $nama])) {
-            $this->session->set_flashdata('success', 'Kategori berhasil diperbarui!');
+            $this->session->set_flashdata('success', 'Kategori berhasil diperbarui.');
         } else {
             $this->session->set_flashdata('error', 'Gagal memperbarui kategori.');
         }
@@ -61,11 +61,11 @@ class Kategori extends CI_Controller {
         // Cek apakah masih ada produk yang pakai kategori ini
         $this->load->model('admin/M_produk');
         if ($this->M_produk->count_by_category($id) > 0) {
-            $this->session->set_flashdata('error', 'Kategori tidak bisa dihapus karena masih digunakan oleh produk!');
+            $this->session->set_flashdata('error', 'Kategori tidak dapat dihapus karena masih terkait dengan data produk.');
             redirect('admin/kategori'); return;
         }
         if ($this->M_kategori->delete($id)) {
-            $this->session->set_flashdata('success', 'Kategori berhasil dihapus!');
+            $this->session->set_flashdata('success', 'Kategori berhasil dihapus.');
         } else {
             $this->session->set_flashdata('error', 'Gagal menghapus kategori.');
         }

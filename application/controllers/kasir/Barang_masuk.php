@@ -51,19 +51,19 @@ class Barang_masuk extends CI_Controller {
         $prices      = $this->input->post('purchase_price', TRUE);
 
         if (empty($no_faktur) || empty($id_supplier) || empty($tgl_beli)) {
-            $this->session->set_flashdata('error', 'No Faktur, Supplier, dan Tanggal wajib diisi!');
+            $this->session->set_flashdata('error', 'No. Faktur, Supplier, dan Tanggal wajib diisi.');
             redirect('kasir/barang_masuk/create');
             return;
         }
 
         if ($this->M_purchase->faktur_exists($no_faktur)) {
-            $this->session->set_flashdata('error', 'No Faktur "' . $no_faktur . '" sudah digunakan!');
+            $this->session->set_flashdata('error', 'No. Faktur "' . $no_faktur . '" sudah terdaftar.');
             redirect('kasir/barang_masuk/create');
             return;
         }
 
         if (empty($id_products) || !is_array($id_products)) {
-            $this->session->set_flashdata('error', 'Minimal 1 produk harus ditambahkan!');
+            $this->session->set_flashdata('error', 'Minimal satu produk harus ditambahkan.');
             redirect('kasir/barang_masuk/create');
             return;
         }
@@ -84,7 +84,7 @@ class Barang_masuk extends CI_Controller {
         }
 
         if (empty($items)) {
-            $this->session->set_flashdata('error', 'Data produk tidak valid, periksa kembali!');
+            $this->session->set_flashdata('error', 'Data produk tidak valid, harap periksa kembali.');
             redirect('kasir/barang_masuk/create');
             return;
         }
@@ -103,10 +103,10 @@ class Barang_masuk extends CI_Controller {
         $result = $this->M_purchase->simpan_transaksi($header, $items);
 
         if ($result) {
-            $this->session->set_flashdata('success', 'Transaksi berhasil disimpan! Stok otomatis diperbarui. No Faktur: ' . $no_faktur);
+            $this->session->set_flashdata('success', 'Transaksi berhasil disimpan. Stok telah diperbarui secara otomatis. No. Faktur: ' . $no_faktur);
             redirect('kasir/barang_masuk');
         } else {
-            $this->session->set_flashdata('error', 'Transaksi gagal disimpan. Silakan coba lagi.');
+            $this->session->set_flashdata('error', 'Transaksi gagal disimpan. Silakan coba kembali.');
             redirect('kasir/barang_masuk/create');
         }
     }

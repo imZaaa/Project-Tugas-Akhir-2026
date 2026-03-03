@@ -9,7 +9,7 @@ class Laporan extends CI_Controller {
 
         if (!$this->session->userdata('logged_in')) redirect('auth');
         if ($this->session->userdata('role') !== 'admin') {
-            $this->session->set_flashdata('error', 'Akses ditolak. Menu ini khusus Admin.');
+            $this->session->set_flashdata('error', 'Akses ditolak. Menu ini khusus untuk peran Admin.');
             redirect('kasir/kasir');
             return;
         }

@@ -36,7 +36,7 @@ class Barang_masuk extends CI_Controller {
 
         // Admin tidak boleh input barang masuk
         if ($role === 'admin') {
-            $this->session->set_flashdata('error', 'Admin tidak dapat menginput barang masuk. Fitur ini khusus Kasir.');
+            $this->session->set_flashdata('error', 'Admin tidak memiliki hak akses untuk menambahkan barang masuk. Fitur ini khusus untuk Kasir.');
             redirect('admin/barang_masuk'); return;
         }
 
@@ -57,7 +57,7 @@ class Barang_masuk extends CI_Controller {
 
         // Admin tidak boleh simpan barang masuk
         if ($role === 'admin') {
-            $this->session->set_flashdata('error', 'Admin tidak dapat menginput barang masuk.');
+            $this->session->set_flashdata('error', 'Admin tidak memiliki hak akses untuk menambahkan barang masuk.');
             redirect('admin/barang_masuk'); return;
         }
 
@@ -73,19 +73,19 @@ class Barang_masuk extends CI_Controller {
 
         // Validasi header
         if (empty($no_faktur) || empty($id_supplier) || empty($tgl_beli)) {
-            $this->session->set_flashdata('error', 'No Faktur, Supplier, dan Tanggal wajib diisi!');
+            $this->session->set_flashdata('error', 'No. Faktur, Supplier, dan Tanggal wajib diisi.');
             redirect($redirect . '/create'); return;
         }
 
         // Cek duplikat no faktur
         if ($this->M_purchase->faktur_exists($no_faktur)) {
-            $this->session->set_flashdata('error', 'No Faktur "' . $no_faktur . '" sudah digunakan!');
+            $this->session->set_flashdata('error', 'No. Faktur "' . $no_faktur . '" sudah terdaftar.');
             redirect($redirect . '/create'); return;
         }
 
         // Validasi items
         if (empty($id_products) || !is_array($id_products)) {
-            $this->session->set_flashdata('error', 'Minimal 1 produk harus ditambahkan!');
+            $this->session->set_flashdata('error', 'Minimal satu produk harus ditambahkan.');
             redirect($redirect . '/create'); return;
         }
 
@@ -106,7 +106,7 @@ class Barang_masuk extends CI_Controller {
         }
 
         if (empty($items)) {
-            $this->session->set_flashdata('error', 'Data produk tidak valid, periksa kembali!');
+            $this->session->set_flashdata('error', 'Data produk tidak valid, harap periksa kembali.');
             redirect($redirect . '/create'); return;
         }
 
@@ -125,10 +125,10 @@ class Barang_masuk extends CI_Controller {
         $result = $this->M_purchase->simpan_transaksi($header, $items);
 
         if ($result) {
-            $this->session->set_flashdata('success', 'Transaksi berhasil disimpan! Stok otomatis diperbarui. No Faktur: ' . $no_faktur);
+            $this->session->set_flashdata('success', 'Transaksi berhasil disimpan. Stok telah diperbarui secara otomatis. No. Faktur: ' . $no_faktur);
             redirect($redirect);
         } else {
-            $this->session->set_flashdata('error', 'Transaksi gagal disimpan. Silakan coba lagi.');
+            $this->session->set_flashdata('error', 'Transaksi gagal disimpan. Silakan coba kembali.');
             redirect($redirect . '/create');
         }
     }
@@ -168,7 +168,7 @@ class Barang_masuk extends CI_Controller {
 
         $id = $this->input->post('id_purchase', TRUE);
         if ($this->M_purchase->hapus_transaksi($id)) {
-            $this->session->set_flashdata('success', 'Transaksi berhasil dihapus dan stok dikembalikan!');
+            $this->session->set_flashdata('success', 'Transaksi berhasil dihapus dan stok telah dikembalikan.');
         } else {
             $this->session->set_flashdata('error', 'Gagal menghapus transaksi.');
         }

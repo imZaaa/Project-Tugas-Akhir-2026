@@ -47,11 +47,11 @@ class Auth extends CI_Controller {
                 redirect('kasir');
             }
         } else {
-            $this->session->set_flashdata('pesan', '<div class="alert alert-danger">Password salah (Mode Plain)!</div>');
+            $this->session->set_flashdata('pesan', '<div class="alert alert-danger">Password yang dimasukkan salah.</div>');
             redirect('auth');
         }
     } else {
-        $this->session->set_flashdata('pesan', '<div class="alert alert-danger">Username nggak ada!</div>');
+        $this->session->set_flashdata('pesan', '<div class="alert alert-danger">Username tidak ditemukan.</div>');
         redirect('auth');
     }
 }
