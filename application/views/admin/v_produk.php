@@ -183,22 +183,16 @@
         <div>
             <h1>Stok Produk</h1>
             <p>
-                <?php if ($this->session->userdata('role') === 'admin'): ?>
                     Kelola seluruh produk baja dan besi
-                <?php else: ?>
-                    Lihat dan perbarui stok produk
-                <?php endif; ?>
             </p>
         </div>
         <div style="display:flex; gap:10px; align-items:center;">
             <a href="<?= site_url('admin/kategori') ?>" class="btn-back">
                 <i class="fas fa-arrow-left"></i> Kategori
             </a>
-            <?php if ($this->session->userdata('role') === 'admin'): ?>
             <button class="btn-primary-custom" onclick="openModal('modalTambah')">
                 <i class="fas fa-plus"></i> Tambah Produk
             </button>
-            <?php endif; ?>
         </div>
     </div>
 
@@ -273,7 +267,6 @@
                                     onclick="openModalEditStok('<?= $p['id_product'] ?>', '<?= htmlspecialchars($p['nama_produk'], ENT_QUOTES) ?>', '<?= $p['stok'] ?>', '<?= htmlspecialchars($p['satuan'], ENT_QUOTES) ?>')">
                                     <i class="fas fa-cubes"></i> Edit Stok
                                 </button>
-                                <?php if ($this->session->userdata('role') === 'admin'): ?>
                                 <button class="btn-action btn-edit"
                                     onclick="openModalEdit(
                                         '<?= $p['id_product'] ?>',
@@ -289,7 +282,6 @@
                                     onclick="openModalDelete('<?= $p['id_product'] ?>', '<?= htmlspecialchars($p['nama_produk'], ENT_QUOTES) ?>')">
                                     <i class="fas fa-trash"></i> Hapus
                                 </button>
-                                <?php endif; ?>
                             </div>
                         </td>
                     </tr>
@@ -298,7 +290,7 @@
                     <tr class="no-data-row">
                         <td colspan="7">
                             <div class="no-data-icon"><i class="fas fa-box-open"></i></div>
-                            <div>Belum ada produk<?= !empty($filter_kategori) ? ' di kategori ini' : '' ?></div>
+                            <div>Belum terdapat data produk<?= !empty($filter_kategori) ? ' di kategori ini' : '' ?>.</div>
                         </td>
                     </tr>
                 <?php endif; ?>
@@ -313,8 +305,7 @@
     </div>
 
 
-    <!-- MODAL TAMBAH (admin only) -->
-    <?php if ($this->session->userdata('role') === 'admin'): ?>
+    <!-- MODAL TAMBAH -->
     <div class="modal-overlay" id="modalTambah">
         <div class="modal-box">
             <div class="modal-header">
@@ -445,8 +436,8 @@
                 <input type="hidden" name="id_product" id="del_id">
                 <div class="delete-modal-body">
                     <div class="delete-icon"><i class="fas fa-exclamation-triangle"></i></div>
-                    <h5>Hapus Produk?</h5>
-                    <p>Produk <strong id="del_nama"></strong> akan dihapus permanen.</p>
+                    <h5>Apakah Anda yakin ingin menghapus produk ini?</h5>
+                    <p>Data produk <strong id="del_nama"></strong> akan dihapus secara permanen.</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-cancel" onclick="closeModal('modalDelete')">Batal</button>
@@ -455,17 +446,16 @@
             </form>
         </div>
     </div>
-    <?php endif; ?>
 
 
-    <!-- MODAL EDIT STOK (admin & kasir) -->
+    <!-- MODAL EDIT STOK -->
     <div class="modal-overlay" id="modalEditStok">
         <div class="modal-box modal-sm">
             <div class="modal-header">
                 <h4><i class="fas fa-cubes" style="color:#059669; margin-right:8px;"></i>Edit Stok</h4>
                 <button class="modal-close" onclick="closeModal('modalEditStok')"><i class="fas fa-times"></i></button>
             </div>
-            <form action="<?= site_url($this->session->userdata('role') === 'admin' ? 'admin/produk/update_stok' : 'kasir/produk/update_stok') ?>" method="post">
+            <form action="<?= site_url('admin/produk/update_stok') ?>" method="post">
                 <input type="hidden" name="id_product" id="stok_id">
                 <div class="modal-body">
                     <div class="stok-current-box">

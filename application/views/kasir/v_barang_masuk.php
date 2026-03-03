@@ -181,7 +181,7 @@
                     <tr class="no-data-row">
                         <td colspan="7">
                             <div class="no-data-icon"><i class="fas fa-truck-loading"></i></div>
-                            <div>Belum ada transaksi barang masuk</div>
+                            <div>Belum terdapat data transaksi barang masuk.</div>
                             <div style="margin-top:6px;"><a href="<?= site_url(($this->session->userdata('role') === 'admin' ? 'admin' : 'kasir') . '/barang_masuk/create') ?>" class="btn-primary-custom" style="margin:0 auto; display:inline-flex;"><i class="fas fa-plus"></i> Input Sekarang</a></div>
                         </td>
                     </tr>

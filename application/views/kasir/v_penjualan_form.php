@@ -178,13 +178,15 @@
         var qty=parseInt(document.getElementById('qty-'+idx)?.value)||0,harga=parseFloat(document.getElementById('harga-'+idx)?.value)||0,subtotal=qty*harga;
         var el=document.getElementById('subtotal-'+idx);if(el){el.textContent='Rp '+subtotal.toLocaleString('id-ID');el.style.color=subtotal>0?'#111827':'#9ca3af';}
         var select=document.querySelector('#item-row-'+idx+' select');
-        if(select&&select.value){var opt=select.options[select.selectedIndex],stok=parseInt(opt.getAttribute('data-stok'))||0,stokEl=document.getElementById('stok-'+idx);if(qty>stok){stokEl.textContent='⚠ Stok: '+stok+' (kurang!)';stokEl.className='stok-hint danger';}}
+        if(select&&select.value){var opt=select.options[select.selectedIndex],stok=parseInt(opt.getAttribute('data-stok'))||0,satuan=opt.getAttribute('data-satuan')||'',stokEl=document.getElementById('stok-'+idx);if(qty>stok){stokEl.textContent='⚠ Stok: '+stok+' (melebihi batas)';stokEl.className='stok-hint danger';}else{stokEl.textContent=stok+' '+satuan;stokEl.className='stok-hint'+(stok<=0?' danger':stok<=10?' warning':'');}}
         updateSummary();
     }
     function updateSummary() {
         var rows=document.querySelectorAll('#itemsBody tr:not(#emptyRow)'),total=0,totalQty=0;
         rows.forEach(function(row){var qty=parseInt(row.querySelector('input[name="qty[]"]')?.value)||0,harga=parseFloat(row.querySelector('input[name="harga_jual[]"]')?.value)||0;total+=qty*harga;totalQty+=qty;});
-        grandTotal=total;document.getElementById('sum-items').textContent=rows.length+' item';document.getElementById('sum-qty').textContent=totalQty;document.getElementById('sum-total').textContent='Rp '+total.toLocaleString('id-ID');document.getElementById('item-count-badge').textContent=rows.length+' item';updateKembalian();
+        grandTotal=total;document.getElementById('sum-items').textContent=rows.length+' item';document.getElementById('sum-qty').textContent=totalQty;document.getElementById('sum-total').textContent='Rp '+total.toLocaleString('id-ID');document.getElementById('item-count-badge').textContent=rows.length+' item';
+        var bayarEl=document.getElementById('inputBayar');if(total>0){bayarEl.value=total;}else{bayarEl.value='';}
+        updateKembalian();
     }
     function updateKembalian() {
         var bayar=parseFloat(document.getElementById('inputBayar').value)||0,kembalian=bayar-grandTotal;

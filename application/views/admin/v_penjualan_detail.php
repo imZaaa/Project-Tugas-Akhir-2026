@@ -68,14 +68,14 @@
     }
 </style>
 
-    <?php $role = $this->session->userdata('role'); $prefix = ($role === 'admin') ? 'admin' : 'kasir'; ?>
+
 
     <div class="page-title-row">
         <div>
             <h1><i class="fas fa-file-invoice-dollar" style="color:#1a56db; margin-right:6px;"></i>Detail Transaksi</h1>
             <p>Detail penjualan — <?= htmlspecialchars($header['kode_transaksi']) ?></p>
         </div>
-        <a href="<?= site_url($prefix . '/penjualan') ?>" class="btn-back">
+        <a href="<?= site_url('admin/penjualan') ?>" class="btn-back">
             <i class="fas fa-arrow-left"></i> Kembali ke Riwayat
         </a>
     </div>
@@ -198,10 +198,10 @@
                         <span class="value" style="color:#059669;">Rp <?= number_format($header['kembalian'] ?? 0, 0, ',', '.') ?></span>
                     </div>
 
-                    <a href="<?= site_url($prefix . '/penjualan/cetak/' . $header['id_sale']) ?>" class="btn-action-lg btn-cetak" target="_blank">
+                    <a href="<?= site_url('admin/penjualan/cetak/' . $header['id_sale']) ?>" class="btn-action-lg btn-cetak" target="_blank">
                         <i class="fas fa-print"></i> Cetak Nota
                     </a>
-                    <a href="<?= site_url($prefix . '/penjualan') ?>" class="btn-action-lg btn-kembali">
+                    <a href="<?= site_url('admin/penjualan') ?>" class="btn-action-lg btn-kembali">
                         <i class="fas fa-arrow-left"></i> Kembali
                     </a>
                 </div>

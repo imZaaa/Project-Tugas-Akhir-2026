@@ -135,7 +135,7 @@
                     </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <tr class="no-data-row"><td colspan="6"><div class="no-data-icon"><i class="fas fa-truck"></i></div><div>Belum ada supplier terdaftar</div></td></tr>
+                    <tr class="no-data-row"><td colspan="6"><div class="no-data-icon"><i class="fas fa-truck"></i></div><div>Belum ada data supplier yang terdaftar.</div></td></tr>
                 <?php endif; ?>
             </tbody>
         </table>

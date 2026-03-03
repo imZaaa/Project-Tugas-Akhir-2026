@@ -130,30 +130,30 @@ $route['kasir/kasir']        = 'kasir/Kasir/index';
 // KASIR — TRANSAKSI
 // =============================================
 
-// Barang Masuk (pakai controller admin, view kasir)
-$route['kasir/barang_masuk']                    = 'admin/barang_masuk/index';
-$route['kasir/barang_masuk/create']             = 'admin/barang_masuk/create';
-$route['kasir/barang_masuk/simpan']             = 'admin/barang_masuk/simpan';
-$route['kasir/barang_masuk/detail/(:num)']      = 'admin/barang_masuk/detail/$1';
+// Barang Masuk (kasir punya controller sendiri)
+$route['kasir/barang_masuk']                    = 'kasir/barang_masuk/index';
+$route['kasir/barang_masuk/create']             = 'kasir/barang_masuk/create';
+$route['kasir/barang_masuk/simpan']             = 'kasir/barang_masuk/simpan';
+$route['kasir/barang_masuk/detail/(:num)']      = 'kasir/barang_masuk/detail/$1';
 
-// Penjualan Offline (share controller admin)
-$route['kasir/penjualan']                       = 'admin/penjualan/index';
-$route['kasir/penjualan/create']                = 'admin/penjualan/create';
-$route['kasir/penjualan/simpan']                = 'admin/penjualan/simpan';
-$route['kasir/penjualan/detail/(:num)']         = 'admin/penjualan/detail/$1';
-$route['kasir/penjualan/cetak/(:num)']          = 'admin/penjualan/cetak/$1';
-$route['kasir/penjualan/get_produk']            = 'admin/penjualan/get_produk_json';
+// Penjualan Offline (kasir punya controller sendiri)
+$route['kasir/penjualan']                       = 'kasir/penjualan/index';
+$route['kasir/penjualan/create']                = 'kasir/penjualan/create';
+$route['kasir/penjualan/simpan']                = 'kasir/penjualan/simpan';
+$route['kasir/penjualan/detail/(:num)']         = 'kasir/penjualan/detail/$1';
+$route['kasir/penjualan/cetak/(:num)']          = 'kasir/penjualan/cetak/$1';
+$route['kasir/penjualan/get_produk']            = 'kasir/penjualan/get_produk_json';
 
 // =============================================
 // KASIR — STOK & RIWAYAT
 // =============================================
 
-// Cek Stok Produk (kasir hanya bisa edit stok)
-$route['kasir/produk']                          = 'admin/produk/index';
-$route['kasir/produk/update_stok']              = 'admin/produk/update_stok';
+// Cek Stok Produk (kasir punya controller sendiri)
+$route['kasir/produk']                          = 'kasir/produk/index';
+$route['kasir/produk/update_stok']              = 'kasir/produk/update_stok';
 
-// Supplier (kasir read-only)
-$route['kasir/supplier']                        = 'admin/supplier/index';
+// Supplier (kasir punya controller sendiri)
+$route['kasir/supplier']                        = 'kasir/supplier/index';
 
 // Laporan Penjualan Kasir
 $route['kasir/laporan']                         = 'kasir/laporan_kasir/index';
@@ -162,3 +162,4 @@ $route['kasir/laporan/cetak']                   = 'kasir/laporan_kasir/cetak';
 // Riwayat Transaksi Kasir
 $route['kasir/riwayat']                         = 'kasir/riwayat/index';
 $route['kasir/riwayat/detail/(:num)']           = 'kasir/riwayat/detail/$1';
+

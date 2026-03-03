@@ -140,7 +140,7 @@
                     </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <tr class="no-data-row"><td colspan="7"><div class="no-data-icon"><i class="fas fa-box-open"></i></div><div>Belum ada produk<?= !empty($filter_kategori) ? ' di kategori ini' : '' ?></div></td></tr>
+                    <tr class="no-data-row"><td colspan="7"><div class="no-data-icon"><i class="fas fa-box-open"></i></div><div>Belum terdapat data produk<?= !empty($filter_kategori) ? ' di kategori ini' : '' ?>.</div></td></tr>
                 <?php endif; ?>
             </tbody>
         </table>

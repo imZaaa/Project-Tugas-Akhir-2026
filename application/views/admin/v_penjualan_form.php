@@ -97,19 +97,19 @@
     }
 </style>
 
-    <?php $prefix = ($this->session->userdata('role') === 'admin') ? 'admin' : 'kasir'; ?>
+
 
     <div class="page-title-row">
         <div>
             <h1><i class="fas fa-cash-register" style="color:#1a56db; margin-right:6px;"></i>Transaksi Baru</h1>
             <p>Input penjualan offline — Gudang PT Pordjo Kaliabang</p>
         </div>
-        <a href="<?= site_url($prefix . '/penjualan') ?>" class="btn-back">
+        <a href="<?= site_url('admin/penjualan') ?>" class="btn-back">
             <i class="fas fa-arrow-left"></i> Kembali
         </a>
     </div>
 
-    <form action="<?= site_url($prefix . '/penjualan/simpan') ?>" method="post" id="formPenjualan">
+    <form action="<?= site_url('admin/penjualan/simpan') ?>" method="post" id="formPenjualan">
     <div class="form-layout">
 
         <!-- LEFT: FORM -->
@@ -355,10 +355,14 @@
         if (select && select.value) {
             var opt  = select.options[select.selectedIndex];
             var stok = parseInt(opt.getAttribute('data-stok')) || 0;
+            var satuan = opt.getAttribute('data-satuan') || '';
             var stokEl = document.getElementById('stok-' + idx);
             if (qty > stok) {
-                stokEl.textContent = '⚠ Stok: ' + stok + ' (kurang!)';
+                stokEl.textContent = '⚠ Stok: ' + stok + ' (melebihi batas)';
                 stokEl.className = 'stok-hint danger';
+            } else {
+                stokEl.textContent = stok + ' ' + satuan;
+                stokEl.className = 'stok-hint' + (stok <= 0 ? ' danger' : stok <= 10 ? ' warning' : '');
             }
         }
 
@@ -390,6 +394,14 @@
         document.getElementById('sum-qty').textContent   = totalQty;
         document.getElementById('sum-total').textContent = 'Rp ' + total.toLocaleString('id-ID');
         document.getElementById('item-count-badge').textContent = rows.length + ' item';
+
+        // Auto-fill jumlah bayar sesuai total
+        var bayarEl = document.getElementById('inputBayar');
+        if (total > 0) {
+            bayarEl.value = total;
+        } else {
+            bayarEl.value = '';
+        }
 
         updateKembalian();
     }

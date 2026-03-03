@@ -61,7 +61,7 @@
             <h1>Detail Barang Masuk</h1>
             <p>Rincian transaksi penerimaan barang</p>
         </div>
-        <a href="<?= site_url($this->session->userdata('role') === 'admin' ? 'admin/barang_masuk' : 'kasir/barang_masuk') ?>" class="btn-back">
+        <a href="<?= site_url('admin/barang_masuk') ?>" class="btn-back">
             <i class="fas fa-arrow-left"></i> Kembali
         </a>
     </div>

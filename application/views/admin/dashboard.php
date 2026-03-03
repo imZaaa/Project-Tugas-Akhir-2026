@@ -728,7 +728,7 @@
     <?php else: ?>
     <div class="notif-bar-empty">
         <i class="fas fa-inbox" style="font-size:18px;"></i>
-        Belum ada barang masuk hari ini
+        Belum terdapat data barang masuk hari ini.
     </div>
     <?php endif; ?>
 
@@ -911,7 +911,7 @@
                 <?php else: ?>
                     <div class="bm-empty">
                         <i class="fas fa-inbox"></i>
-                        Belum ada barang masuk hari ini
+                        Belum terdapat data barang masuk hari ini.
                     </div>
                 <?php endif; ?>
             </div>
@@ -947,7 +947,7 @@
                             </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
-                            <tr><td colspan="5" style="text-align:center;padding:32px;color:#9ca3af;font-size:13px;">Belum ada transaksi penjualan</td></tr>
+                            <tr><td colspan="5" style="text-align:center;padding:32px;color:#9ca3af;font-size:13px;">Belum terdapat data transaksi penjualan.</td></tr>
                         <?php endif; ?>
                     </tbody>
                 </table>

@@ -204,7 +204,7 @@
                 </tbody>
             </table>
             <?php else: ?>
-            <div class="no-data-msg"><i class="fas fa-trophy"></i>Belum ada data</div>
+            <div class="no-data-msg"><i class="fas fa-trophy"></i>Belum terdapat data.</div>
             <?php endif; ?>
         </div>
 

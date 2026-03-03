@@ -89,14 +89,14 @@
     }
 </style>
 
-    <?php $role = $this->session->userdata('role'); $prefix = ($role === 'admin') ? 'admin' : 'kasir'; ?>
+
 
     <div class="page-title-row">
         <div>
             <h1><i class="fas fa-shopping-cart" style="color:#1a56db; margin-right:6px;"></i>Penjualan Offline</h1>
-            <p><?= ($role === 'admin') ? 'Seluruh riwayat transaksi penjualan' : 'Riwayat transaksi penjualan hari ini' ?></p>
+            <p>Seluruh riwayat transaksi penjualan</p>
         </div>
-        <a href="<?= site_url($prefix . '/penjualan/create') ?>" class="btn-primary-custom">
+        <a href="<?= site_url('admin/penjualan/create') ?>" class="btn-primary-custom">
             <i class="fas fa-plus"></i> Transaksi Baru
         </a>
     </div>
@@ -185,13 +185,13 @@
                         </td>
                         <td>
                             <div style="display:flex; gap:5px; flex-wrap:wrap;">
-                                <a href="<?= site_url($prefix . '/penjualan/detail/' . $s['id_sale']) ?>" class="btn-action btn-detail">
+                                <a href="<?= site_url('admin/penjualan/detail/' . $s['id_sale']) ?>" class="btn-action btn-detail">
                                     <i class="fas fa-eye"></i> Detail
                                 </a>
-                                <a href="<?= site_url($prefix . '/penjualan/cetak/' . $s['id_sale']) ?>" class="btn-action btn-print" target="_blank">
+                                <a href="<?= site_url('admin/penjualan/cetak/' . $s['id_sale']) ?>" class="btn-action btn-print" target="_blank">
                                     <i class="fas fa-print"></i> Nota
                                 </a>
-                                <?php if ($role === 'admin' && ($s['status'] ?? '') === 'Lunas'): ?>
+                                <?php if (($s['status'] ?? '') === 'Lunas'): ?>
                                 <button class="btn-action btn-void" onclick="openVoid('<?= $s['id_sale'] ?>', '<?= htmlspecialchars($s['kode_transaksi'], ENT_QUOTES) ?>')">
                                     <i class="fas fa-ban"></i> Void
                                 </button>
@@ -204,9 +204,9 @@
                     <tr class="no-data-row">
                         <td colspan="9">
                             <div class="no-data-icon"><i class="fas fa-shopping-cart"></i></div>
-                            <div>Belum ada transaksi penjualan<?= ($role !== 'admin') ? ' hari ini' : '' ?></div>
+                            <div>Belum terdapat data transaksi penjualan.</div>
                             <div style="margin-top:6px;">
-                                <a href="<?= site_url($prefix . '/penjualan/create') ?>" class="btn-primary-custom" style="margin:0 auto; display:inline-flex;">
+                                <a href="<?= site_url('admin/penjualan/create') ?>" class="btn-primary-custom" style="margin:0 auto; display:inline-flex;">
                                     <i class="fas fa-plus"></i> Buat Transaksi Baru
                                 </a>
                             </div>
@@ -222,8 +222,7 @@
         </div>
     </div>
 
-    <!-- MODAL VOID (admin only) -->
-    <?php if ($role === 'admin'): ?>
+    <!-- MODAL VOID -->
     <div class="modal-overlay" id="modalVoid">
         <div class="modal-box">
             <div class="modal-header-custom">
@@ -245,7 +244,6 @@
             </form>
         </div>
     </div>
-    <?php endif; ?>
 
 <script>
     function openVoid(id, kode) {

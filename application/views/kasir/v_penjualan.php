@@ -143,7 +143,7 @@
                     <tr class="no-data-row">
                         <td colspan="8">
                             <div class="no-data-icon"><i class="fas fa-shopping-cart"></i></div>
-                            <div>Belum ada transaksi penjualan hari ini</div>
+                            <div>Belum terdapat data transaksi penjualan hari ini.</div>
                             <div style="margin-top:6px;"><a href="<?= site_url('kasir/penjualan/create') ?>" class="btn-primary-custom" style="margin:0 auto; display:inline-flex;"><i class="fas fa-plus"></i> Buat Transaksi Baru</a></div>
                         </td>
                     </tr>

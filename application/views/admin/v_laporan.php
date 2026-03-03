@@ -191,7 +191,7 @@
                 <canvas id="omzetChart"></canvas>
             </div>
             <?php else: ?>
-            <div class="no-data-msg"><i class="fas fa-chart-bar"></i>Belum ada data untuk grafik</div>
+            <div class="no-data-msg"><i class="fas fa-chart-bar"></i>Belum terdapat data untuk grafik.</div>
             <?php endif; ?>
         </div>
     </div>
@@ -244,7 +244,7 @@
                 </tbody>
             </table>
             <?php else: ?>
-            <div class="no-data-msg"><i class="fas fa-trophy"></i>Belum ada data produk</div>
+            <div class="no-data-msg"><i class="fas fa-trophy"></i>Belum terdapat data produk.</div>
             <?php endif; ?>
         </div>
 
@@ -281,7 +281,7 @@
                 </tbody>
             </table>
             <?php else: ?>
-            <div class="no-data-msg"><i class="fas fa-users"></i>Belum ada data kasir</div>
+            <div class="no-data-msg"><i class="fas fa-users"></i>Belum terdapat data kasir.</div>
             <?php endif; ?>
         </div>
     </div>

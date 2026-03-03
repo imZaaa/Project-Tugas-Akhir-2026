@@ -171,7 +171,7 @@
                     <tr class="no-data-row">
                         <td colspan="8">
                             <div class="no-data-icon"><i class="fas fa-history"></i></div>
-                            <div>Belum ada riwayat transaksi</div>
+                            <div>Belum terdapat riwayat transaksi.</div>
                         </td>
                     </tr>
                 <?php endif; ?>

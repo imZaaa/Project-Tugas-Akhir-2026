@@ -338,7 +338,7 @@
     <div style="padding: 24px 28px 0; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
         <div>
             <h1 style="font-size:20px; font-weight:700; color:#111827; margin:0 0 3px; letter-spacing:-0.3px;">Dashboard Kasir</h1>
-            <p style="font-size:12.5px; color:#9ca3af; margin:0;">Halo, <?= $this->session->userdata('nama') ?: 'Kasir' ?>! Siap melayani transaksi hari ini.</p>
+            <p style="font-size:12.5px; color:#9ca3af; margin:0;">Halo, <?= $this->session->userdata('nama') ?: 'Kasir' ?>. Selamat bertugas melayani transaksi hari ini.</p>
         </div>
         <div style="display:flex; align-items:center; gap:10px;">
             <div style="display:inline-flex; align-items:center; gap:7px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:7px 14px; color:#1a56db; font-size:13px; font-weight:600;">

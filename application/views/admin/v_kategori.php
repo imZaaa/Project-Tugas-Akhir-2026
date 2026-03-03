@@ -155,7 +155,7 @@
                     <tr class="no-data-row">
                         <td colspan="3">
                             <div class="no-data-icon"><i class="fas fa-tag"></i></div>
-                            <div>Belum ada kategori</div>
+                            <div>Belum terdapat data kategori.</div>
                         </td>
                     </tr>
                 <?php endif; ?>

@@ -85,11 +85,9 @@
             <h1>Barang Masuk</h1>
             <p>Histori transaksi pembelian & penerimaan barang</p>
         </div>
-        <?php if ($this->session->userdata('role') !== 'admin'): ?>
-        <a href="<?= site_url('kasir/barang_masuk/create') ?>" class="btn-primary-custom">
+        <a href="<?= site_url('admin/barang_masuk/create') ?>" class="btn-primary-custom">
             <i class="fas fa-plus"></i> Input Barang Masuk
         </a>
-        <?php endif; ?>
     </div>
 
     <?php if ($this->session->flashdata('success')): ?>
@@ -171,14 +169,12 @@
                         <td><span class="total-text">Rp <?= number_format($p['total_bayar'], 0, ',', '.') ?></span></td>
                         <td>
                             <div style="display:flex; gap:6px;">
-                                <a href="<?= site_url(($this->session->userdata('role') === 'admin' ? 'admin' : 'kasir') . '/barang_masuk/detail/' . $p['id_purchase']) ?>" class="btn-action btn-detail">
+                                <a href="<?= site_url('admin/barang_masuk/detail/' . $p['id_purchase']) ?>" class="btn-action btn-detail">
                                     <i class="fas fa-eye"></i> Detail
                                 </a>
-                                <?php if ($this->session->userdata('role') === 'admin'): ?>
                                 <button class="btn-action btn-delete" onclick="openDelete('<?= $p['id_purchase'] ?>', '<?= htmlspecialchars($p['no_faktur'], ENT_QUOTES) ?>')">
                                     <i class="fas fa-trash"></i> Hapus
                                 </button>
-                                <?php endif; ?>
                             </div>
                         </td>
                     </tr>
@@ -187,8 +183,8 @@
                     <tr class="no-data-row">
                         <td colspan="7">
                             <div class="no-data-icon"><i class="fas fa-truck-loading"></i></div>
-                            <div>Belum ada transaksi barang masuk</div>
-                            <div style="margin-top:6px;"><a href="<?= site_url(($this->session->userdata('role') === 'admin' ? 'admin' : 'kasir') . '/barang_masuk/create') ?>" class="btn-primary-custom" style="margin:0 auto; display:inline-flex;"><i class="fas fa-plus"></i> Input Sekarang</a></div>
+                            <div>Belum terdapat data transaksi barang masuk.</div>
+                            <div style="margin-top:6px;"><a href="<?= site_url('admin/barang_masuk/create') ?>" class="btn-primary-custom" style="margin:0 auto; display:inline-flex;"><i class="fas fa-plus"></i> Input Sekarang</a></div>
                         </td>
                     </tr>
                 <?php endif; ?>
@@ -201,8 +197,7 @@
         </div>
     </div>
 
-    <!-- MODAL HAPUS (admin only) -->
-    <?php if ($this->session->userdata('role') === 'admin'): ?>
+    <!-- MODAL HAPUS -->
     <div class="modal-overlay" id="modalDelete">
         <div class="modal-box">
             <div class="modal-header">
@@ -224,7 +219,6 @@
             </form>
         </div>
     </div>
-    <?php endif; ?>
 
 <script>
     function openDelete(id, faktur) {

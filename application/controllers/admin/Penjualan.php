@@ -8,34 +8,18 @@ class Penjualan extends CI_Controller {
         $this->load->model('admin/M_sale');
         $this->load->model('admin/M_produk');
         if (!$this->session->userdata('logged_in')) redirect('auth');
-    }
-
-    // ===== HELPER: prefix URL berdasarkan role =====
-    private function _prefix() {
-        return ($this->session->userdata('role') === 'admin') ? 'admin' : 'kasir';
+        if ($this->session->userdata('role') !== 'admin') {
+            redirect('kasir/penjualan');
+            return;
+        }
     }
 
     // ===== LIST RIWAYAT PENJUALAN =====
     public function index() {
-        $role    = $this->session->userdata('role');
-        $id_user = $this->session->userdata('id_user');
-
-        $data['title'] = 'Penjualan Offline | PT Pordjo';
-
-        // Admin: semua transaksi. Kasir: hanya hari ini
-        if ($role === 'admin') {
-            $data['sales'] = $this->M_sale->get_all();
-        } else {
-            $data['sales'] = $this->M_sale->get_today_by_kasir($id_user);
-        }
-
-        $data['omzet_hari'] = ($role === 'admin')
-            ? $this->M_sale->omzet_hari_ini()
-            : $this->M_sale->omzet_by_kasir_hari_ini($id_user);
-
-        $data['trx_hari'] = ($role === 'admin')
-            ? $this->M_sale->count_hari_ini()
-            : $this->M_sale->count_by_kasir_hari_ini($id_user);
+        $data['title']     = 'Penjualan Offline | PT Pordjo';
+        $data['sales']     = $this->M_sale->get_all();
+        $data['omzet_hari'] = $this->M_sale->omzet_hari_ini();
+        $data['trx_hari']   = $this->M_sale->count_hari_ini();
 
         $this->load->view('layout/header', $data);
         $this->load->view('layout/sidebar', $data);
@@ -57,26 +41,24 @@ class Penjualan extends CI_Controller {
 
     // ===== SIMPAN TRANSAKSI =====
     public function simpan() {
-        $prefix = $this->_prefix();
-
         $kode_transaksi = $this->input->post('kode_transaksi', TRUE);
         $nama_pelanggan = $this->input->post('nama_pelanggan', TRUE);
         $bayar          = (float) $this->input->post('bayar', TRUE);
-        $id_products    = $this->input->post('id_product', TRUE);   // array
-        $qtys           = $this->input->post('qty', TRUE);           // array
-        $harga_juals    = $this->input->post('harga_jual', TRUE);    // array
+        $id_products    = $this->input->post('id_product', TRUE);
+        $qtys           = $this->input->post('qty', TRUE);
+        $harga_juals    = $this->input->post('harga_jual', TRUE);
 
         // Validasi header
         if (empty($kode_transaksi) || empty($bayar)) {
             $this->session->set_flashdata('error', 'Kode transaksi dan nominal pembayaran wajib diisi.');
-            redirect($prefix . '/penjualan/create');
+            redirect('admin/penjualan/create');
             return;
         }
 
         // Validasi items
         if (empty($id_products) || !is_array($id_products)) {
             $this->session->set_flashdata('error', 'Minimal satu produk harus ditambahkan.');
-            redirect($prefix . '/penjualan/create');
+            redirect('admin/penjualan/create');
             return;
         }
 
@@ -96,7 +78,7 @@ class Penjualan extends CI_Controller {
                 $nama = $produk ? $produk['nama_produk'] : 'Unknown';
                 $sisa = $produk ? $produk['stok'] : 0;
                 $this->session->set_flashdata('error', 'Stok "' . $nama . '" tidak mencukupi. Sisa stok: ' . $sisa . ', jumlah yang diminta: ' . $qty);
-                redirect($prefix . '/penjualan/create');
+                redirect('admin/penjualan/create');
                 return;
             }
 
@@ -110,14 +92,14 @@ class Penjualan extends CI_Controller {
 
         if (empty($items)) {
             $this->session->set_flashdata('error', 'Data produk tidak valid, harap periksa kembali.');
-            redirect($prefix . '/penjualan/create');
+            redirect('admin/penjualan/create');
             return;
         }
 
         // Validasi bayar >= total
         if ($bayar < $total_harga) {
             $this->session->set_flashdata('error', 'Nominal pembayaran (Rp ' . number_format($bayar, 0, ',', '.') . ') kurang dari total belanja (Rp ' . number_format($total_harga, 0, ',', '.') . ').');
-            redirect($prefix . '/penjualan/create');
+            redirect('admin/penjualan/create');
             return;
         }
 
@@ -141,23 +123,22 @@ class Penjualan extends CI_Controller {
 
         if ($id_sale) {
             $this->session->set_flashdata('success', 'Transaksi berhasil disimpan dengan kode transaksi: ' . $kode_transaksi);
-            redirect($prefix . '/penjualan/detail/' . $id_sale);
+            redirect('admin/penjualan/detail/' . $id_sale);
         } else {
             $this->session->set_flashdata('error', 'Transaksi gagal disimpan. Silakan coba kembali.');
-            redirect($prefix . '/penjualan/create');
+            redirect('admin/penjualan/create');
         }
     }
 
     // ===== DETAIL TRANSAKSI =====
     public function detail($id_sale) {
-        $prefix = $this->_prefix();
         $data['title']  = 'Detail Penjualan | PT Pordjo';
         $data['header'] = $this->M_sale->get_by_id($id_sale);
         $data['detail'] = $this->M_sale->get_detail($id_sale);
 
         if (!$data['header']) {
             $this->session->set_flashdata('error', 'Data transaksi tidak ditemukan.');
-            redirect($prefix . '/penjualan');
+            redirect('admin/penjualan');
             return;
         }
 
@@ -175,7 +156,7 @@ class Penjualan extends CI_Controller {
 
         if (!$data['header']) {
             $this->session->set_flashdata('error', 'Data transaksi tidak ditemukan.');
-            redirect($this->_prefix() . '/penjualan');
+            redirect('admin/penjualan');
             return;
         }
 
@@ -183,14 +164,8 @@ class Penjualan extends CI_Controller {
         $this->load->view('admin/v_penjualan_cetak', $data);
     }
 
-    // ===== VOID TRANSAKSI (ADMIN ONLY) =====
+    // ===== VOID TRANSAKSI =====
     public function void_transaksi() {
-        if ($this->session->userdata('role') !== 'admin') {
-            $this->session->set_flashdata('error', 'Akses ditolak. Hanya Admin yang bisa membatalkan transaksi.');
-            redirect('kasir/penjualan');
-            return;
-        }
-
         $id_sale = $this->input->post('id_sale', TRUE);
 
         if ($this->M_sale->void_transaksi($id_sale)) {

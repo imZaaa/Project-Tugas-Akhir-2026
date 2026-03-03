@@ -438,8 +438,8 @@
                     <tr class="no-data-row">
                         <td colspan="5">
                             <div class="no-data-icon"><i class="fas fa-users"></i></div>
-                            <div>Belum ada user terdaftar</div>
-                            <div style="margin-top:4px; font-size:12px;">Klik "Tambah User" untuk menambahkan akun baru</div>
+                            <div>Belum ada pengguna yang terdaftar.</div>
+                            <div style="margin-top:4px; font-size:12px;">Silakan klik "Tambah User" untuk menambahkan akun baru.</div>
                         </td>
                     </tr>
                 <?php endif; ?>
@@ -579,8 +579,8 @@
                 <input type="hidden" name="id_user" id="delete_id">
                 <div class="delete-modal-body">
                     <div class="delete-icon"><i class="fas fa-exclamation-triangle"></i></div>
-                    <h5>Hapus akun ini?</h5>
-                    <p>Akun <strong id="delete_nama"></strong> akan dihapus permanen dan tidak bisa dikembalikan.</p>
+                    <h5>Apakah Anda yakin ingin menghapus akun ini?</h5>
+                    <p>Akun <strong id="delete_nama"></strong> akan dihapus secara permanen dan tidak dapat dipulihkan kembali.</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-cancel" onclick="closeModal('modalDelete')">Batal</button>
