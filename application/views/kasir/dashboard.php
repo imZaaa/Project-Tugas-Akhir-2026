@@ -500,14 +500,33 @@
         <!-- RIGHT -->
         <div class="kasir-right">
 
-            <!-- Cek Stok Produk -->
+            <!-- Cek Stok -->
             <div class="k-card">
                 <div class="k-card-header">
                     <div>
-                        <h3>Cek Stok Produk</h3>
-                        <p>Lihat ketersediaan produk</p>
+                        <h3>Cek Stok</h3>
+                        <p>Pantau ketersediaan stok produk</p>
                     </div>
                 </div>
+                <?php $produk_habis_list = $produk_habis ?? []; ?>
+                <?php if (!empty($produk_habis_list)): ?>
+                <div style="margin:0 16px 8px; padding:12px 16px; background:#fef2f2; border:1px solid #fecaca; border-radius:10px; display:flex; align-items:flex-start; gap:10px;">
+                    <i class="fas fa-exclamation-circle" style="color:#dc2626; font-size:16px; margin-top:2px; flex-shrink:0;"></i>
+                    <div style="flex:1;">
+                        <div style="font-size:12.5px; font-weight:700; color:#dc2626; margin-bottom:4px;">
+                            <?= count($produk_habis_list) ?> Produk Stok Habis
+                        </div>
+                        <div style="font-size:11.5px; color:#991b1b; line-height:1.5;">
+                            <?php foreach (array_slice($produk_habis_list, 0, 3) as $ph): ?>
+                                <span style="display:inline-block; background:#fee2e2; padding:2px 8px; border-radius:5px; margin:2px 2px; font-weight:600;"><?= htmlspecialchars($ph['nama_produk']) ?></span>
+                            <?php endforeach; ?>
+                            <?php if (count($produk_habis_list) > 3): ?>
+                                <span style="font-weight:600; color:#b91c1c;">+<?= count($produk_habis_list) - 3 ?> lainnya</span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
                 <div class="search-produk-wrap">
                     <div class="search-input-box">
                         <i class="fas fa-search"></i>
@@ -521,7 +540,7 @@
                             <div class="sci-icon"><i class="fas fa-cube"></i></div>
                             <div style="flex:1;">
                                 <span class="sci-name"><?= $p['nama_produk'] ?></span>
-                                <span class="sci-cat"><?= $p['kategori'] ?></span>
+                                <span class="sci-cat"><?= $p['nama_kategori'] ?></span>
                             </div>
                             <div class="sci-stok <?= $p['stok'] <= 3 ? 'low' : ($p['stok'] <= 10 ? 'warn' : 'ok') ?>">
                                 <?= $p['stok'] ?> <small style="font-size:10px;font-weight:500;"><?= $p['satuan'] ?></small>

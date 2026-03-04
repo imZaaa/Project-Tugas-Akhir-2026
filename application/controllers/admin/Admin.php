@@ -24,6 +24,7 @@ class Admin extends CI_Controller {
         $produk_menipis         = $this->M_produk->get_stok_menipis(10);
         $data['produk_menipis'] = $produk_menipis;
         $data['stok_menipis']   = count($produk_menipis);
+        $data['produk_habis']   = array_filter($produk_menipis, fn($p) => (int)$p['stok'] === 0);
 
         // ===== SUPPLIER =====
         $data['total_supplier'] = $this->M_supplier->count_all();

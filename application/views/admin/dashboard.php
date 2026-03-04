@@ -996,15 +996,34 @@
                 </div>
             </div>
 
-            <!-- Stok Menipis -->
+            <!-- Cek Stok -->
             <div class="dash-card">
                 <div class="dash-card-header">
                     <div>
-                        <h3>Stok Menipis</h3>
-                        <p>Perlu segera kulakan</p>
+                        <h3>Cek Stok</h3>
+                        <p>Pantau ketersediaan stok produk</p>
                     </div>
                     <a href="<?= site_url('admin/produk') ?>" class="btn-card-action">Kelola</a>
                 </div>
+                <?php $produk_habis_list = $produk_habis ?? []; ?>
+                <?php if (!empty($produk_habis_list)): ?>
+                <div style="margin:0 16px; padding:12px 16px; background:#fef2f2; border:1px solid #fecaca; border-radius:10px; display:flex; align-items:flex-start; gap:10px;">
+                    <i class="fas fa-exclamation-circle" style="color:#dc2626; font-size:16px; margin-top:2px; flex-shrink:0;"></i>
+                    <div style="flex:1;">
+                        <div style="font-size:12.5px; font-weight:700; color:#dc2626; margin-bottom:4px;">
+                            <?= count($produk_habis_list) ?> Produk Stok Habis
+                        </div>
+                        <div style="font-size:11.5px; color:#991b1b; line-height:1.5;">
+                            <?php foreach (array_slice($produk_habis_list, 0, 3) as $ph): ?>
+                                <span style="display:inline-block; background:#fee2e2; padding:2px 8px; border-radius:5px; margin:2px 2px; font-weight:600;"><?= htmlspecialchars($ph['nama_produk']) ?></span>
+                            <?php endforeach; ?>
+                            <?php if (count($produk_habis_list) > 3): ?>
+                                <span style="font-weight:600; color:#b91c1c;">+<?= count($produk_habis_list) - 3 ?> lainnya</span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
                 <?php if (!empty($produk_menipis)): ?>
                     <?php foreach (array_slice($produk_menipis, 0, 5) as $p): ?>
                     <div class="low-stock-item">
