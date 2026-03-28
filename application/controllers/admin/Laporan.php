@@ -59,7 +59,7 @@ class Laporan extends CI_Controller {
         $data['sales']        = $this->M_sale->get_laporan($tgl_awal, $tgl_akhir);
         $data['total_omzet']  = $this->M_sale->omzet_by_range($tgl_awal, $tgl_akhir);
         $data['total_trx']    = $this->M_sale->count_by_range($tgl_awal, $tgl_akhir);
-        $data['top_produk']   = $this->M_sale->get_top_produk($tgl_awal, $tgl_akhir, 10);
+        $data['top_produk']   = $this->M_sale->get_top_produk($tgl_awal, $tgl_akhir, 5);
         $data['per_kasir']    = $this->M_sale->omzet_per_kasir($tgl_awal, $tgl_akhir);
 
         // Chart data — omzet per hari
@@ -89,7 +89,7 @@ class Laporan extends CI_Controller {
         $data['sales']        = $this->M_sale->get_laporan($tgl_awal, $tgl_akhir);
         $data['total_omzet']  = $this->M_sale->omzet_by_range($tgl_awal, $tgl_akhir);
         $data['total_trx']    = $this->M_sale->count_by_range($tgl_awal, $tgl_akhir);
-        $data['top_produk']   = $this->M_sale->get_top_produk($tgl_awal, $tgl_akhir, 10);
+        $data['top_produk']   = $this->M_sale->get_top_produk($tgl_awal, $tgl_akhir, 5);
         $data['per_kasir']    = $this->M_sale->omzet_per_kasir($tgl_awal, $tgl_akhir);
 
         // Load tanpa sidebar/header — layout cetak

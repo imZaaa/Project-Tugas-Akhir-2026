@@ -446,49 +446,28 @@
                         <?php if (!empty($my_transaksi_hari)): ?>
                             <?php foreach ($my_transaksi_hari as $t): ?>
                             <tr>
-                                <td><span class="trx-code"><?= $t['kode_transaksi'] ?></span></td>
-                                <td><?= date('H:i', strtotime($t['tanggal'])) ?></td>
+                                <td><span class="trx-code"><?= htmlspecialchars($t['kode_transaksi']) ?></span></td>
+                                <td><?= date('H:i', strtotime($t['tgl_jual'])) ?></td>
                                 <td><?= $t['jumlah_item'] ?> item</td>
-                                <td class="trx-amount">Rp <?= number_format($t['total'], 0, ',', '.') ?></td>
-                                <td><span class="k-badge-status">Lunas</span></td>
+                                <td class="trx-amount">Rp <?= number_format($t['total_harga'], 0, ',', '.') ?></td>
+                                <td>
+                                    <?php if (($t['status'] ?? '') === 'Lunas'): ?>
+                                        <span class="k-badge-status">Lunas</span>
+                                    <?php else: ?>
+                                        <span class="k-badge-status" style="background:#fef2f2; color:#dc2626;">Batal</span>
+                                    <?php endif; ?>
+                                </td>
                             </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
-                            <!-- Dummy rows -->
                             <tr>
-                                <td><span class="trx-code">TRX-20260001</span></td>
-                                <td>08:30</td>
-                                <td>3 item</td>
-                                <td class="trx-amount">Rp 750.000</td>
-                                <td><span class="k-badge-status">Lunas</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="trx-code">TRX-20260002</span></td>
-                                <td>09:15</td>
-                                <td>1 item</td>
-                                <td class="trx-amount">Rp 320.000</td>
-                                <td><span class="k-badge-status">Lunas</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="trx-code">TRX-20260003</span></td>
-                                <td>10:48</td>
-                                <td>5 item</td>
-                                <td class="trx-amount">Rp 2.150.000</td>
-                                <td><span class="k-badge-status">Lunas</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="trx-code">TRX-20260004</span></td>
-                                <td>11:22</td>
-                                <td>2 item</td>
-                                <td class="trx-amount">Rp 480.000</td>
-                                <td><span class="k-badge-status">Lunas</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="trx-code">TRX-20260005</span></td>
-                                <td>13:05</td>
-                                <td>4 item</td>
-                                <td class="trx-amount">Rp 1.900.000</td>
-                                <td><span class="k-badge-status">Lunas</span></td>
+                                <td colspan="5" style="text-align:center; padding:32px 20px; color:#9ca3af;">
+                                    <div style="width:48px; height:48px; background:#f3f4f6; border-radius:12px; display:flex; align-items:center; justify-content:center; margin:0 auto 10px; font-size:20px; color:#d1d5db;">
+                                        <i class="fas fa-receipt"></i>
+                                    </div>
+                                    <div style="font-size:13px; font-weight:600; color:#6b7280;">Belum ada transaksi hari ini</div>
+                                    <div style="font-size:11.5px; color:#9ca3af; margin-top:3px;">Mulai buat transaksi baru!</div>
+                                </td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
@@ -548,36 +527,12 @@
                         </div>
                         <?php endforeach; ?>
                     <?php else: ?>
-                        <!-- Dummy -->
-                        <div class="stock-check-item">
-                            <div class="sci-icon"><i class="fas fa-cube"></i></div>
-                            <div style="flex:1;"><span class="sci-name">Besi Beton 10mm</span><span class="sci-cat">Besi Beton</span></div>
-                            <div class="sci-stok ok">42 <small style="font-size:10px;">btg</small></div>
-                        </div>
-                        <div class="stock-check-item">
-                            <div class="sci-icon"><i class="fas fa-cube"></i></div>
-                            <div style="flex:1;"><span class="sci-name">Baja Ringan C75</span><span class="sci-cat">Baja Ringan</span></div>
-                            <div class="sci-stok warn">7 <small style="font-size:10px;">btg</small></div>
-                        </div>
-                        <div class="stock-check-item">
-                            <div class="sci-icon"><i class="fas fa-cube"></i></div>
-                            <div style="flex:1;"><span class="sci-name">Plat Besi 6mm</span><span class="sci-cat">Plat Besi</span></div>
-                            <div class="sci-stok low">3 <small style="font-size:10px;">lbr</small></div>
-                        </div>
-                        <div class="stock-check-item">
-                            <div class="sci-icon"><i class="fas fa-cube"></i></div>
-                            <div style="flex:1;"><span class="sci-name">Besi Hollow 4x4</span><span class="sci-cat">Besi Hollow</span></div>
-                            <div class="sci-stok ok">28 <small style="font-size:10px;">pcs</small></div>
-                        </div>
-                        <div class="stock-check-item">
-                            <div class="sci-icon"><i class="fas fa-cube"></i></div>
-                            <div style="flex:1;"><span class="sci-name">Wiremesh M8</span><span class="sci-cat">Wiremesh</span></div>
-                            <div class="sci-stok low">1 <small style="font-size:10px;">lbr</small></div>
-                        </div>
-                        <div class="stock-check-item">
-                            <div class="sci-icon"><i class="fas fa-cube"></i></div>
-                            <div style="flex:1;"><span class="sci-name">Besi UNP 100</span><span class="sci-cat">Besi Profil</span></div>
-                            <div class="sci-stok ok">15 <small style="font-size:10px;">btg</small></div>
+                        <div style="text-align:center; padding:28px 20px; color:#9ca3af;">
+                            <div style="width:44px; height:44px; background:#f3f4f6; border-radius:12px; display:flex; align-items:center; justify-content:center; margin:0 auto 10px; font-size:18px; color:#d1d5db;">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div style="font-size:12.5px; font-weight:600; color:#6b7280;">Semua stok aman</div>
+                            <div style="font-size:11px; color:#9ca3af; margin-top:2px;">Tidak ada produk dengan stok menipis</div>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -601,8 +556,9 @@
                         <span style="font-size:12.5px;color:#6b7280;font-weight:500;"><i class="fas fa-calendar-day mr-2" style="color:#1a56db;"></i>Tanggal</span>
                         <span style="font-size:13px;font-weight:700;color:#111827;"><?= date('d/m/Y') ?></span>
                     </div>
-                    <a href="<?= site_url('auth/logout') ?>"
-                       style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px;padding:10px;background:#fef2f2;border-radius:9px;color:#dc2626;font-size:12.5px;font-weight:600;text-decoration:none;transition:background 0.15s;"
+                    <a href="javascript:void(0)"
+                       onclick="document.getElementById('modalLogout').classList.add('show')"
+                       style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px;padding:10px;background:#fef2f2;border-radius:9px;color:#dc2626;font-size:12.5px;font-weight:600;text-decoration:none;transition:background 0.15s;cursor:pointer;"
                        onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='#fef2f2'">
                         <i class="fas fa-sign-out-alt"></i> Logout
                     </a>

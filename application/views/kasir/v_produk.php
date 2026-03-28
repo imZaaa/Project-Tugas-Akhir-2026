@@ -2,139 +2,756 @@
 
 <style>
     @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
-    .content-wrapper, .content-wrapper *:not(i):not(svg):not(path) { font-family: 'DM Sans','Segoe UI',sans-serif; }
+    .content-wrapper,
+    .content-wrapper *:not(i):not(svg):not(path) {
+        font-family: 'DM Sans', 'Segoe UI', sans-serif;
+    }
 
     /* ===== PAGE HEADER ===== */
-    .kp-header { padding: 28px 28px 0; display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
-    .kp-header h1 { font-size: 22px; font-weight: 800; color: #111827; margin: 0 0 3px; letter-spacing: -0.3px; }
-    .kp-header p  { font-size: 13px; color: #9ca3af; margin: 0; }
-    .kp-header-right { display: flex; align-items: center; gap: 10px; }
+    .kp-header {
+        padding: 28px 28px 0;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 16px;
+    }
 
-    /* ===== STOK SUMMARY CARDS ===== */
-    .kp-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; padding: 18px 28px 0; }
-    .kp-stat-card { background: #fff; border-radius: 14px; border: 1px solid #e8ecf0; padding: 16px 18px; display: flex; align-items: center; gap: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); transition: transform 0.15s, box-shadow 0.15s; }
-    .kp-stat-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.06); }
-    .kp-stat-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
-    .kp-stat-value { font-size: 22px; font-weight: 800; color: #111827; line-height: 1; }
-    .kp-stat-label { font-size: 11.5px; color: #9ca3af; font-weight: 500; margin-top: 3px; }
+    .kp-header h1 {
+        font-size: 22px;
+        font-weight: 800;
+        color: #111827;
+        margin: 0 0 3px;
+        letter-spacing: -0.3px;
+    }
+
+    .kp-header p {
+        font-size: 13px;
+        color: #9ca3af;
+        margin: 0;
+    }
+
+    .kp-header-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* ===== STAT CARDS ===== */
+    .kp-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        padding: 18px 28px 0;
+    }
+
+    .kp-stat-card {
+        background: #fff;
+        border-radius: 14px;
+        border: 1px solid #e8ecf0;
+        padding: 16px 18px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+        transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .kp-stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    .kp-stat-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 17px;
+        flex-shrink: 0;
+    }
+
+    .kp-stat-value {
+        font-size: 22px;
+        font-weight: 800;
+        color: #111827;
+        line-height: 1;
+    }
+
+    .kp-stat-label {
+        font-size: 11.5px;
+        color: #9ca3af;
+        font-weight: 500;
+        margin-top: 3px;
+    }
 
     /* ===== OUT-OF-STOCK ALERT ===== */
-    .kp-oos-alert { margin: 16px 28px 0; padding: 14px 18px; background: linear-gradient(135deg, #fef2f2, #fff1f2); border: 1px solid #fecaca; border-radius: 12px; display: flex; align-items: flex-start; gap: 12px; animation: pulseAlert 2s ease-in-out infinite; }
-    @keyframes pulseAlert { 0%, 100% { box-shadow: 0 0 0 0 rgba(220,38,38,0); } 50% { box-shadow: 0 0 0 4px rgba(220,38,38,0.08); } }
-    .kp-oos-icon { width: 38px; height: 38px; background: #fee2e2; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #dc2626; font-size: 16px; flex-shrink: 0; }
-    .kp-oos-title { font-size: 13px; font-weight: 700; color: #dc2626; margin-bottom: 4px; }
-    .kp-oos-products { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
-    .kp-oos-pill { display: inline-flex; align-items: center; gap: 4px; background: #fee2e2; color: #991b1b; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; }
+    .kp-oos-alert {
+        margin: 16px 28px 0;
+        padding: 14px 18px;
+        background: linear-gradient(135deg, #fef2f2, #fff1f2);
+        border: 1px solid #fecaca;
+        border-radius: 12px;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        animation: pulseAlert 2s ease-in-out infinite;
+    }
 
-    /* ===== FILTER ===== */
-    .kp-filter-bar { margin: 14px 28px 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .kp-filter-badge { display: inline-flex; align-items: center; gap: 6px; background: #eff6ff; border: 1px solid #bfdbfe; color: #1a56db; font-size: 12.5px; font-weight: 600; padding: 5px 14px; border-radius: 20px; }
-    .kp-filter-badge a { color: #1a56db; margin-left: 4px; text-decoration: none; font-size: 11px; opacity: 0.7; }
-    .kp-filter-badge a:hover { opacity: 1; }
+    @keyframes pulseAlert {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+        50%       { box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.08); }
+    }
+
+    .kp-oos-icon {
+        width: 38px;
+        height: 38px;
+        background: #fee2e2;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #dc2626;
+        font-size: 16px;
+        flex-shrink: 0;
+    }
+
+    .kp-oos-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: #dc2626;
+        margin-bottom: 4px;
+    }
+
+    .kp-oos-products {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-top: 4px;
+    }
+
+    .kp-oos-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: #fee2e2;
+        color: #991b1b;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 20px;
+    }
+
+    /* ===== FILTER BAR ===== */
+    .kp-filter-bar {
+        margin: 14px 28px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .kp-filter-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        color: #1a56db;
+        font-size: 12.5px;
+        font-weight: 600;
+        padding: 5px 14px;
+        border-radius: 20px;
+    }
+
+    .kp-filter-badge a {
+        color: #1a56db;
+        margin-left: 4px;
+        text-decoration: none;
+        font-size: 11px;
+        opacity: 0.7;
+    }
+
+    .kp-filter-badge a:hover {
+        opacity: 1;
+    }
 
     /* ===== ALERTS ===== */
-    .alert-custom { margin: 16px 28px 0; padding: 11px 16px; border-radius: 10px; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 9px; }
-    .alert-custom.success { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
-    .alert-custom.error   { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+    .alert-custom {
+        margin: 16px 28px 0;
+        padding: 11px 16px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+    }
+
+    .alert-custom.success {
+        background: #f0fdf4;
+        color: #16a34a;
+        border: 1px solid #bbf7d0;
+    }
+
+    .alert-custom.error {
+        background: #fef2f2;
+        color: #dc2626;
+        border: 1px solid #fecaca;
+    }
 
     /* ===== MAIN TABLE CARD ===== */
-    .kp-card { margin: 16px 28px 28px; background: #fff; border-radius: 16px; border: 1px solid #e8ecf0; box-shadow: 0 2px 12px rgba(0,0,0,0.04); overflow: hidden; }
-    .kp-toolbar { padding: 16px 22px; border-bottom: 1px solid #f1f3f5; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-    .kp-toolbar-title { font-size: 15px; font-weight: 700; color: #111827; }
-    .kp-count-badge { display: inline-flex; align-items: center; gap: 5px; background: #eff6ff; color: #1a56db; font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 20px; margin-left: 10px; }
-    .kp-search { display: flex; align-items: center; gap: 8px; background: #f8fafc; border: 1.5px solid #e8ecf0; border-radius: 10px; padding: 8px 14px; transition: all 0.2s; }
-    .kp-search:focus-within { border-color: #1a56db; background: #fff; box-shadow: 0 0 0 3px rgba(26,86,219,0.06); }
-    .kp-search i { color: #9ca3af; font-size: 13px; }
-    .kp-search input { border: none; background: transparent; font-size: 13px; color: #374151; outline: none; width: 220px; font-family: 'DM Sans', sans-serif; }
-    .kp-search input::placeholder { color: #d1d5db; }
+    .kp-card {
+        margin: 16px 28px 28px;
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid #e8ecf0;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+        overflow: hidden;
+    }
+
+    .kp-toolbar {
+        padding: 16px 22px;
+        border-bottom: 1px solid #f1f3f5;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .kp-toolbar-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: #111827;
+    }
+
+    .kp-count-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: #eff6ff;
+        color: #1a56db;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: 20px;
+        margin-left: 10px;
+    }
+
+    .kp-search {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #f8fafc;
+        border: 1.5px solid #e8ecf0;
+        border-radius: 10px;
+        padding: 8px 14px;
+        transition: all 0.2s;
+    }
+
+    .kp-search:focus-within {
+        border-color: #1a56db;
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.06);
+    }
+
+    .kp-search i {
+        color: #9ca3af;
+        font-size: 13px;
+    }
+
+    .kp-search input {
+        border: none;
+        background: transparent;
+        font-size: 13px;
+        color: #374151;
+        outline: none;
+        width: 220px;
+        font-family: 'DM Sans', sans-serif;
+    }
+
+    .kp-search input::placeholder {
+        color: #d1d5db;
+    }
 
     /* ===== TABLE ===== */
-    .kp-table { width: 100%; border-collapse: collapse; }
-    .kp-table th { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: #9ca3af; padding: 12px 22px; text-align: left; background: #fafbfc; border-bottom: 1px solid #f1f3f5; white-space: nowrap; }
-    .kp-table td { padding: 14px 22px; font-size: 13px; color: #374151; border-bottom: 1px solid #f7f8f9; vertical-align: middle; }
-    .kp-table tr:last-child td { border-bottom: none; }
-    .kp-table tr { transition: background 0.15s; }
-    .kp-table tr:hover td { background: #fafbff; }
-    .kp-table tr.stok-habis-row td { background: #fefce8; }
-    .kp-table tr.stok-habis-row:hover td { background: #fef9c3; }
+    .kp-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
 
-    /* Product cell */
-    .kp-produk-cell { display: flex; align-items: center; gap: 12px; }
-    .kp-produk-avatar { width: 38px; height: 38px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; color: white; flex-shrink: 0; }
+    .kp-table th {
+        font-size: 10.5px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        color: #9ca3af;
+        padding: 12px 22px;
+        text-align: left;
+        background: #fafbfc;
+        border-bottom: 1px solid #f1f3f5;
+        white-space: nowrap;
+    }
+
+    .kp-table td {
+        padding: 14px 22px;
+        font-size: 13px;
+        color: #374151;
+        border-bottom: 1px solid #f7f8f9;
+        vertical-align: middle;
+    }
+
+    .kp-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .kp-table tr {
+        transition: background 0.15s;
+    }
+
+    .kp-table tr:hover td {
+        background: #fafbff;
+    }
+
+    .kp-table tr.stok-habis-row td {
+        background: #fefce8;
+    }
+
+    .kp-table tr.stok-habis-row:hover td {
+        background: #fef9c3;
+    }
+
+    /* ===== PRODUCT CELL ===== */
+    .kp-produk-cell {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .kp-produk-avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 800;
+        color: white;
+        flex-shrink: 0;
+    }
+
     .kp-produk-avatar.a { background: linear-gradient(135deg, #6366f1, #4f46e5); }
     .kp-produk-avatar.b { background: linear-gradient(135deg, #f59e0b, #d97706); }
     .kp-produk-avatar.c { background: linear-gradient(135deg, #14b8a6, #0d9488); }
     .kp-produk-avatar.d { background: linear-gradient(135deg, #3b82f6, #2563eb); }
     .kp-produk-avatar.e { background: linear-gradient(135deg, #ec4899, #db2777); }
-    .kp-produk-name { font-size: 13.5px; font-weight: 600; color: #111827; display: block; line-height: 1.3; }
-    .kp-produk-id { font-size: 10.5px; color: #9ca3af; font-weight: 500; }
 
-    /* Category pill */
-    .kp-kat-pill { display: inline-flex; align-items: center; gap: 4px; background: #f5f3ff; color: #7c3aed; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
+    .kp-produk-name {
+        font-size: 13.5px;
+        font-weight: 600;
+        color: #111827;
+        display: block;
+        line-height: 1.3;
+    }
 
-    /* Price */
-    .kp-price { font-weight: 700; color: #111827; font-size: 13.5px; white-space: nowrap; }
+    .kp-produk-id {
+        font-size: 10.5px;
+        color: #9ca3af;
+        font-weight: 500;
+    }
 
-    /* Stok indicator */
-    .kp-stok-wrap { display: flex; align-items: center; gap: 8px; }
-    .kp-stok-bar-bg { width: 60px; height: 6px; background: #f1f3f5; border-radius: 3px; overflow: hidden; flex-shrink: 0; }
-    .kp-stok-bar-fill { height: 100%; border-radius: 3px; transition: width 0.3s; }
-    .kp-stok-bar-fill.ok { background: linear-gradient(90deg, #22c55e, #16a34a); }
-    .kp-stok-bar-fill.warn { background: linear-gradient(90deg, #f59e0b, #d97706); }
+    /* ===== CATEGORY PILL ===== */
+    .kp-kat-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: #f5f3ff;
+        color: #7c3aed;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 20px;
+    }
+
+    /* ===== PRICE ===== */
+    .kp-price {
+        font-weight: 700;
+        color: #111827;
+        font-size: 13.5px;
+        white-space: nowrap;
+    }
+
+    /* ===== STOK INDICATOR ===== */
+    .kp-stok-wrap {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .kp-stok-bar-bg {
+        width: 60px;
+        height: 6px;
+        background: #f1f3f5;
+        border-radius: 3px;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .kp-stok-bar-fill {
+        height: 100%;
+        border-radius: 3px;
+        transition: width 0.3s;
+    }
+
+    .kp-stok-bar-fill.ok       { background: linear-gradient(90deg, #22c55e, #16a34a); }
+    .kp-stok-bar-fill.warn     { background: linear-gradient(90deg, #f59e0b, #d97706); }
     .kp-stok-bar-fill.critical { background: linear-gradient(90deg, #ef4444, #dc2626); }
-    .kp-stok-bar-fill.habis { background: #e5e7eb; }
-    .kp-stok-num { font-size: 13px; font-weight: 700; min-width: 28px; }
-    .kp-stok-num.ok { color: #16a34a; }
-    .kp-stok-num.warn { color: #d97706; }
+    .kp-stok-bar-fill.habis    { background: #e5e7eb; }
+
+    .kp-stok-num {
+        font-size: 13px;
+        font-weight: 700;
+        min-width: 28px;
+    }
+
+    .kp-stok-num.ok       { color: #16a34a; }
+    .kp-stok-num.warn     { color: #d97706; }
     .kp-stok-num.critical { color: #dc2626; }
-    .kp-stok-num.habis { color: #9ca3af; }
-    .kp-stok-satuan { font-size: 11px; color: #9ca3af; font-weight: 500; }
-    .kp-stok-habis-badge { display: inline-flex; align-items: center; gap: 4px; background: #fef2f2; color: #dc2626; font-size: 10.5px; font-weight: 700; padding: 3px 8px; border-radius: 20px; letter-spacing: 0.3px; }
+    .kp-stok-num.habis    { color: #9ca3af; }
 
-    /* Actions */
-    .kp-btn-stok { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; padding: 7px 14px; border-radius: 9px; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; background: linear-gradient(135deg, #ecfdf5, #d1fae5); color: #059669; text-decoration: none; }
-    .kp-btn-stok:hover { background: linear-gradient(135deg, #d1fae5, #a7f3d0); transform: translateY(-1px); box-shadow: 0 3px 10px rgba(5,150,105,0.15); }
+    .kp-stok-satuan {
+        font-size: 11px;
+        color: #9ca3af;
+        font-weight: 500;
+    }
 
-    /* Empty state */
-    .kp-empty { text-align: center; padding: 56px 20px; color: #9ca3af; }
-    .kp-empty-icon { width: 64px; height: 64px; background: linear-gradient(135deg, #f3f4f6, #e5e7eb); border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 26px; color: #d1d5db; margin: 0 auto 14px; }
+    .kp-stok-habis-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: #fef2f2;
+        color: #dc2626;
+        font-size: 10.5px;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 20px;
+        letter-spacing: 0.3px;
+    }
 
-    /* Pagination */
-    .kp-pagination { padding: 14px 22px; border-top: 1px solid #f1f3f5; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
-    .kp-pagination-info { font-size: 12.5px; color: #9ca3af; font-weight: 500; }
-    .kp-pagination-info strong { color: #374151; }
-    .kp-pagination-controls { display: flex; align-items: center; gap: 4px; }
-    .kp-page-btn { width: 34px; height: 34px; border: 1.5px solid #e5e7eb; border-radius: 9px; background: #fff; color: #374151; font-size: 12.5px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.15s; font-family: 'DM Sans', sans-serif; }
-    .kp-page-btn:hover:not(:disabled) { background: #eff6ff; border-color: #bfdbfe; color: #1a56db; }
-    .kp-page-btn.active { background: #1a56db; border-color: #1a56db; color: #fff; box-shadow: 0 2px 8px rgba(26,86,219,0.3); }
-    .kp-page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
-    .kp-page-btn.nav-btn { width: auto; padding: 0 12px; gap: 5px; font-size: 12px; }
+    /* ===== ACTION BUTTONS ===== */
+    .kp-btn-stok {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 7px 14px;
+        border-radius: 9px;
+        border: none;
+        cursor: pointer;
+        font-family: 'DM Sans', sans-serif;
+        transition: all 0.15s;
+        background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+        color: #059669;
+        text-decoration: none;
+    }
+
+    .kp-btn-stok:hover {
+        background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+        transform: translateY(-1px);
+        box-shadow: 0 3px 10px rgba(5, 150, 105, 0.15);
+    }
+
+    /* ===== EMPTY STATE ===== */
+    .kp-empty {
+        text-align: center;
+        padding: 56px 20px;
+        color: #9ca3af;
+    }
+
+    .kp-empty-icon {
+        width: 64px;
+        height: 64px;
+        background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+        color: #d1d5db;
+        margin: 0 auto 14px;
+    }
+
+    /* ===== PAGINATION ===== */
+    .kp-pagination {
+        padding: 14px 22px;
+        border-top: 1px solid #f1f3f5;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .kp-pagination-info {
+        font-size: 12.5px;
+        color: #9ca3af;
+        font-weight: 500;
+    }
+
+    .kp-pagination-info strong {
+        color: #374151;
+    }
+
+    .kp-pagination-controls {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .kp-page-btn {
+        width: 34px;
+        height: 34px;
+        border: 1.5px solid #e5e7eb;
+        border-radius: 9px;
+        background: #fff;
+        color: #374151;
+        font-size: 12.5px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s;
+        font-family: 'DM Sans', sans-serif;
+    }
+
+    .kp-page-btn:hover:not(:disabled) {
+        background: #eff6ff;
+        border-color: #bfdbfe;
+        color: #1a56db;
+    }
+
+    .kp-page-btn.active {
+        background: #1a56db;
+        border-color: #1a56db;
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(26, 86, 219, 0.3);
+    }
+
+    .kp-page-btn:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+    }
+
+    .kp-page-btn.nav-btn {
+        width: auto;
+        padding: 0 12px;
+        gap: 5px;
+        font-size: 12px;
+    }
 
     /* ===== MODAL ===== */
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 99999; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
-    .modal-overlay.show { display: flex; }
-    .modal-box { background: #fff; border-radius: 18px; width: 100%; max-width: 400px; box-shadow: 0 24px 60px rgba(0,0,0,0.22); overflow: hidden; animation: modalIn 0.25s ease; }
-    @keyframes modalIn { from { opacity: 0; transform: translateY(-20px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
-    .modal-header { padding: 20px 24px; border-bottom: 1px solid #f1f3f5; display: flex; align-items: center; justify-content: space-between; }
-    .modal-header h4 { font-size: 16px; font-weight: 700; color: #111827; margin: 0; display: flex; align-items: center; }
-    .modal-close { width: 32px; height: 32px; background: #f3f4f6; border: none; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #6b7280; font-size: 14px; transition: all 0.15s; }
-    .modal-close:hover { background: #e5e7eb; }
-    .modal-body { padding: 22px 24px; }
-    .modal-footer { padding: 16px 24px; border-top: 1px solid #f1f3f5; display: flex; justify-content: flex-end; gap: 10px; }
-    .stok-current-box { background: linear-gradient(135deg, #f8fafc, #f1f5f9); border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 16px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; }
-    .stok-current-box .label { font-size: 12.5px; color: #6b7280; font-weight: 500; display: flex; align-items: center; }
-    .stok-current-box .value { font-size: 24px; font-weight: 800; color: #111827; }
-    .form-group-custom { margin-bottom: 16px; }
-    .form-label-custom { display: block; font-size: 12.5px; font-weight: 600; color: #374151; margin-bottom: 6px; }
-    .form-label-custom span { color: #dc2626; }
-    .input-wrap { position: relative; }
-    .input-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 13px; color: #9ca3af; pointer-events: none; }
-    .form-control-custom { width: 100%; padding: 11px 14px 11px 38px; border: 1.5px solid #e5e7eb; border-radius: 10px; font-size: 14px; font-family: 'DM Sans', sans-serif; color: #111827; background: #fafafa; outline: none; transition: all 0.15s; }
-    .form-control-custom:focus { border-color: #1a56db; background: #fff; box-shadow: 0 0 0 3px rgba(26,86,219,0.08); }
-    .btn-cancel { padding: 10px 20px; border: 1.5px solid #e5e7eb; border-radius: 10px; background: #fff; color: #6b7280; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
-    .btn-cancel:hover { background: #f9fafb; border-color: #d1d5db; }
-    .btn-submit-green { padding: 10px 22px; border: none; border-radius: 10px; background: linear-gradient(135deg, #059669, #047857); color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; box-shadow: 0 4px 14px rgba(5,150,105,0.3); display: flex; align-items: center; gap: 7px; transition: all 0.15s; }
-    .btn-submit-green:hover { background: linear-gradient(135deg, #047857, #065f46); transform: translateY(-1px); box-shadow: 0 6px 18px rgba(5,150,105,0.35); }
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        z-index: 99999;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        backdrop-filter: blur(4px);
+    }
+
+    .modal-overlay.show {
+        display: flex;
+    }
+
+    .modal-box {
+        background: #fff;
+        border-radius: 18px;
+        width: 100%;
+        max-width: 400px;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+        overflow: hidden;
+        animation: modalIn 0.25s ease;
+    }
+
+    @keyframes modalIn {
+        from { opacity: 0; transform: translateY(-20px) scale(0.96); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .modal-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid #f1f3f5;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .modal-header h4 {
+        font-size: 16px;
+        font-weight: 700;
+        color: #111827;
+        margin: 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .modal-close {
+        width: 32px;
+        height: 32px;
+        background: #f3f4f6;
+        border: none;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: #6b7280;
+        font-size: 14px;
+        transition: all 0.15s;
+    }
+
+    .modal-close:hover {
+        background: #e5e7eb;
+    }
+
+    .modal-body {
+        padding: 22px 24px;
+    }
+
+    .modal-footer {
+        padding: 16px 24px;
+        border-top: 1px solid #f1f3f5;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    /* ===== STOK CURRENT BOX ===== */
+    .stok-current-box {
+        background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-bottom: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .stok-current-box .label {
+        font-size: 12.5px;
+        color: #6b7280;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+    }
+
+    .stok-current-box .value {
+        font-size: 24px;
+        font-weight: 800;
+        color: #111827;
+    }
+
+    /* ===== MODAL FORM ===== */
+    .form-group-custom {
+        margin-bottom: 16px;
+    }
+
+    .form-label-custom {
+        display: block;
+        font-size: 12.5px;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 6px;
+    }
+
+    .form-label-custom span {
+        color: #dc2626;
+    }
+
+    .input-wrap {
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 13px;
+        color: #9ca3af;
+        pointer-events: none;
+    }
+
+    .form-control-custom {
+        width: 100%;
+        padding: 11px 14px 11px 38px;
+        border: 1.5px solid #e5e7eb;
+        border-radius: 10px;
+        font-size: 14px;
+        font-family: 'DM Sans', sans-serif;
+        color: #111827;
+        background: #fafafa;
+        outline: none;
+        transition: all 0.15s;
+    }
+
+    .form-control-custom:focus {
+        border-color: #1a56db;
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.08);
+    }
+
+    /* ===== MODAL BUTTONS ===== */
+    .btn-cancel {
+        padding: 10px 20px;
+        border: 1.5px solid #e5e7eb;
+        border-radius: 10px;
+        background: #fff;
+        color: #6b7280;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: 'DM Sans', sans-serif;
+        transition: all 0.15s;
+    }
+
+    .btn-cancel:hover {
+        background: #f9fafb;
+        border-color: #d1d5db;
+    }
+
+    .btn-submit-green {
+        padding: 10px 22px;
+        border: none;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #059669, #047857);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: 'DM Sans', sans-serif;
+        box-shadow: 0 4px 14px rgba(5, 150, 105, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        transition: all 0.15s;
+    }
+
+    .btn-submit-green:hover {
+        background: linear-gradient(135deg, #047857, #065f46);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(5, 150, 105, 0.35);
+    }
 
     /* ===== RESPONSIVE ===== */
     @media (max-width: 1024px) { .kp-stats { grid-template-columns: repeat(2, 1fr); } }
@@ -332,7 +949,7 @@
                 <h4><i class="fas fa-cubes" style="color:#059669; margin-right:8px;"></i>Edit Stok</h4>
                 <button class="modal-close" onclick="closeModal('modalEditStok')"><i class="fas fa-times"></i></button>
             </div>
-            <form action="<?= site_url('kasir/produk/update_stok') ?>" method="post">
+            <form id="formEditStok" action="<?= site_url('kasir/produk/update_stok') ?>" method="post">
                 <input type="hidden" name="id_product" id="stok_id">
                 <div class="modal-body">
                     <div class="stok-current-box">
@@ -356,6 +973,39 @@
                     <button type="submit" class="btn-submit-green"><i class="fas fa-save"></i> Update Stok</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- MODAL KONFIRMASI UPDATE STOK -->
+    <div class="modal-overlay" id="modalConfirmStok">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h4><i class="fas fa-boxes" style="color:#059669; margin-right:8px;"></i>Konfirmasi Update Stok</h4>
+                <button class="modal-close" onclick="closeModal('modalConfirmStok')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" style="text-align:center;">
+                <div style="width:56px; height:56px; background:#ecfdf5; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:24px; color:#059669; margin:0 auto 14px;"><i class="fas fa-boxes"></i></div>
+                <h5 style="font-size:15px; font-weight:700; color:#111827; margin:0 0 12px;">Konfirmasi perubahan stok?</h5>
+                <p style="font-size:12.5px; color:#6b7280; margin:0 0 16px; line-height:1.6;">Stok produk akan diperbarui dengan nilai baru.</p>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; text-align:left;">
+                    <div style="background:#f8fafc; border-radius:9px; padding:10px 14px;">
+                        <span style="font-size:10.5px; color:#9ca3af; font-weight:600; text-transform:uppercase; letter-spacing:0.3px; display:block; margin-bottom:3px;">Produk</span>
+                        <span style="font-size:13px; font-weight:700; color:#111827;" id="confirmStokProduk">—</span>
+                    </div>
+                    <div style="background:#f8fafc; border-radius:9px; padding:10px 14px;">
+                        <span style="font-size:10.5px; color:#9ca3af; font-weight:600; text-transform:uppercase; letter-spacing:0.3px; display:block; margin-bottom:3px;">Stok Lama</span>
+                        <span style="font-size:16px; font-weight:700; color:#dc2626;" id="confirmStokLama">0</span>
+                    </div>
+                    <div style="background:linear-gradient(135deg, #059669, #047857); border-radius:9px; padding:10px 14px;">
+                        <span style="font-size:10.5px; color:rgba(255,255,255,0.7); font-weight:600; text-transform:uppercase; letter-spacing:0.3px; display:block; margin-bottom:3px;">Stok Baru</span>
+                        <span style="font-size:16px; font-weight:700; color:#fff;" id="confirmStokBaru">0</span>
+                    </div>
+                </div>
+            </div>
+            <div style="padding:14px 24px; border-top:1px solid #f1f3f5; display:flex; justify-content:flex-end; gap:10px;">
+                <button type="button" class="btn-cancel" onclick="closeModal('modalConfirmStok')">Batal</button>
+                <button type="button" class="btn-submit-green" onclick="confirmSubmitStok()"><i class="fas fa-check-circle"></i> Ya, Update</button>
+            </div>
         </div>
     </div>
 
@@ -428,6 +1078,25 @@
         document.getElementById('stok_new').value = stok;
         document.getElementById('stok_satuan_hint').textContent = 'Satuan: ' + satuan;
         openModal('modalEditStok');
+    }
+
+    // Intercept Edit Stok form submit with confirmation
+    document.getElementById('formEditStok').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var newStok = document.getElementById('stok_new').value;
+        if (!newStok && newStok !== '0') { alert('Masukkan jumlah stok baru!'); return; }
+        // Fill confirmation modal
+        document.getElementById('confirmStokProduk').textContent = document.getElementById('stok_nama_display').textContent;
+        document.getElementById('confirmStokLama').textContent = document.getElementById('stok_current_display').textContent;
+        document.getElementById('confirmStokBaru').textContent = newStok;
+        // Close edit modal and open confirmation
+        closeModal('modalEditStok');
+        setTimeout(function(){ openModal('modalConfirmStok'); }, 150);
+    });
+
+    function confirmSubmitStok() {
+        closeModal('modalConfirmStok');
+        document.getElementById('formEditStok').submit();
     }
 
     document.querySelectorAll('.modal-overlay').forEach(function(o) {

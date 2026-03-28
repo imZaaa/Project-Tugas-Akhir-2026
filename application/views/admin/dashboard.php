@@ -1,10 +1,16 @@
-<div class="content-wrapper" style="background:#f5f7fa; font-family:'DM Sans','Segoe UI',sans-serif;">
+<div class="content-wrapper" style="background:#f5f7fa; font-family:'DM Sans','Segoe UI',sans-serif; overflow-x:hidden;">
 
 <style>
     @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
 
     .content-wrapper, .content-wrapper *:not(i):not(svg):not(path) {
         font-family: 'DM Sans', 'Segoe UI', sans-serif;
+    }
+
+    /* Cegah overflow horizontal di semua device */
+    .content-wrapper {
+        overflow-x: hidden;
+        box-sizing: border-box;
     }
 
     /* ===== NOTIFICATION BAR ===== */
@@ -57,17 +63,29 @@
         100% { transform: scale(1);   opacity: 0; }
     }
 
+    .notif-bar-text {
+        flex: 1;
+        min-width: 0;
+    }
+
     .notif-bar-text strong {
         font-size: 13.5px;
         font-weight: 700;
         color: #14532d;
         display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .notif-bar-text span {
         font-size: 12px;
         color: #16a34a;
         font-weight: 500;
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .notif-bar-tags {
@@ -102,7 +120,6 @@
         transform: translateX(4px);
     }
 
-    /* EMPTY notif (hari ini belum ada) */
     .notif-bar-empty {
         margin: 20px 24px 0;
         background: #f8fafc;
@@ -151,6 +168,8 @@
         font-size: 12.5px;
         color: #6b7280;
         font-weight: 500;
+        white-space: nowrap;
+        flex-shrink: 0;
     }
 
     .dash-date-pill i { color: #1a56db; font-size: 12px; }
@@ -177,6 +196,7 @@
         gap: 12px;
         transition: transform 0.2s, box-shadow 0.2s;
         animation: fadeSlideUp 0.4s ease both;
+        min-width: 0;
     }
 
     .stat-card:hover {
@@ -258,6 +278,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        gap: 10px;
     }
 
     .dash-card-header h3 {
@@ -285,6 +306,8 @@
         text-decoration: none;
         display: inline-block;
         transition: background 0.15s;
+        white-space: nowrap;
+        flex-shrink: 0;
     }
 
     .btn-card-action:hover {
@@ -365,7 +388,13 @@
     }
 
     /* ===== TABLE ===== */
-    .dash-table { width: 100%; border-collapse: collapse; }
+    /* Wrapper agar tabel bisa scroll horizontal di layar kecil */
+    .dash-table-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .dash-table { width: 100%; border-collapse: collapse; min-width: 460px; }
 
     .dash-table th {
         font-size: 10.5px;
@@ -377,6 +406,7 @@
         text-align: left;
         background: #fafafa;
         border-bottom: 1px solid #f1f3f5;
+        white-space: nowrap;
     }
 
     .dash-table td {
@@ -418,6 +448,7 @@
         gap: 12px;
         padding: 13px 20px;
         border-bottom: 1px solid #f7f8f9;
+        position: relative;
     }
 
     .quick-stat-item:last-child { border-bottom: none; }
@@ -452,6 +483,7 @@
         display: flex;
         align-items: center;
         gap: 10px;
+        flex-wrap: wrap;
     }
 
     .monitoring-header-icon {
@@ -465,6 +497,11 @@
         font-size: 14px;
         color: #fff;
         flex-shrink: 0;
+    }
+
+    .monitoring-header-text {
+        flex: 1;
+        min-width: 0;
     }
 
     .monitoring-header-text strong {
@@ -573,7 +610,6 @@
         margin-top: 4px;
     }
 
-    /* Transaksi row (in purchases list) */
     .bm-trx-row {
         padding: 11px 18px;
         border-bottom: 1px solid #f0fdf4;
@@ -644,10 +680,10 @@
     }
 
     .low-stock-item:last-child { border-bottom: none; }
-    .low-stock-bar-wrap { flex: 1; }
-    .low-stock-name { font-size: 12.5px; font-weight: 600; color: #374151; display: block; }
+    .low-stock-bar-wrap { flex: 1; min-width: 0; }
+    .low-stock-name { font-size: 12.5px; font-weight: 600; color: #374151; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .low-stock-sub  { font-size: 11px; color: #9ca3af; display: block; margin-top: 2px; }
-    .low-stock-count { font-size: 13px; font-weight: 700; color: #dc2626; white-space: nowrap; }
+    .low-stock-count { font-size: 13px; font-weight: 700; color: #dc2626; white-space: nowrap; flex-shrink: 0; }
 
     .progress-mini {
         width: 60px; height: 5px;
@@ -660,23 +696,164 @@
     .progress-mini-fill { height: 100%; border-radius: 10px; background: #f97316; }
     .progress-mini-fill.critical { background: #dc2626; }
 
-    /* ===== RESPONSIVE ===== */
-    @media (max-width: 1100px) {
-        .dash-stats-grid { grid-template-columns: repeat(2, 1fr); }
-        .dash-main-section { grid-template-columns: 1fr; }
-    }
-
-    @media (max-width: 600px) {
-        .dash-stats-grid { grid-template-columns: 1fr; }
-        .dash-cards-section, .dash-main-section { padding: 16px 14px 0; }
-        .dash-page-title { padding: 18px 14px 0; flex-direction: column; align-items: flex-start; gap: 10px; }
-        .notif-bar, .notif-bar-empty { margin: 16px 14px 0; }
-        .notif-bar-tags { display: none; }
-    }
-
     @keyframes fadeSlideUp {
         from { opacity: 0; transform: translateY(14px); }
         to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ============================================================
+       FIX DASAR — grid children wajib min-width:0 agar tidak overflow
+    ============================================================ */
+    .dash-main-section > div,
+    .dash-right-col > div,
+    .dash-stats-grid > div {
+        min-width: 0;
+    }
+
+    /* Semua section tidak boleh meluber ke kanan */
+    .dash-cards-section,
+    .dash-main-section,
+    .dash-page-title,
+    .notif-bar,
+    .notif-bar-empty {
+        box-sizing: border-box;
+        max-width: 100%;
+    }
+
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+
+    /* Tablet landscape — ≤ 1100px */
+    @media (max-width: 1100px) {
+        .dash-stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .dash-main-section {
+            grid-template-columns: 1fr;
+        }
+        .dash-right-col {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            align-items: start;
+        }
+    }
+
+    /* Tablet portrait — ≤ 768px */
+    @media (max-width: 768px) {
+        .dash-page-title {
+            padding: 18px 16px 0;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .dash-cards-section,
+        .dash-main-section {
+            padding-left: 16px;
+            padding-right: 16px;
+        }
+        .notif-bar,
+        .notif-bar-empty {
+            margin-left: 16px;
+            margin-right: 16px;
+        }
+        .notif-bar-text span { display: none; }
+        .notif-bar-tags { display: none; }
+        .dash-right-col { grid-template-columns: 1fr; }
+        .monitoring-header { flex-wrap: wrap; }
+    }
+
+    /* Mobile — ≤ 600px */
+    @media (max-width: 600px) {
+        .dash-page-title {
+            padding: 16px 14px 0;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .dash-cards-section,
+        .dash-main-section {
+            padding-left: 14px;
+            padding-right: 14px;
+        }
+        .notif-bar,
+        .notif-bar-empty {
+            margin-left: 14px;
+            margin-right: 14px;
+        }
+        .dash-stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .dash-right-col { grid-template-columns: 1fr; }
+
+        .stat-card { padding: 14px 12px; gap: 8px; }
+        .stat-icon { width: 38px; height: 38px; font-size: 15px; }
+        .stat-value { font-size: 22px; }
+        .stat-label { font-size: 11px; }
+
+        .dash-page-title h1 { font-size: 17px; }
+        .dash-page-title p  { font-size: 11.5px; }
+        .dash-date-pill     { font-size: 11.5px; padding: 5px 10px; }
+
+        .chart-container { height: 180px; padding: 12px 14px 16px; }
+        .chart-bars      { height: 128px; gap: 6px; }
+        .chart-bar-label { font-size: 9px; }
+
+        .dash-card-header { padding: 13px 16px; }
+        .dash-card-header h3 { font-size: 13px; }
+
+        .dash-table th, .dash-table td { padding: 10px 14px; }
+        .dash-table th { font-size: 9.5px; }
+        .dash-table td { font-size: 12px; }
+
+        .quick-stat-item { padding: 11px 16px; }
+        .qs-icon  { width: 32px; height: 32px; font-size: 13px; }
+        .qs-label { font-size: 12px; }
+        .qs-value { font-size: 13px; }
+
+        .bm-item     { padding: 10px 14px; }
+        .bm-trx-row  { padding: 10px 14px; }
+        .monitoring-footer { padding: 9px 14px; }
+
+        .low-stock-item  { padding: 10px 16px; }
+        .low-stock-count { font-size: 12px; }
+    }
+
+    /* Small mobile — ≤ 420px */
+    @media (max-width: 420px) {
+        .dash-page-title h1 { font-size: 15px; }
+        .dash-date-pill     { display: none; }
+        .stat-value  { font-size: 20px; }
+        .stat-badge  { display: none; }
+        .notif-pulse { width: 30px; height: 30px; font-size: 12px; }
+        .notif-bar   { gap: 10px; padding: 10px 12px; }
+        .notif-bar-text strong { font-size: 12px; }
+        .chart-container { height: 160px; }
+        .chart-bars      { height: 108px; gap: 5px; }
+    }
+
+    /* Small mobile — ≤ 420px */
+    @media (max-width: 420px) {
+        .dash-page-title h1 { font-size: 15px; }
+        /* Sembunyikan date pill agar judul tidak terhimpit */
+        .dash-date-pill { display: none; }
+
+        .stat-value { font-size: 20px; }
+
+        /* Notif: hanya ikon + judul + panah */
+        .notif-pulse { width: 30px; height: 30px; font-size: 12px; }
+        .notif-bar   { gap: 10px; padding: 10px 12px; }
+        .notif-bar-text strong { font-size: 12px; }
+
+        /* Stats 2 kolom tetap, tapi lebih mepet */
+        .dash-stats-grid { gap: 8px; }
+        .stat-card { padding: 12px 10px; }
+        .stat-badge { display: none; }
+
+        /* Chart */
+        .chart-container { height: 160px; }
+        .chart-bars      { height: 108px; gap: 5px; }
     }
 </style>
 
@@ -698,7 +875,6 @@
         $bm_items_today = $barang_masuk_items    ?? [];
         $bm_count       = count($bm_hari_ini);
         $bm_qty_total   = $barang_masuk_qty_total ?? 0;
-        // Kumpulkan supplier unik hari ini
         $suppliers_unik = array_unique(array_column($bm_hari_ini, 'nama_supplier'));
     ?>
 
@@ -786,7 +962,7 @@
     <!-- ===== MAIN CONTENT ===== -->
     <div class="dash-main-section">
 
-        <div style="display:flex; flex-direction:column; gap:20px;">
+        <div style="display:flex; flex-direction:column; gap:20px; min-width:0;">
 
             <!-- Chart -->
             <div class="dash-card">
@@ -818,7 +994,7 @@
                 </div>
             </div>
 
-            <!-- MONITORING BARANG MASUK HARI INI — main area -->
+            <!-- MONITORING BARANG MASUK HARI INI -->
             <div class="monitoring-card">
                 <div class="monitoring-header">
                     <div class="monitoring-header-icon"><i class="fas fa-arrow-circle-down"></i></div>
@@ -833,15 +1009,14 @@
                 </div>
 
                 <?php if (!empty($bm_items_today)): ?>
-                    <!-- Toggle view: Per Item / Per Transaksi -->
-                    <div style="padding:10px 18px; border-bottom:1px solid #f0fdf4; display:flex; align-items:center; gap:8px;">
-                        <button onclick="toggleBMView('items')" id="btnItems" class="filter-bm-btn active-bm-btn" style="font-size:11.5px;font-weight:600;padding:5px 12px;border-radius:20px;border:1.5px solid #86efac;background:#16a34a;color:#fff;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;">
+                    <div style="padding:10px 18px; border-bottom:1px solid #f0fdf4; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                        <button onclick="toggleBMView('items')" id="btnItems" class="filter-bm-btn active-bm-btn" style="font-size:11.5px;font-weight:600;padding:5px 12px;border-radius:20px;border:1.5px solid #86efac;background:#16a34a;color:#fff;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;white-space:nowrap;">
                             <i class="fas fa-cubes"></i> Per Produk
                         </button>
-                        <button onclick="toggleBMView('trx')" id="btnTrx" style="font-size:11.5px;font-weight:600;padding:5px 12px;border-radius:20px;border:1.5px solid #e5e7eb;background:#fff;color:#6b7280;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;">
+                        <button onclick="toggleBMView('trx')" id="btnTrx" style="font-size:11.5px;font-weight:600;padding:5px 12px;border-radius:20px;border:1.5px solid #e5e7eb;background:#fff;color:#6b7280;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;white-space:nowrap;">
                             <i class="fas fa-receipt"></i> Per Transaksi
                         </button>
-                        <span style="margin-left:auto;font-size:11.5px;color:#9ca3af;">
+                        <span style="margin-left:auto;font-size:11.5px;color:#9ca3af;white-space:nowrap;">
                             <?= count($bm_items_today) ?> jenis produk · <?= $bm_count ?> faktur
                         </span>
                     </div>
@@ -897,7 +1072,7 @@
                     </div>
 
                     <div class="monitoring-footer">
-                        <div style="display:flex;align-items:center;justify-content:space-between;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;">
                             <span style="font-size:12px;color:#16a34a;font-weight:600;">
                                 <i class="fas fa-check-circle" style="margin-right:5px;"></i>
                                 <?= $bm_count ?> faktur · <?= $bm_qty_total ?> unit · <?= count(array_unique(array_column($bm_hari_ini, 'nama_supplier'))) ?> supplier
@@ -925,32 +1100,35 @@
                     </div>
                     <a href="<?= site_url('admin/penjualan') ?>" class="btn-card-action">Semua Transaksi</a>
                 </div>
-                <table class="dash-table">
-                    <thead>
-                        <tr>
-                            <th>Kode</th>
-                            <th>Tanggal</th>
-                            <th>Kasir</th>
-                            <th>Total</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (!empty($transaksi_terbaru)): ?>
-                            <?php foreach ($transaksi_terbaru as $t): ?>
+                <!-- Wrapper scroll horizontal untuk tabel di layar kecil -->
+                <div class="dash-table-wrap">
+                    <table class="dash-table">
+                        <thead>
                             <tr>
-                                <td><span class="trans-code"><?= htmlspecialchars($t['kode_transaksi']) ?></span></td>
-                                <td><?= date('d/m/Y H:i', strtotime($t['tgl_jual'])) ?></td>
-                                <td><?= htmlspecialchars($t['nama_kasir'] ?? '-') ?></td>
-                                <td class="trans-amount">Rp <?= number_format($t['total_harga'], 0, ',', '.') ?></td>
-                                <td><span class="badge-status lunas">Lunas</span></td>
+                                <th>Kode</th>
+                                <th>Tanggal</th>
+                                <th>Kasir</th>
+                                <th>Total</th>
+                                <th>Status</th>
                             </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <tr><td colspan="5" style="text-align:center;padding:32px;color:#9ca3af;font-size:13px;">Belum terdapat data transaksi penjualan.</td></tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            <?php if (!empty($transaksi_terbaru)): ?>
+                                <?php foreach ($transaksi_terbaru as $t): ?>
+                                <tr>
+                                    <td><span class="trans-code"><?= htmlspecialchars($t['kode_transaksi']) ?></span></td>
+                                    <td><?= date('d/m/Y H:i', strtotime($t['tgl_jual'])) ?></td>
+                                    <td><?= htmlspecialchars($t['nama_kasir'] ?? '-') ?></td>
+                                    <td class="trans-amount">Rp <?= number_format($t['total_harga'], 0, ',', '.') ?></td>
+                                    <td><span class="badge-status lunas">Lunas</span></td>
+                                </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr><td colspan="5" style="text-align:center;padding:32px;color:#9ca3af;font-size:13px;">Belum terdapat data transaksi penjualan.</td></tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
         </div>
@@ -1007,15 +1185,15 @@
                 </div>
                 <?php $produk_habis_list = $produk_habis ?? []; ?>
                 <?php if (!empty($produk_habis_list)): ?>
-                <div style="margin:0 16px; padding:12px 16px; background:#fef2f2; border:1px solid #fecaca; border-radius:10px; display:flex; align-items:flex-start; gap:10px;">
+                <div style="margin:0 16px 12px; padding:12px 16px; background:#fef2f2; border:1px solid #fecaca; border-radius:10px; display:flex; align-items:flex-start; gap:10px;">
                     <i class="fas fa-exclamation-circle" style="color:#dc2626; font-size:16px; margin-top:2px; flex-shrink:0;"></i>
-                    <div style="flex:1;">
+                    <div style="flex:1;min-width:0;">
                         <div style="font-size:12.5px; font-weight:700; color:#dc2626; margin-bottom:4px;">
                             <?= count($produk_habis_list) ?> Produk Stok Habis
                         </div>
-                        <div style="font-size:11.5px; color:#991b1b; line-height:1.5;">
+                        <div style="font-size:11.5px; color:#991b1b; line-height:1.5; display:flex; flex-wrap:wrap; gap:4px;">
                             <?php foreach (array_slice($produk_habis_list, 0, 3) as $ph): ?>
-                                <span style="display:inline-block; background:#fee2e2; padding:2px 8px; border-radius:5px; margin:2px 2px; font-weight:600;"><?= htmlspecialchars($ph['nama_produk']) ?></span>
+                                <span style="background:#fee2e2; padding:2px 8px; border-radius:5px; font-weight:600;"><?= htmlspecialchars($ph['nama_produk']) ?></span>
                             <?php endforeach; ?>
                             <?php if (count($produk_habis_list) > 3): ?>
                                 <span style="font-weight:600; color:#b91c1c;">+<?= count($produk_habis_list) - 3 ?> lainnya</span>

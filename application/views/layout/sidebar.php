@@ -207,7 +207,7 @@
             <?php endif; ?>
 
             <hr class="sb-divider">
-            <a href="<?= site_url('auth/logout') ?>" class="sb-logout-link">
+            <a href="javascript:void(0)" onclick="document.getElementById('modalLogout').classList.add('show')" class="sb-logout-link">
                 <span class="sb-icon-red"><i class="fas fa-sign-out-alt"></i></span>
                 <span class="sb-label">Logout</span>
             </a>
@@ -215,3 +215,54 @@
         </nav>
     </div>
 </aside>
+
+<!-- MODAL LOGOUT CONFIRMATION -->
+<style>
+    .logout-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 99999; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(3px); }
+    .logout-modal-overlay.show { display: flex; }
+    .logout-modal-box { background: #fff; border-radius: 16px; width: 100%; max-width: 380px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); overflow: hidden; animation: logoutModalIn 0.2s ease; }
+    @keyframes logoutModalIn { from { opacity: 0; transform: translateY(-16px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    .logout-modal-header { padding: 18px 22px; border-bottom: 1px solid #f1f3f5; display: flex; align-items: center; justify-content: space-between; }
+    .logout-modal-header h4 { font-size: 15px; font-weight: 700; color: #111827; margin: 0; font-family: 'DM Sans', sans-serif; }
+    .logout-modal-close { width: 30px; height: 30px; background: #f3f4f6; border: none; border-radius: 7px; cursor: pointer; color: #6b7280; font-size: 13px; display: flex; align-items: center; justify-content: center; }
+    .logout-modal-close:hover { background: #e5e7eb; }
+    .logout-modal-body { padding: 24px 22px; text-align: center; }
+    .logout-modal-icon { width: 56px; height: 56px; background: #fffbeb; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #d97706; margin: 0 auto 14px; }
+    .logout-modal-body h5 { font-size: 15px; font-weight: 700; color: #111827; margin: 0 0 8px; font-family: 'DM Sans', sans-serif; }
+    .logout-modal-body p { font-size: 12.5px; color: #6b7280; margin: 0; line-height: 1.6; font-family: 'DM Sans', sans-serif; }
+    .logout-modal-footer { padding: 14px 22px; border-top: 1px solid #f1f3f5; display: flex; justify-content: flex-end; gap: 10px; }
+    .logout-modal-btn-cancel { padding: 9px 18px; border: 1.5px solid #e5e7eb; border-radius: 9px; background: #fff; color: #6b7280; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+    .logout-modal-btn-cancel:hover { background: #f9fafb; }
+    .logout-modal-btn-confirm { padding: 9px 20px; border: none; border-radius: 9px; background: linear-gradient(135deg, #d97706, #b45309); color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; display: flex; align-items: center; gap: 6px; text-decoration: none; box-shadow: 0 3px 10px rgba(217,119,6,0.3); }
+    .logout-modal-btn-confirm:hover { opacity: 0.9; color: #fff; text-decoration: none; }
+</style>
+
+<div class="logout-modal-overlay" id="modalLogout">
+    <div class="logout-modal-box">
+        <div class="logout-modal-header">
+            <h4><i class="fas fa-sign-out-alt" style="color:#d97706; margin-right:8px;"></i>Konfirmasi Logout</h4>
+            <button class="logout-modal-close" onclick="document.getElementById('modalLogout').classList.remove('show')"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="logout-modal-body">
+            <div class="logout-modal-icon"><i class="fas fa-exclamation-triangle"></i></div>
+            <h5>Yakin ingin logout?</h5>
+            <p>Anda akan keluar dari sistem.<br>Pastikan semua pekerjaan sudah tersimpan sebelum keluar.</p>
+        </div>
+        <div class="logout-modal-footer">
+            <button type="button" class="logout-modal-btn-cancel" onclick="document.getElementById('modalLogout').classList.remove('show')">Batal</button>
+            <a href="<?= site_url('auth/logout') ?>" class="logout-modal-btn-confirm"><i class="fas fa-sign-out-alt"></i> Ya, Logout</a>
+        </div>
+    </div>
+</div>
+
+<script>
+(function(){
+    var overlay = document.getElementById('modalLogout');
+    if(overlay){
+        overlay.addEventListener('click', function(e){ if(e.target === overlay) overlay.classList.remove('show'); });
+    }
+    document.addEventListener('keydown', function(e){
+        if(e.key === 'Escape' && document.getElementById('modalLogout')) document.getElementById('modalLogout').classList.remove('show');
+    });
+})();
+</script>

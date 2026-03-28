@@ -1,0 +1,274 @@
+/* ================================================
+   RESPONSIVE – PT Pordjo Steelindo Perkasa
+   Global responsive overrides for all pages.
+   Loaded via header.php after AdminLTE CSS.
+================================================ */
+
+/* ===== TABLE HORIZONTAL SCROLL =====
+   All known table classes are made scrollable on mobile.
+   Tables keep normal size, parent scrolls horizontally. */
+
+@media (max-width: 768px) {
+
+    /* --- Content area --- */
+    .content-wrapper>.content {
+        padding: 10px !important;
+    }
+
+    .content-header {
+        padding: 12px 16px !important;
+    }
+
+    /* --- Navbar compact --- */
+    .main-header .navbar-nav .nav-link {
+        padding: 0.4rem 0.6rem !important;
+    }
+
+    .navbar-greeting-card {
+        padding: 5px 8px 5px 6px !important;
+        margin-right: 4px !important;
+        gap: 6px !important;
+    }
+
+    .navbar-greeting-card>div:nth-child(2) {
+        display: none !important;
+    }
+
+    .greeting-caret {
+        display: none !important;
+    }
+
+    /* --- Stat grids: 2 columns on mobile --- */
+    .ap-stats,
+    .kp-stats,
+    .lap-stats,
+    .pj-stats,
+    .bm-stats,
+    .rw-stats,
+    .supplier-stats {
+        grid-template-columns: repeat(2, 1fr) !important;
+        padding-left: 14px !important;
+        padding-right: 14px !important;
+        gap: 10px !important;
+    }
+
+    /* --- 2-column layout grids: stack --- */
+    .grid-2col {
+        grid-template-columns: 1fr !important;
+        margin-left: 14px !important;
+        margin-right: 14px !important;
+    }
+
+    /* --- Form layouts (form + summary sidebar): stack --- */
+    .form-layout {
+        grid-template-columns: 1fr !important;
+        margin: 14px !important;
+        gap: 16px !important;
+    }
+
+    /* --- Detail 2-col layouts: stack --- */
+    .detail-layout {
+        grid-template-columns: 1fr !important;
+        margin: 14px !important;
+        gap: 16px !important;
+    }
+
+    /* --- Form row grids: stack --- */
+    .form-row-3 {
+        grid-template-columns: 1fr !important;
+    }
+
+    .form-row,
+    .form-row-2 {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* --- Info grids in detail views --- */
+    .info-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* --- TABLES: horizontal scroll ---
+       Strategy: parent containers get overflow-x:auto,
+       tables get min-width to prevent column compression.
+       Tables keep their native table layout. */
+
+    /* Parent card containers: allow horizontal scroll */
+    .main-card,
+    .ap-card,
+    .kp-card,
+    .users-card,
+    .k-card,
+    .dash-card {
+        overflow-x: auto !important;
+        overflow-y: visible !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Tables: use min-width, remove width:100% compression */
+    .data-table,
+    .items-table,
+    .ap-table,
+    .kp-table,
+    .users-table,
+    .dash-table,
+    .k-table {
+        width: auto !important;
+        min-width: 700px !important;
+    }
+
+    .items-table {
+        min-width: 550px !important;
+    }
+
+    /* --- Card adjustments --- */
+    .card {
+        border-radius: 10px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .card-body {
+        padding: 12px !important;
+    }
+
+    /* --- Dashboard stat cards --- */
+    .dash-stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+    }
+
+    /* --- Page title sections inline padding --- */
+    .page-header-bar,
+    .section-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+    }
+
+    /* --- Modal max-width on mobile --- */
+    .logout-modal-box,
+    .flash-modal-box,
+    .flash-err-box {
+        max-width: calc(100vw - 32px) !important;
+    }
+
+    /* --- Penjualan/Barang Masuk form sidebar --- */
+    .summary-card,
+    .order-summary {
+        position: static !important;
+    }
+
+    /* --- Dashboard main 2-col layout: stack --- */
+    .dash-main-section {
+        grid-template-columns: 1fr !important;
+        padding: 16px 14px 24px !important;
+    }
+
+    .kasir-main {
+        grid-template-columns: 1fr !important;
+        padding: 16px 14px 24px !important;
+    }
+
+    .kasir-stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    /* --- Dashboard page title / header: stack --- */
+    .dash-page-title {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+        padding: 18px 16px 0 !important;
+    }
+
+    .dash-cards-section,
+    .kasir-cards-section {
+        padding-left: 14px !important;
+        padding-right: 14px !important;
+    }
+
+    /* --- Notification bar: compact on mobile --- */
+    .notif-bar,
+    .notif-bar-empty {
+        margin-left: 14px !important;
+        margin-right: 14px !important;
+    }
+
+    .notif-bar-tags {
+        display: none !important;
+    }
+
+    /* --- v_produk card grid for stock detail modal --- */
+    [style*="grid-template-columns:1fr 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* ===== SMALL MOBILE: <= 480px ===== */
+@media (max-width: 480px) {
+
+    /* Stats: single column */
+    .ap-stats,
+    .kp-stats,
+    .lap-stats,
+    .pj-stats,
+    .bm-stats,
+    .rw-stats,
+    .supplier-stats {
+        grid-template-columns: 1fr !important;
+    }
+
+    .dash-stats-grid,
+    .kasir-stats-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Tighter content */
+    .content-wrapper>.content {
+        padding: 6px !important;
+    }
+
+    /* Smaller table min-width */
+    .data-table,
+    .ap-table,
+    .kp-table,
+    .users-table,
+    .dash-table,
+    .k-table {
+        min-width: 520px;
+    }
+}
+
+/* ===== TABLET: 769px - 1024px ===== */
+@media (min-width: 769px) and (max-width: 1024px) {
+
+    /* Form layouts: narrower sidebar */
+    .form-layout {
+        grid-template-columns: 1fr 260px !important;
+    }
+
+    /* Detail layouts */
+    .detail-layout {
+        grid-template-columns: 1fr 240px !important;
+    }
+
+    /* 4-col stats → 2 cols */
+    .ap-stats,
+    .kp-stats {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    /* Lap stats 4 → 2 */
+    .lap-stats {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    /* Dashboard 2-col → narrower sidebar */
+    .dash-main-section {
+        grid-template-columns: 1fr 280px !important;
+    }
+
+    .kasir-main {
+        grid-template-columns: 1fr 260px !important;
+    }
+}

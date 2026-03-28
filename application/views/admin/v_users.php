@@ -142,10 +142,118 @@
         transition: background 0.15s;
         text-decoration: none;
     }
+    .btn-detail { background: #f0fdf4; color: #059669; }
+    .btn-detail:hover { background: #dcfce7; color: #059669; }
     .btn-edit   { background: #eff6ff; color: #1a56db; }
     .btn-edit:hover  { background: #dbeafe; color: #1a56db; }
     .btn-delete { background: #fef2f2; color: #dc2626; }
     .btn-delete:hover { background: #fee2e2; color: #dc2626; }
+
+    /* DETAIL MODAL */
+    .detail-profile-header {
+        background: linear-gradient(135deg, #1a56db 0%, #0d3fa6 100%);
+        padding: 28px 22px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+        position: relative;
+        overflow: hidden;
+    }
+    .detail-profile-header::before {
+        content: '';
+        position: absolute;
+        top: -30px; right: -30px;
+        width: 100px; height: 100px;
+        background: rgba(255,255,255,0.06);
+        border-radius: 50%;
+    }
+    .detail-profile-header::after {
+        content: '';
+        position: absolute;
+        bottom: -20px; left: -20px;
+        width: 80px; height: 80px;
+        background: rgba(255,255,255,0.04);
+        border-radius: 50%;
+    }
+    .detail-avatar {
+        width: 72px; height: 72px;
+        border-radius: 18px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 28px; font-weight: 800; color: #ffffff;
+        background: rgba(255,255,255,0.18);
+        border: 3px solid rgba(255,255,255,0.3);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        position: relative; z-index: 1;
+    }
+    .detail-name {
+        font-size: 18px; font-weight: 700; color: #ffffff;
+        text-align: center; letter-spacing: -0.3px;
+        position: relative; z-index: 1;
+    }
+    .detail-username {
+        font-size: 13px; color: rgba(255,255,255,0.7);
+        margin-top: -6px; position: relative; z-index: 1;
+    }
+    .detail-role-badge {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 4px 14px; border-radius: 20px;
+        font-size: 12px; font-weight: 600;
+        position: relative; z-index: 1;
+    }
+    .detail-role-badge.admin {
+        background: rgba(255,255,255,0.18);
+        border: 1px solid rgba(255,255,255,0.25);
+        color: rgba(255,255,255,0.95);
+    }
+    .detail-role-badge.kasir {
+        background: rgba(74,222,128,0.2);
+        border: 1px solid rgba(74,222,128,0.35);
+        color: #bbf7d0;
+    }
+    .detail-role-dot {
+        width: 7px; height: 7px; border-radius: 50%;
+    }
+    .detail-role-badge.admin .detail-role-dot { background: #93c5fd; }
+    .detail-role-badge.kasir .detail-role-dot { background: #4ade80; }
+    .detail-info-body { padding: 20px 22px; }
+    .detail-info-item {
+        display: flex; align-items: center; gap: 12px;
+        padding: 12px 14px; border-radius: 10px;
+        transition: background 0.12s;
+        margin-bottom: 4px;
+    }
+    .detail-info-item:hover { background: #f8fafc; }
+    .detail-info-icon {
+        width: 38px; height: 38px; min-width: 38px;
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 14px;
+    }
+    .detail-info-label {
+        font-size: 11px; color: #9ca3af; font-weight: 500;
+        display: block; line-height: 1;
+    }
+    .detail-info-value {
+        font-size: 13.5px; color: #111827; font-weight: 600;
+        display: block; margin-top: 3px;
+    }
+    .detail-footer {
+        padding: 14px 22px;
+        border-top: 1px solid #f1f3f5;
+        display: flex; justify-content: center;
+    }
+    .btn-detail-close {
+        padding: 9px 28px;
+        border: 1.5px solid #e5e7eb;
+        border-radius: 9px;
+        background: #ffffff;
+        color: #6b7280;
+        font-size: 13px; font-weight: 600;
+        cursor: pointer; font-family: 'DM Sans', sans-serif;
+        transition: background 0.15s;
+    }
+    .btn-detail-close:hover { background: #f9fafb; }
 
     /* NO DATA */
     .no-data-row td {
@@ -416,7 +524,17 @@
                             <?= date('d M Y', strtotime($u['created_at'])) ?>
                         </td>
                         <td>
-                            <div style="display:flex; gap:6px;">
+                            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                                <button class="btn-action btn-detail"
+                                    onclick="openModalDetail(
+                                        '<?= htmlspecialchars($u['nama_lengkap'], ENT_QUOTES) ?>',
+                                        '<?= htmlspecialchars($u['username'], ENT_QUOTES) ?>',
+                                        '<?= $u['role'] ?>',
+                                        '<?= date('d F Y, H:i', strtotime($u['created_at'])) ?>',
+                                        '<?= $u['id_user'] ?>'
+                                    )">
+                                    <i class="fas fa-eye"></i> Detail
+                                </button>
                                 <button class="btn-action btn-edit"
                                     onclick="openModalEdit(
                                         '<?= $u['id_user'] ?>',
@@ -427,7 +545,7 @@
                                     <i class="fas fa-pen"></i> Edit
                                 </button>
                                 <button class="btn-action btn-delete"
-                                    onclick="openModalDelete('<?= $u['id_user'] ?>', '<?= htmlspecialchars($u['nama_lengkap'], ENT_QUOTES) ?>')">
+                                    onclick="openModalDelete('<?= $u['id_user'] ?>', '<?= htmlspecialchars($u['nama_lengkap'], ENT_QUOTES) ?>')"> 
                                     <i class="fas fa-trash"></i> Hapus
                                 </button>
                             </div>
@@ -593,10 +711,85 @@
     </div>
 
 
+    <!-- ===== MODAL DETAIL ===== -->
+    <div class="modal-overlay" id="modalDetail">
+        <div class="modal-box" style="max-width:400px;">
+            <div class="detail-profile-header">
+                <div class="detail-avatar" id="detail_avatar">A</div>
+                <div class="detail-name" id="detail_nama">-</div>
+                <div class="detail-username" id="detail_username">@-</div>
+                <span class="detail-role-badge admin" id="detail_role_badge">
+                    <span class="detail-role-dot"></span>
+                    <span id="detail_role_text">Admin</span>
+                </span>
+            </div>
+            <div class="detail-info-body">
+                <div class="detail-info-item">
+                    <div class="detail-info-icon" style="background:#eff6ff; color:#1a56db;">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div>
+                        <span class="detail-info-label">Username</span>
+                        <span class="detail-info-value" id="detail_info_username">-</span>
+                    </div>
+                </div>
+                <div class="detail-info-item">
+                    <div class="detail-info-icon" style="background:#f0fdf4; color:#059669;">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div>
+                        <span class="detail-info-label">Role / Jabatan</span>
+                        <span class="detail-info-value" id="detail_info_role">-</span>
+                    </div>
+                </div>
+                <div class="detail-info-item">
+                    <div class="detail-info-icon" style="background:#fffbeb; color:#d97706;">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div>
+                        <span class="detail-info-label">Tanggal Dibuat</span>
+                        <span class="detail-info-value" id="detail_info_created">-</span>
+                    </div>
+                </div>
+                <div class="detail-info-item">
+                    <div class="detail-info-icon" style="background:#fdf4ff; color:#9333ea;">
+                        <i class="fas fa-fingerprint"></i>
+                    </div>
+                    <div>
+                        <span class="detail-info-label">ID User</span>
+                        <span class="detail-info-value" id="detail_info_id">-</span>
+                    </div>
+                </div>
+            </div>
+            <div class="detail-footer">
+                <button class="btn-detail-close" onclick="closeModal('modalDetail')">
+                    <i class="fas fa-times" style="margin-right:5px;"></i> Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+
 <script>
     // ===== MODAL FUNCTIONS =====
     function openModalTambah() {
         document.getElementById('modalTambah').classList.add('show');
+    }
+
+    function openModalDetail(nama, username, role, created, id) {
+        document.getElementById('detail_avatar').textContent = nama.charAt(0).toUpperCase();
+        document.getElementById('detail_nama').textContent = nama;
+        document.getElementById('detail_username').textContent = '@' + username;
+        document.getElementById('detail_info_username').textContent = username;
+        document.getElementById('detail_info_role').textContent = role.charAt(0).toUpperCase() + role.slice(1);
+        document.getElementById('detail_info_created').textContent = created;
+        document.getElementById('detail_info_id').textContent = '#' + id;
+
+        var badge = document.getElementById('detail_role_badge');
+        badge.className = 'detail-role-badge ' + role;
+        document.getElementById('detail_role_text').textContent = role.charAt(0).toUpperCase() + role.slice(1);
+
+        document.getElementById('modalDetail').classList.add('show');
     }
 
     function openModalEdit(id, nama, username, role) {

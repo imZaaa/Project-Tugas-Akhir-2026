@@ -2,51 +2,275 @@
 
 <style>
     @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
-    .content-wrapper, .content-wrapper *:not(i):not(svg):not(path) { font-family: 'DM Sans','Segoe UI',sans-serif; }
-    .page-title-row { padding: 24px 28px 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-    .page-title-row h1 { font-size: 20px; font-weight: 700; color: #111827; margin: 0 0 3px; }
-    .btn-back { display: inline-flex; align-items: center; gap: 7px; background: #f3f4f6; color: #374151 !important; border: none; padding: 9px 16px; border-radius: 9px; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none !important; transition: background 0.15s; }
-    .btn-back:hover { background: #e5e7eb; }
+    .content-wrapper,
+    .content-wrapper *:not(i):not(svg):not(path) {
+        font-family: 'DM Sans', 'Segoe UI', sans-serif;
+    }
 
-    .detail-layout { margin: 20px 24px 28px; display: grid; grid-template-columns: 1fr 300px; gap: 20px; align-items: start; }
-    .det-card { background: #fff; border-radius: 14px; border: 1px solid #e8ecf0; box-shadow: 0 2px 12px rgba(0,0,0,0.04); overflow: hidden; }
-    .det-card-header { padding: 16px 20px; border-bottom: 1px solid #f1f3f5; }
-    .det-card-header h3 { font-size: 14px; font-weight: 700; color: #111827; margin: 0; }
+    .page-title-row {
+        padding: 24px 28px 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
 
-    /* NOTA HEADER */
-    .nota-banner { background: linear-gradient(135deg, #059669, #047857); padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; }
-    .nota-badge { font-family: 'Courier New', monospace; font-size: 18px; font-weight: 800; color: #fff; letter-spacing: 1px; }
-    .nota-date { font-size: 12px; color: rgba(255,255,255,0.8); margin-top: 4px; }
-    .nota-total-label { font-size: 11px; color: rgba(255,255,255,0.75); text-align: right; }
-    .nota-total-value { font-size: 22px; font-weight: 800; color: #fff; text-align: right; }
+    .page-title-row h1 {
+        font-size: 20px;
+        font-weight: 700;
+        color: #111827;
+        margin: 0 0 3px;
+    }
 
-    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
-    .info-cell { padding: 14px 20px; border-bottom: 1px solid #f7f8f9; border-right: 1px solid #f7f8f9; }
-    .info-cell:nth-child(2n) { border-right: none; }
-    .info-cell:last-child, .info-cell:nth-last-child(2) { border-bottom: none; }
-    .info-label { font-size: 11px; color: #9ca3af; font-weight: 500; display: block; margin-bottom: 4px; }
-    .info-value { font-size: 13px; font-weight: 600; color: #111827; display: block; }
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: #f3f4f6;
+        color: #374151 !important;
+        border: none;
+        padding: 9px 16px;
+        border-radius: 9px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none !important;
+        transition: background 0.15s;
+    }
 
-    /* ITEMS TABLE */
-    .items-table { width: 100%; border-collapse: collapse; }
-    .items-table th { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #9ca3af; padding: 11px 20px; text-align: left; background: #fafafa; border-bottom: 1px solid #f1f3f5; }
-    .items-table td { padding: 13px 20px; font-size: 13px; color: #374151; border-bottom: 1px solid #f7f8f9; vertical-align: middle; }
-    .items-table tr:last-child td { border-bottom: none; }
-    .prod-name { font-weight: 600; color: #111827; display: block; }
-    .prod-kat  { font-size: 11.5px; color: #9ca3af; display: block; margin-top: 2px; }
-    .qty-badge { display: inline-flex; align-items: center; gap: 4px; background: #eff6ff; color: #1a56db; font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 20px; }
-    .subtotal-text { font-weight: 700; color: #111827; }
+    .btn-back:hover {
+        background: #e5e7eb;
+    }
 
-    /* SIDEBAR */
-    .side-info-row { display: flex; align-items: center; gap: 10px; padding: 13px 20px; border-bottom: 1px solid #f7f8f9; }
-    .side-info-row:last-child { border-bottom: none; }
-    .side-icon { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; }
-    .side-label { font-size: 11px; color: #9ca3af; font-weight: 500; display: block; }
-    .side-value { font-size: 13px; font-weight: 600; color: #111827; display: block; margin-top: 1px; }
+    /* ===== LAYOUT — 1 kolom ke bawah ===== */
+    .detail-layout {
+        margin: 20px auto 28px;
+        padding: 0 24px;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+        align-items: start;
+        max-width: 860px;
+    }
 
-    .total-footer { padding: 16px 20px; background: #f8fafc; border-top: 2px solid #e8ecf0; display: flex; align-items: center; justify-content: space-between; }
-    .total-footer .label { font-size: 13px; color: #6b7280; font-weight: 500; }
-    .total-footer .value { font-size: 18px; font-weight: 800; color: #059669; }
+    .det-card {
+        background: #fff;
+        border-radius: 14px;
+        border: 1px solid #e8ecf0;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+        overflow: hidden;
+    }
+
+    .det-card-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid #f1f3f5;
+    }
+
+    .det-card-header h3 {
+        font-size: 14px;
+        font-weight: 700;
+        color: #111827;
+        margin: 0;
+    }
+
+    /* ===== NOTA BANNER ===== */
+    .nota-banner {
+        background: linear-gradient(135deg, #059669, #047857);
+        padding: 20px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .nota-badge {
+        font-family: 'Courier New', monospace;
+        font-size: 18px;
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: 1px;
+    }
+
+    .nota-date {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.8);
+        margin-top: 4px;
+    }
+
+    .nota-total-label {
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.75);
+        text-align: right;
+    }
+
+    .nota-total-value {
+        font-size: 22px;
+        font-weight: 800;
+        color: #fff;
+        text-align: right;
+    }
+
+    /* ===== INFO GRID ===== */
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+    }
+
+    .info-cell {
+        padding: 14px 20px;
+        border-bottom: 1px solid #f7f8f9;
+        border-right: none;
+    }
+
+    .info-cell:nth-child(odd) {
+        border-right: 1px solid #f7f8f9;
+    }
+
+    .info-cell:last-child,
+    .info-cell:nth-last-child(2) {
+        border-bottom: none;
+    }
+
+    .info-label {
+        font-size: 11px;
+        color: #9ca3af;
+        font-weight: 500;
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    .info-value {
+        font-size: 13px;
+        font-weight: 600;
+        color: #111827;
+        display: block;
+    }
+
+    /* ===== ITEMS TABLE ===== */
+    .items-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .items-table th {
+        font-size: 10.5px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #9ca3af;
+        padding: 11px 20px;
+        text-align: left;
+        background: #fafafa;
+        border-bottom: 1px solid #f1f3f5;
+    }
+
+    .items-table td {
+        padding: 13px 20px;
+        font-size: 13px;
+        color: #374151;
+        border-bottom: 1px solid #f7f8f9;
+        vertical-align: middle;
+    }
+
+    .items-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .prod-name {
+        font-weight: 600;
+        color: #111827;
+        display: block;
+    }
+
+    .prod-kat {
+        font-size: 11.5px;
+        color: #9ca3af;
+        display: block;
+        margin-top: 2px;
+    }
+
+    .qty-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: #eff6ff;
+        color: #1a56db;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 3px 9px;
+        border-radius: 20px;
+    }
+
+    .subtotal-text {
+        font-weight: 700;
+        color: #111827;
+    }
+
+    /* ===== SIDEBAR INFO — sekarang jadi card bawah ===== */
+    .summary-card {
+        position: static;
+    }
+
+    .side-info-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 13px 20px;
+        border-bottom: 1px solid #f7f8f9;
+    }
+
+    .side-info-row:last-child {
+        border-bottom: none;
+    }
+
+    .side-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        flex-shrink: 0;
+    }
+
+    .side-label {
+        font-size: 11px;
+        color: #9ca3af;
+        font-weight: 500;
+        display: block;
+    }
+
+    .side-value {
+        font-size: 13px;
+        font-weight: 600;
+        color: #111827;
+        display: block;
+        margin-top: 1px;
+    }
+
+    /* ===== TOTAL FOOTER ===== */
+    .total-footer {
+        padding: 16px 20px;
+        background: #f8fafc;
+        border-top: 2px solid #e8ecf0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .total-footer .label {
+        font-size: 13px;
+        color: #6b7280;
+        font-weight: 500;
+    }
+
+    .total-footer .value {
+        font-size: 18px;
+        font-weight: 800;
+        color: #059669;
+    }
 
     @media (max-width: 900px) {
         .detail-layout { grid-template-columns: 1fr; margin: 16px 14px 24px; }
