@@ -24,12 +24,42 @@ class Supplier extends CI_Controller {
     }
 
     public function tambah() {
-        $nama  = $this->input->post('nama_supplier', TRUE);
+        $this->load->library('form_validation');
 
-        if (empty($nama)) {
-            $this->session->set_flashdata('error', 'Nama Supplier wajib diisi!');
-            redirect('admin/supplier'); return;
+        // Aturan validasi
+        $this->form_validation->set_rules('nama_supplier', 'Nama Supplier', 'required|trim', [
+            'required' => '%s wajib diisi!'
+        ]);
+        $this->form_validation->set_rules('nama_kontak', 'Nama Kontak', 'required|trim', [
+            'required' => '%s wajib diisi!'
+        ]);
+        $this->form_validation->set_rules('email', 'Email', 'required|trim|valid_email', [
+            'required'   => '%s wajib diisi!',
+            'valid_email' => 'Format %s tidak valid!'
+        ]);
+        $this->form_validation->set_rules('no_telp', 'No. Telepon', 'required|trim|numeric|min_length[9]|max_length[15]', [
+            'required'   => '%s wajib diisi!',
+            'numeric'    => '%s hanya boleh berisi angka!',
+            'min_length' => '%s minimal 9 digit!',
+            'max_length' => '%s maksimal 15 digit!'
+        ]);
+        $this->form_validation->set_rules('alamat', 'Alamat', 'required|trim', [
+            'required' => '%s wajib diisi!'
+        ]);
+        $this->form_validation->set_rules('keterangan', 'Keterangan', 'required|trim', [
+            'required' => '%s wajib diisi!'
+        ]);
+
+        if ($this->form_validation->run() == FALSE) {
+            // Format ulang pesan error agar rapi (tanpa tag <p>)
+            $this->form_validation->set_error_delimiters('', '<br>');
+            $pesan = validation_errors();
+            $this->session->set_flashdata('error', $pesan);
+            redirect('admin/supplier');
+            return;
         }
+
+        $nama = $this->input->post('nama_supplier', TRUE);
 
         // Generate kode otomatis
         $kode = $this->M_supplier->generate_kode();
@@ -56,12 +86,45 @@ class Supplier extends CI_Controller {
     }
 
     public function update() {
+        $this->load->library('form_validation');
+
+        // Aturan validasi sama dengan tambah
+        $this->form_validation->set_rules('nama_supplier', 'Nama Supplier', 'required|trim', [
+            'required' => '%s wajib diisi!'
+        ]);
+        $this->form_validation->set_rules('nama_kontak', 'Nama Kontak', 'required|trim', [
+            'required' => '%s wajib diisi!'
+        ]);
+        $this->form_validation->set_rules('email', 'Email', 'required|trim|valid_email', [
+            'required'   => '%s wajib diisi!',
+            'valid_email' => 'Format %s tidak valid!'
+        ]);
+        $this->form_validation->set_rules('no_telp', 'No. Telepon', 'required|trim|numeric|min_length[9]|max_length[15]', [
+            'required'   => '%s wajib diisi!',
+            'numeric'    => '%s hanya boleh berisi angka!',
+            'min_length' => '%s minimal 9 digit!',
+            'max_length' => '%s maksimal 15 digit!'
+        ]);
+        $this->form_validation->set_rules('alamat', 'Alamat', 'required|trim', [
+            'required' => '%s wajib diisi!'
+        ]);
+        $this->form_validation->set_rules('keterangan', 'Keterangan', 'required|trim', [
+            'required' => '%s wajib diisi!'
+        ]);
+
+        if ($this->form_validation->run() == FALSE) {
+            $this->form_validation->set_error_delimiters('', '<br>');
+            $this->session->set_flashdata('error', validation_errors());
+            redirect('admin/supplier');
+            return;
+        }
+
         $id   = $this->input->post('id_supplier',  TRUE);
         $kode = $this->input->post('kode_supplier', TRUE);
         $nama = $this->input->post('nama_supplier', TRUE);
 
-        if (empty($id) || empty($kode) || empty($nama)) {
-            $this->session->set_flashdata('error', 'Data tidak lengkap!');
+        if (empty($id) || empty($kode)) {
+            $this->session->set_flashdata('error', 'Data ID / Kode tidak lengkap!');
             redirect('admin/supplier'); return;
         }
 

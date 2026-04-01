@@ -39,47 +39,61 @@ class Barang_masuk extends CI_Controller {
         $this->load->view('layout/footer');
     }
 
-    // ===== SIMPAN TRANSAKSI =====
+    // ===== SIMPAN TRANSAKSI BARANG MASUK =====
+    // Menangkap form "Tambah Kulakan" dari Admin
     public function simpan() {
-        $no_faktur   = $this->input->post('no_faktur',   TRUE);
-        $id_supplier = $this->input->post('id_supplier', TRUE);
-        $tgl_beli    = $this->input->post('tgl_beli',    TRUE);
-        $keterangan  = $this->input->post('keterangan',  TRUE);
+        // [1] PENERIMAAN DATA INPUT (Telah difilter XSS dengan parameter TRUE)
+        $no_faktur   = $this->input->post('no_faktur',   TRUE); // Nomor Resi dari pabrik/supplier
+        $id_supplier = $this->input->post('id_supplier', TRUE); // Dari PT. mana barang ini dibeli
+        $tgl_beli    = $this->input->post('tgl_beli',    TRUE); // Tanggal di faktur
+        $keterangan  = $this->input->post('keterangan',  TRUE); // Opsional
+        
+        // Data Multi-row (Satu nota gudang bisa berisi puluhan jenis barang)
         $id_products = $this->input->post('id_product',  TRUE);
-        $qtys        = $this->input->post('qty',         TRUE);
-        $prices      = $this->input->post('purchase_price', TRUE);
+        $qtys        = $this->input->post('qty',         TRUE); // Qty Masuk Gudang
+        $prices      = $this->input->post('purchase_price', TRUE); // Harga modal (HB) saat ini
 
-        // Validasi header
+        // [2] CEK PERSYARATAN WAJIB STRUK HEADER
         if (empty($no_faktur) || empty($id_supplier) || empty($tgl_beli)) {
             $this->session->set_flashdata('error', 'No. Faktur, Supplier, dan Tanggal wajib diisi.');
             redirect('admin/barang_masuk/create'); return;
         }
 
-        // Cek duplikat no faktur
+        // --- PROTEKSI DUPLIKASI DATA ---
+        // Mencegah admin mem-posting dua kali faktur / resi yang secara fisik sama
         if ($this->M_purchase->faktur_exists($no_faktur)) {
             $this->session->set_flashdata('error', 'No. Faktur "' . $no_faktur . '" sudah terdaftar.');
             redirect('admin/barang_masuk/create'); return;
         }
 
-        // Validasi items
+        // Memastikan admin minimal meng-input 1 barang, tidak boleh simpan keranjang kosong
         if (empty($id_products) || !is_array($id_products)) {
             $this->session->set_flashdata('error', 'Minimal satu produk harus ditambahkan.');
             redirect('admin/barang_masuk/create'); return;
         }
 
-        // Susun items & hitung total
-        $items       = [];
-        $total_bayar = 0;
+        // [3] PROSES VALIDASI KERANJANG KULAKAN (ITEMS)
+        $items       = []; // Wadah untuk detail pesanan bersih
+        $total_bayar = 0;  // Akumulasi modal uang keluar (outflow)
+        
         foreach ($id_products as $i => $id_product) {
+            // Tolak barisan (row) input yang cacat tapi jangan hentikan perulangan (continue)
             if (empty($id_product) || empty($qtys[$i]) || empty($prices[$i])) continue;
+            
             $qty      = (int) $qtys[$i];
             $price    = (float) $prices[$i];
+            
+            // Subtotal modal keluar per item = Jumlah x Harga Kulak per Satuan
             $subtotal = $qty * $price;
+            
+            // Bungkus menjadi satu set array
             $items[]  = [
                 'id_product'     => $id_product,
                 'qty'            => $qty,
                 'purchase_price' => $price,
             ];
+            
+            // Masukkan nilai belanjanya ke total tagihan supplier
             $total_bayar += $subtotal;
         }
 
@@ -88,20 +102,23 @@ class Barang_masuk extends CI_Controller {
             redirect('admin/barang_masuk/create'); return;
         }
 
+        // [4] SUSUN HEADER FINAL UNTUK DIKIRIM KE DATABASE
         date_default_timezone_set('Asia/Jakarta');
         $header = [
             'no_faktur'   => $no_faktur,
             'id_supplier' => $id_supplier,
-            'id_user'     => $this->session->userdata('id_user'),
+            'id_user'     => $this->session->userdata('id_user'), // Siapa petugas admin yang mendata ini
             'tgl_beli'    => $tgl_beli,
-            'total_bayar' => $total_bayar,
+            'total_bayar' => $total_bayar, // Menentukan pencatatan beban piutang/uang keluar
             'keterangan'  => $keterangan,
-            'created_at'  => date('Y-m-d H:i:s'),
+            'created_at'  => date('Y-m-d H:i:s'), // Waktu aktual disistem
         ];
 
-        // Simpan atomic (header + detail + update stok)
+        // [5] EKSEKUSI DATABASE LEVEL TINGGI
+        // Panggil M_purchase untuk melakukan Query ATOMIC (Insert Header, Insert Details, UPDATE STOK GUDANG)
         $result = $this->M_purchase->simpan_transaksi($header, $items);
 
+        // Umpan balik ke admin pengisi form
         if ($result) {
             $this->session->set_flashdata('success', 'Transaksi berhasil disimpan. Stok telah diperbarui secara otomatis. No. Faktur: ' . $no_faktur);
             redirect('admin/barang_masuk');
@@ -129,13 +146,16 @@ class Barang_masuk extends CI_Controller {
         $this->load->view('layout/footer');
     }
 
-    // ===== HAPUS =====
+    // ===== HAPUS / PEMBATALAN BARANG MASUK =====
+    // Berfungsi layaknya "Void / Retur". Jika Admin menghapus rekaman kulakan, barang di gudang akan otomatis dikurangi (-)
     public function hapus() {
         $id = $this->input->post('id_purchase', TRUE);
+        
+        // Operasi database hapus ditanggung oleh Model
         if ($this->M_purchase->hapus_transaksi($id)) {
-            $this->session->set_flashdata('success', 'Transaksi berhasil dihapus dan stok telah dikembalikan.');
+            $this->session->set_flashdata('success', 'Transaksi berhasil dihapus dan jumlah stok yang tadinya masuk telah ditarik kembali.');
         } else {
-            $this->session->set_flashdata('error', 'Gagal menghapus transaksi.');
+            $this->session->set_flashdata('error', 'Gagal menghapus blok transaksi.');
         }
         redirect('admin/barang_masuk');
     }

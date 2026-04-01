@@ -1,10 +1,28 @@
-<div class="content-wrapper" style="background:#f5f7fa; font-family:'DM Sans','Segoe UI',sans-serif;">
+<div class="content-wrapper" style="background:#f5f7fa; font-family:'DM Sans','Segoe UI',sans-serif; overflow-x:hidden;">
 
 <style>
     @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
 
-    .content-wrapper, .content-wrapper * {
+    .content-wrapper, .content-wrapper *:not(i):not(svg):not(path) {
         font-family: 'DM Sans', 'Segoe UI', sans-serif;
+    }
+
+    .content-wrapper {
+        overflow-x: hidden;
+        box-sizing: border-box;
+    }
+
+    /* Grid children tidak boleh overflow */
+    .kasir-main > div,
+    .kasir-right > div,
+    .kasir-stats-grid > div {
+        min-width: 0;
+    }
+
+    .kasir-cards-section,
+    .kasir-main {
+        box-sizing: border-box;
+        max-width: 100%;
     }
 
     /* ===== CARDS ===== */
@@ -148,7 +166,6 @@
         align-items: center;
         justify-content: center;
         gap: 12px;
-        width: calc(100% - 32px);
         margin: 16px;
         padding: 16px;
         background: linear-gradient(135deg, #1a56db, #0d3fa6);
@@ -159,6 +176,7 @@
         text-decoration: none;
         transition: opacity 0.2s, transform 0.2s;
         box-shadow: 0 4px 14px rgba(26,86,219,0.3);
+        box-sizing: border-box;
     }
 
     .btn-new-transaction:hover {

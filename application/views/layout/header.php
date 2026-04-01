@@ -9,6 +9,16 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
   <link rel="stylesheet" href="<?= base_url('assets/css/responsive.css') ?>">
+  <link rel="stylesheet" href="<?= base_url('assets/css/dark-mode.css') ?>">
+
+  <!-- Pre-apply dark mode SEBELUM render untuk menghindari flash putih -->
+  <script>
+    (function(){
+      if(localStorage.getItem('darkMode')==='true'){
+        document.documentElement.style.background='#0f1117';
+      }
+    })();
+  </script>
 
   <style>
     /* ===== GREETING CARD TRIGGER ===== */
@@ -241,10 +251,11 @@
 </head>
 
 <body class="hold-transition sidebar-mini">
+<script>if(localStorage.getItem('darkMode')==='true')document.body.classList.add('dark-mode');</script>
 <div class="wrapper">
 
   <nav class="main-header navbar navbar-expand navbar-white navbar-light"
-       style="border-bottom:1px solid #e8ecf0 !important; box-shadow:0 1px 6px rgba(0,0,0,0.04) !important; background:#ffffff !important; min-height:57px; display:flex; align-items:center;">
+       style="border-bottom:1px solid #e8ecf0; box-shadow:0 1px 6px rgba(0,0,0,0.04); background:#ffffff; min-height:57px; display:flex; align-items:center;">
 
     <!-- Sidebar Toggle -->
     <ul class="navbar-nav">
@@ -264,6 +275,11 @@
     <!-- Greeting Card -->
     <ul class="navbar-nav ml-auto">
       <li class="nav-item" style="display:flex; align-items:center;">
+
+        <!-- Dark Mode Toggle -->
+        <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle Dark Mode">
+          <i class="fas fa-moon" id="darkModeIcon"></i>
+        </button>
 
         <div class="account-dropdown-wrap">
 
@@ -392,3 +408,47 @@
     })();
   </script>
 
+  <!-- Dark Mode Toggle Script -->
+  <script>
+    (function () {
+      var toggle = document.getElementById('darkModeToggle');
+      var icon   = document.getElementById('darkModeIcon'); 
+
+      function updateIcon() {
+        if (document.body.classList.contains('dark-mode')) {
+          icon.className = 'fas fa-sun';
+        } else {
+          icon.className = 'fas fa-moon';
+        }
+      }
+      updateIcon();
+
+      toggle.addEventListener('click', function () {
+        document.body.classList.toggle('dark-mode');
+        var isDark = document.body.classList.contains('dark-mode');
+        localStorage.setItem('darkMode', isDark ? 'true' : 'false');
+        updateIcon();
+        neutralizeInlineHovers(isDark);
+      });
+
+      // Hapus onmouseover/onmouseout yang set warna pastel saat dark mode
+      function neutralizeInlineHovers(isDark) {
+        if (isDark) {
+          document.querySelectorAll('[onmouseover]').forEach(function(el) {
+            var omo = el.getAttribute('onmouseover');
+            if (omo && omo.indexOf('background') !== -1) {
+              el._origMouseover = omo;
+              el._origMouseout = el.getAttribute('onmouseout');
+              el.removeAttribute('onmouseover');
+              el.removeAttribute('onmouseout');
+            }
+          });
+        } else {
+          document.querySelectorAll('[data-orig-mouseover]').forEach(function(el) {
+            // Restore handled by page navigation/reload
+          });
+        }
+      }
+      neutralizeInlineHovers(document.body.classList.contains('dark-mode'));
+    })();
+  </script>

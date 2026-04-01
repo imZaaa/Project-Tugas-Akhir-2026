@@ -101,16 +101,23 @@
     .btn-delete-confirm { padding: 9px 20px; border: none; border-radius: 9px; background: linear-gradient(135deg, #dc2626, #b91c1c); color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; box-shadow: 0 3px 10px rgba(220,38,38,0.3); display: flex; align-items: center; gap: 6px; }
     .btn-delete-confirm:hover { opacity: 0.9; }
 
-    /* DETAIL MODAL */
-    .detail-header-box { background: linear-gradient(135deg, #1a56db, #0d3fa6); border-radius: 12px; padding: 18px; display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
-    .detail-avatar { width: 50px; height: 50px; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.3); border-radius: 13px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; color: #fff; flex-shrink: 0; }
-    .detail-nama { font-size: 15px; font-weight: 700; color: #fff; display: block; }
-    .detail-kode { font-size: 11.5px; color: rgba(255,255,255,0.75); font-family: 'Courier New', monospace; display: block; margin-top: 3px; }
-    .detail-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f1f3f5; }
-    .detail-row:last-child { border-bottom: none; }
-    .detail-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; margin-top: 1px; }
-    .detail-label { font-size: 11px; color: #9ca3af; font-weight: 500; display: block; }
-    .detail-value { font-size: 13px; color: #111827; font-weight: 600; display: block; margin-top: 2px; word-break: break-word; }
+    /* DETAIL MODAL PRO */
+    .detail-header-pro { background: linear-gradient(135deg, #1a56db, #0d3fa6); border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 20px; position: relative; overflow: hidden; box-shadow: 0 10px 25px rgba(26, 86, 219, 0.15); }
+    .detail-header-pro::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.1) 0%, transparent 60%); pointer-events: none; }
+    .detail-avatar-pro { width: 64px; height: 64px; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.3); border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 800; color: #fff; margin: 0 auto 12px; position: relative; z-index: 1; }
+    .detail-nama-pro { font-size: 17px; font-weight: 700; color: #fff; display: block; margin-bottom: 4px; position: relative; z-index: 1; }
+    .detail-kode-pro { font-size: 11.5px; color: rgba(255,255,255,0.75); font-family: 'Courier New', monospace; display: inline-block; position: relative; z-index: 1; }
+    
+    .detail-grid-pro { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .detail-card-pro { background: #fff; border: 1px solid #f1f3f5; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; transition: transform 0.2s ease, box-shadow 0.2s ease; overflow: hidden; }
+    .detail-card-pro:hover { background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.03); transform: translateY(-2px); }
+
+    .detail-card-pro.full { grid-column: span 2; flex-direction: row; align-items: flex-start; gap: 12px; padding: 14px 16px; }
+    .detail-card-pro.full .dc-icon { margin-top: 1px; }
+    .dc-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .dc-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; }
+    .dc-label { font-size: 11px; font-weight: 500; color: #9ca3af; }
+    .dc-value { font-size: 13px; font-weight: 600; color: #111827; word-break: break-word; line-height: 1.4; }
 
     /* ALERT */
     .alert-custom { margin: 16px 24px 0; padding: 11px 16px; border-radius: 10px; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 9px; }
@@ -138,10 +145,10 @@
 
     <!-- FLASH -->
     <?php if ($this->session->flashdata('success')): ?>
-    <div class="alert-custom success"><i class="fas fa-check-circle"></i><?= $this->session->flashdata('success') ?></div>
+    <div class="alert-custom success"><i class="fas fa-check-circle"></i> <div><?= $this->session->flashdata('success') ?></div></div>
     <?php endif; ?>
     <?php if ($this->session->flashdata('error')): ?>
-    <div class="alert-custom error"><i class="fas fa-exclamation-circle"></i><?= $this->session->flashdata('error') ?></div>
+    <div class="alert-custom error" style="align-items: flex-start;"><i class="fas fa-exclamation-circle" style="margin-top: 2px;"></i> <div><?= $this->session->flashdata('error') ?></div></div>
     <?php endif; ?>
 
     <!-- STAT CARDS -->
@@ -297,39 +304,39 @@
                     </div>
                     <div class="form-row">
                         <div class="form-group-custom">
-                            <label class="form-label-custom">Nama Kontak</label>
+                            <label class="form-label-custom">Nama Kontak <span>*</span></label>
                             <div class="input-wrap">
                                 <i class="fas fa-user input-icon"></i>
-                                <input type="text" name="nama_kontak" class="form-control-custom" placeholder="Nama PIC">
+                                <input type="text" name="nama_kontak" class="form-control-custom" placeholder="Nama PIC" required>
                             </div>
                         </div>
                         <div class="form-group-custom">
-                            <label class="form-label-custom">No. Telp</label>
+                            <label class="form-label-custom">No. Telp <span>*</span></label>
                             <div class="input-wrap">
                                 <i class="fas fa-phone input-icon"></i>
-                                <input type="text" name="no_telp" class="form-control-custom" placeholder="08xx-xxxx-xxxx">
+                                <input type="text" name="no_telp" class="form-control-custom" placeholder="08xx-xxxx-xxxx" required>
                             </div>
                         </div>
                     </div>
                     <div class="form-group-custom">
-                        <label class="form-label-custom">Email</label>
+                        <label class="form-label-custom">Email <span>*</span></label>
                         <div class="input-wrap">
                             <i class="fas fa-envelope input-icon"></i>
-                            <input type="email" name="email" class="form-control-custom" placeholder="supplier@email.com">
+                            <input type="email" name="email" class="form-control-custom" placeholder="supplier@email.com" required>
                         </div>
                     </div>
                     <div class="form-group-custom">
-                        <label class="form-label-custom">Alamat</label>
+                        <label class="form-label-custom">Alamat <span>*</span></label>
                         <div class="input-wrap">
                             <i class="fas fa-map-marker-alt input-icon top"></i>
-                            <textarea name="alamat" class="form-control-custom" placeholder="Alamat lengkap supplier"></textarea>
+                            <textarea name="alamat" class="form-control-custom" placeholder="Alamat lengkap supplier" required></textarea>
                         </div>
                     </div>
                     <div class="form-group-custom">
-                        <label class="form-label-custom">Keterangan</label>
+                        <label class="form-label-custom">Keterangan <span>*</span></label>
                         <div class="input-wrap">
                             <i class="fas fa-sticky-note input-icon top"></i>
-                            <textarea name="keterangan" class="form-control-custom" placeholder="Catatan tambahan (opsional)"></textarea>
+                            <textarea name="keterangan" class="form-control-custom" placeholder="Catatan tambahan (opsional/beri strip jika kosong)" required></textarea>
                         </div>
                     </div>
                 </div>
@@ -371,39 +378,39 @@
                     </div>
                     <div class="form-row">
                         <div class="form-group-custom">
-                            <label class="form-label-custom">Nama Kontak</label>
+                            <label class="form-label-custom">Nama Kontak <span>*</span></label>
                             <div class="input-wrap">
                                 <i class="fas fa-user input-icon"></i>
-                                <input type="text" name="nama_kontak" id="edit_kontak" class="form-control-custom">
+                                <input type="text" name="nama_kontak" id="edit_kontak" class="form-control-custom" required>
                             </div>
                         </div>
                         <div class="form-group-custom">
-                            <label class="form-label-custom">No. Telp</label>
+                            <label class="form-label-custom">No. Telp <span>*</span></label>
                             <div class="input-wrap">
                                 <i class="fas fa-phone input-icon"></i>
-                                <input type="text" name="no_telp" id="edit_telp" class="form-control-custom">
+                                <input type="text" name="no_telp" id="edit_telp" class="form-control-custom" required>
                             </div>
                         </div>
                     </div>
                     <div class="form-group-custom">
-                        <label class="form-label-custom">Email</label>
+                        <label class="form-label-custom">Email <span>*</span></label>
                         <div class="input-wrap">
                             <i class="fas fa-envelope input-icon"></i>
-                            <input type="email" name="email" id="edit_email" class="form-control-custom">
+                            <input type="email" name="email" id="edit_email" class="form-control-custom" required>
                         </div>
                     </div>
                     <div class="form-group-custom">
-                        <label class="form-label-custom">Alamat</label>
+                        <label class="form-label-custom">Alamat <span>*</span></label>
                         <div class="input-wrap">
                             <i class="fas fa-map-marker-alt input-icon top"></i>
-                            <textarea name="alamat" id="edit_alamat" class="form-control-custom"></textarea>
+                            <textarea name="alamat" id="edit_alamat" class="form-control-custom" required></textarea>
                         </div>
                     </div>
                     <div class="form-group-custom">
-                        <label class="form-label-custom">Keterangan</label>
+                        <label class="form-label-custom">Keterangan <span>*</span></label>
                         <div class="input-wrap">
                             <i class="fas fa-sticky-note input-icon top"></i>
-                            <textarea name="keterangan" id="edit_keterangan" class="form-control-custom"></textarea>
+                            <textarea name="keterangan" id="edit_keterangan" class="form-control-custom" required></textarea>
                         </div>
                     </div>
                 </div>
@@ -416,7 +423,7 @@
     </div>
 
 
-    <!-- ===== MODAL DETAIL ===== -->
+    <!-- ===== MODAL DETAIL PRO ===== -->
     <div class="modal-overlay" id="modalDetail">
         <div class="modal-box modal-detail">
             <div class="modal-header">
@@ -424,36 +431,60 @@
                 <button class="modal-close" onclick="closeModal('modalDetail')"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
-                <div class="detail-header-box">
-                    <div class="detail-avatar" id="det_avatar"></div>
-                    <div>
-                        <span class="detail-nama" id="det_nama"></span>
-                        <span class="detail-kode" id="det_kode"></span>
+                <div class="detail-header-pro">
+                    <div class="detail-avatar-pro" id="det_avatar"></div>
+                    <span class="detail-nama-pro" id="det_nama"></span>
+                    <span class="detail-kode-pro" id="det_kode"></span>
+                </div>
+                
+                <div class="detail-grid-pro">
+                    <div class="detail-card-pro">
+                        <div class="dc-top">
+                            <div class="dc-icon" style="background:#eff6ff; color:#1a56db;"><i class="fas fa-user"></i></div>
+                            <span class="dc-label">Nama Kontak / PIC</span>
+                        </div>
+                        <div class="dc-value" id="det_kontak"></div>
                     </div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-icon" style="background:#eff6ff; color:#1a56db;"><i class="fas fa-user"></i></div>
-                    <div><span class="detail-label">Nama Kontak / PIC</span><span class="detail-value" id="det_kontak"></span></div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-icon" style="background:#f0fdf4; color:#16a34a;"><i class="fas fa-phone"></i></div>
-                    <div><span class="detail-label">No. Telepon</span><span class="detail-value" id="det_telp"></span></div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-icon" style="background:#fffbeb; color:#d97706;"><i class="fas fa-envelope"></i></div>
-                    <div><span class="detail-label">Email</span><span class="detail-value" id="det_email"></span></div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-icon" style="background:#fdf4ff; color:#9333ea;"><i class="fas fa-map-marker-alt"></i></div>
-                    <div><span class="detail-label">Alamat</span><span class="detail-value" id="det_alamat"></span></div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-icon" style="background:#f8fafc; color:#6b7280;"><i class="fas fa-sticky-note"></i></div>
-                    <div><span class="detail-label">Keterangan</span><span class="detail-value" id="det_keterangan"></span></div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-icon" style="background:#f8fafc; color:#6b7280;"><i class="fas fa-calendar-plus"></i></div>
-                    <div><span class="detail-label">Terdaftar</span><span class="detail-value" id="det_created"></span></div>
+                    
+                    <div class="detail-card-pro">
+                        <div class="dc-top">
+                            <div class="dc-icon" style="background:#f0fdf4; color:#16a34a;"><i class="fas fa-phone"></i></div>
+                            <span class="dc-label">No. Telepon</span>
+                        </div>
+                        <div class="dc-value" id="det_telp"></div>
+                    </div>
+                    
+                    <div class="detail-card-pro">
+                        <div class="dc-top">
+                            <div class="dc-icon" style="background:#fffbeb; color:#d97706;"><i class="fas fa-envelope"></i></div>
+                            <span class="dc-label">Email</span>
+                        </div>
+                        <div class="dc-value" id="det_email"></div>
+                    </div>
+
+                    <div class="detail-card-pro">
+                        <div class="dc-top">
+                            <div class="dc-icon" style="background:#f8fafc; color:#6b7280;"><i class="fas fa-calendar-plus"></i></div>
+                            <span class="dc-label">Terdaftar</span>
+                        </div>
+                        <div class="dc-value" id="det_created"></div>
+                    </div>
+
+                    <div class="detail-card-pro full">
+                        <div class="dc-icon" style="background:#fdf4ff; color:#9333ea;"><i class="fas fa-map-marker-alt"></i></div>
+                        <div>
+                            <span class="dc-label" style="display:block; margin-bottom:4px;">Alamat</span>
+                            <div class="dc-value" id="det_alamat"></div>
+                        </div>
+                    </div>
+
+                    <div class="detail-card-pro full">
+                        <div class="dc-icon" style="background:#f8fafc; color:#6b7280;"><i class="fas fa-sticky-note"></i></div>
+                        <div>
+                            <span class="dc-label" style="display:block; margin-bottom:4px;">Keterangan</span>
+                            <div class="dc-value" id="det_keterangan"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">

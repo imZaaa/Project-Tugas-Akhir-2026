@@ -60,61 +60,77 @@ class M_purchase extends CI_Model {
         return $no;
     }
 
-    // ===== SIMPAN TRANSAKSI (ATOMIC) =====
-    // Melakukan 3 operasi sekaligus:
-    // 1. Insert header ke purchases
-    // 2. Insert rows ke purchase_details
-    // 3. Update stok di products
-    // Jika salah satu gagal, semua di-rollback
+    // ===== SIMPAN TRANSAKSI BARANG MASUK (ATOMIC OPERATION) =====
+    // Keterangan: Sama krusialnya dengan Penjualan, ini adalah jantung kulakan (restock).
+    // Kenapa Atomic? Karena ada 3 operasi database yang tidak boleh gagal di tengah jalan:
+    // 1. Simpan nota pembelian (header)
+    // 2. Simpan daftar barang yang masuk (detail)
+    // 3. Tambahkan stok barang tersebut ke master produk (restocking otomatis)
+    // Jika mati lampu saat simpan barang ke-3, maka barang 1 dan 2 akan dibatalkan (rollback).
     public function simpan_transaksi($header, $items) {
+        // [1] MULAI KUNCI TRANSAKSI
         $this->db->trans_start();
 
-        // 1. Insert header
+        // [2] SIMPAN NOTA UTAMA (Faktur, Tanggal, Supplier, Total Bayar)
         $this->db->insert($this->tbl_header, $header);
+        
+        // Ambil ID Nota/Faktur yang baru saja tercipta untuk disematkan ke barang-barangnya
         $id_purchase = $this->db->insert_id();
 
-        // 2. Insert detail + update stok per item
+        // [3] PROSES DAFTAR BARANG SATU PER SATU
         foreach ($items as $item) {
+            // Hitung subtotal harga beli (Modal Beli x Jumlah Masuk)
             $subtotal = $item['qty'] * $item['purchase_price'];
+            
+            // Simpan setiap item ke "keranjang/detail barang masuk" milik nota di atas
             $this->db->insert($this->tbl_detail, [
                 'id_purchase'    => $id_purchase,
                 'id_product'     => $item['id_product'],
                 'qty'            => $item['qty'],
-                'purchase_price' => $item['purchase_price'],
+                'purchase_price' => $item['purchase_price'], // Merekam riwayat harga modal
                 'subtotal'       => $subtotal,
             ]);
 
-            // 3. Update stok otomatis: stok_baru = stok_lama + qty_masuk
+            // [4] PENAMBAHAN STOK OTOMATIS KE GUDANG UTAMA
+            // Memanfaatkan SQL Injection (Aman) via set(param, param, FALSE) agar langsung bertambah
+            // Misal: UPDATE products SET stok = stok + 10 WHERE id = 5
             $this->db->set('stok', 'stok + ' . (int)$item['qty'], FALSE);
             $this->db->where('id_product', $item['id_product']);
             $this->db->update('products');
         }
 
+        // [5] TUTUP TRANSAKSI (Evaluasi apakah sukses total atau ada error query)
         $this->db->trans_complete();
 
-        // Kembalikan id_purchase jika sukses, FALSE jika gagal
+        // Jika trans_status TRUE, kirimkan ID-nya kembali ke Controller untuk dialihkan halamannya
         return $this->db->trans_status() ? $id_purchase : FALSE;
     }
 
-    // ===== HAPUS TRANSAKSI (ATOMIC) =====
-    // Rollback stok sebelum hapus
+    // ===== HAPUS TRANSAKSI BARANG MASUK (ATOMIC OPERATION) =====
+    // Keterangan: Saat admin salah input faktur dan mau menghapusnya, sistem harus cerdas.
+    // Tidak boleh asal hapus histori, stok yang tadinya masuk HARUS ditarik kembali (dikurangi)
     public function hapus_transaksi($id_purchase) {
+        // [1] MULAI TRANSAKSI KUNCI DATABASE JAGA-JAGA ERROR
         $this->db->trans_start();
 
-        // Ambil detail dulu untuk rollback stok
+        // [2] AMBIL RIWAYAT BARANG YANG MASUK SAAT FAKTUR INI DIBUAT
         $details = $this->get_detail($id_purchase);
+        
         foreach ($details as $d) {
+            // [3] TARIK KEMBALI STOK GUDANG (Kurangi)
+            // Karena fakturnya dibatalkan, anggap barangnya ditarik lagi ke luar pabrik
             $this->db->set('stok', 'stok - ' . (int)$d['qty'], FALSE);
             $this->db->where('id_product', $d['id_product']);
             $this->db->update('products');
         }
 
-        // Hapus detail
+        // [4] HAPUS KERANJANG DETAIL (Wajib hapus "anaknya" dulu sebelum hapus "induknya")
         $this->db->delete($this->tbl_detail, ['id_purchase' => $id_purchase]);
 
-        // Hapus header
+        // [5] BARULAH HAPUS NOTA INDUK
         $this->db->delete($this->tbl_header, ['id_purchase' => $id_purchase]);
 
+        // Kunci dan selesaikan
         $this->db->trans_complete();
         return $this->db->trans_status();
     }

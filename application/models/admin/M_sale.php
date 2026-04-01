@@ -92,33 +92,50 @@ class M_sale extends CI_Model {
         return $this->db->get_where($this->tbl_header, ['kode_transaksi' => $kode])->num_rows() > 0;
     }
 
-    // ===== SIMPAN TRANSAKSI (ATOMIC) =====
-    // 1. Insert header ke sales
-    // 2. Insert rows ke sale_details (catat harga saat transaksi)
-    // 3. Kurangi stok products
+    // ===== SIMPAN TRANSAKSI (ATOMIC OPERATION) =====
+    // Keterangan: Fungsi ini adalah kunci utama Modul Penjualan (Jantung POS).
+    // Kenapa dipanggil 'Atomic'? Karena menggunakan Database Transaction (trans_start & trans_complete).
+    // Artinya: Jika ada yang gagal/error di tengah-tengah foreach (misal produk ke-5 error), 
+    // maka produk ke 1-4 dan nota akan dibatalkan/dihapus otomatis oleh database dengan rollback.
     public function simpan_transaksi($header, $items) {
+        // [1] MULAI TRANSAKSI KUNCI DATABASE (Mencegah data separuh-masuk saat mati lampu/error)
         $this->db->trans_start();
 
+        // [2] SIMPAN HEADER KE TABEL SALES
+        // Menyimpan data umum struk belanja: tanggal, kasir, total belanja, dan kembalian
         $this->db->insert($this->tbl_header, $header);
+        
+        // $id_sale ini digenerate otomatis berdasarkan nomor Auto Increment dari tabel sales yang baru masuk
+        // Berguna untuk mengikat data barang belanjaan (detail) dengan struk/notanya 
         $id_sale = $this->db->insert_id();
 
+        // [3] PROSES DAFTAR BARANG YANG DIBELI (Bisa puluhan barang dlm 1 nota)
         foreach ($items as $item) {
+            
+            // Hitung harga asli dikali jumlah (qty) agar punya rekaman subtotal untuk auditing
             $subtotal = (int)$item['qty'] * (float)$item['harga_jual'];
+            
+            // Insert produk ke tabel 'sale_details' (keranjang per-nota)
             $this->db->insert($this->tbl_detail, [
-                'id_sale'    => $id_sale,
+                'id_sale'    => $id_sale, // Diikat dengan nomor urut struk utama
                 'id_product' => $item['id_product'],
                 'qty'        => (int)$item['qty'],
                 'harga_jual' => (float)$item['harga_jual'],
                 'subtotal'   => (int)$subtotal,
             ]);
 
-            // Kurangi stok otomatis
+            // [4] AUTOMATIC STOCK DEDUCTION (Pengurangan Stok Otomatis)
+            // Tanpa perlu mengambil sisa stok ke PHP, kita set langsung secara matematika di MySQL
+            // Menggunakan FALSE di parameter ketiga agar codeigniter tidak memanipulasi string "stok -"
             $this->db->set('stok', 'stok - ' . (int)$item['qty'], FALSE);
             $this->db->where('id_product', $item['id_product']);
-            $this->db->update('products');
+            $this->db->update('products'); // eksekusi: UPDATE products SET stok = stok - qty WHERE id_product = X
         }
 
+        // [5] TUTUP TRANSAKSI DATABASE KUNCI (Jika sampai sini dengan selamat, COMMIT datanya)
         $this->db->trans_complete();
+        
+        // Cek apakah transaksinya berstatus TRUE (sukses keseluruhan tanpa ada tabel tersedak error)
         return $this->db->trans_status() ? $id_sale : FALSE;
     }
 

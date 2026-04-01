@@ -7,6 +7,12 @@
         font-family: 'DM Sans', 'Segoe UI', sans-serif;
     }
 
+    /* FIX OVERFLOW — hanya aktif di mobile/tablet */
+    @media (max-width: 1024px) {
+        .content-wrapper { overflow-x: hidden; }
+        .form-layout > div { min-width: 0; }
+    }
+
     /* ===== PAGE TITLE ===== */
     .page-title-row {
         padding: 24px 28px 0;
@@ -205,15 +211,18 @@
         background: #dbeafe;
     }
 
+    /* Scroll horizontal untuk tabel item di layar kecil */
     .items-table-wrap {
         border: 1.5px solid #e5e7eb;
         border-radius: 10px;
-        overflow: hidden;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     .items-table {
         width: 100%;
         border-collapse: collapse;
+        min-width: 600px;
     }
 
     .items-table th {
@@ -531,6 +540,35 @@
         .form-row-3 {
             grid-template-columns: 1fr;
         }
+    }
+
+    @media (max-width: 600px) {
+        .page-title-row { padding: 16px 14px 0; flex-direction: column; align-items: flex-start; gap: 10px; }
+        .page-title-row h1 { font-size: 17px; }
+        .page-title-row p  { font-size: 11.5px; }
+        .btn-back { padding: 8px 14px; font-size: 12.5px; }
+        .form-layout { margin: 14px 14px 24px; gap: 14px; }
+        .form-card-header { padding: 13px 16px; }
+        .form-card-header h3 { font-size: 13px; }
+        .form-card-body { padding: 16px; }
+        .form-control { font-size: 12.5px; }
+        .items-header { flex-wrap: wrap; gap: 8px; }
+        .btn-add-item { padding: 6px 12px; font-size: 12px; white-space: nowrap; flex-shrink: 0; }
+        .summary-header { padding: 13px 16px; }
+        .summary-body { padding: 14px 16px; }
+        .summary-total .value { font-size: 18px; }
+        .btn-bayar { font-size: 13px; padding: 11px; }
+        .kembalian-box .value { font-size: 16px; }
+    }
+
+    @media (max-width: 420px) {
+        .form-layout { margin: 12px 12px 20px; }
+        .page-title-row { padding: 14px 12px 0; }
+        .form-card-body { padding: 14px 12px; }
+        .form-card-header { padding: 12px 14px; }
+        .summary-body { padding: 12px 14px; }
+        .summary-header { padding: 12px 14px; }
+        .summary-total .value { font-size: 17px; }
     }
 </style>
 
