@@ -6,13 +6,25 @@ class M_purchase extends CI_Model {
     private $tbl_header = 'purchases';
     private $tbl_detail = 'purchase_details';
 
-    // ===== GET ALL (untuk list history) =====
+    // ===== GET ALL (untuk list history — semua user, admin scope) =====
     public function get_all() {
         return $this->db
             ->select('p.*, s.nama_supplier, s.kode_supplier, u.username AS nama_kasir')
             ->from($this->tbl_header . ' p')
             ->join('suppliers s', 's.id_supplier = p.id_supplier', 'left')
             ->join('users u',    'u.id_user = p.id_user',         'left')
+            ->order_by('p.created_at', 'DESC')
+            ->get()->result_array();
+    }
+
+    // ===== GET BY USER (hanya data milik kasir tertentu) =====
+    public function get_by_user($id_user) {
+        return $this->db
+            ->select('p.*, s.nama_supplier, s.kode_supplier, u.username AS nama_kasir')
+            ->from($this->tbl_header . ' p')
+            ->join('suppliers s', 's.id_supplier = p.id_supplier', 'left')
+            ->join('users u',    'u.id_user = p.id_user',         'left')
+            ->where('p.id_user', $id_user)
             ->order_by('p.created_at', 'DESC')
             ->get()->result_array();
     }
@@ -74,7 +86,7 @@ class M_purchase extends CI_Model {
         // [2] SIMPAN NOTA UTAMA (Faktur, Tanggal, Supplier, Total Bayar)
         $this->db->insert($this->tbl_header, $header);
         
-        // Ambil ID Nota/Faktur yang baru saja tercipta untuk disematkan ke barang-barangnya
+        // Ambil ID Nota/Faktur yang baru saja tercipta untuk disematkan ke  barang-barangnya
         $id_purchase = $this->db->insert_id();
 
         // [3] PROSES DAFTAR BARANG SATU PER SATU
@@ -91,12 +103,33 @@ class M_purchase extends CI_Model {
                 'subtotal'       => $subtotal,
             ]);
 
-            // [4] PENAMBAHAN STOK OTOMATIS KE GUDANG UTAMA
-            // Memanfaatkan SQL Injection (Aman) via set(param, param, FALSE) agar langsung bertambah
-            // Misal: UPDATE products SET stok = stok + 10 WHERE id = 5
-            $this->db->set('stok', 'stok + ' . (int)$item['qty'], FALSE);
-            $this->db->where('id_product', $item['id_product']);
-            $this->db->update('products');
+            // [4] PERHITUNGAN AVERAGE COST & PENAMBAHAN STOK OTOMATIS KE GUDANG UTAMA
+            // Ambil data produk lama terlebih dahulu untuk mendapat stok lama dan harga beli lama
+            $produk_lama = $this->db->get_where('products', ['id_product' => $item['id_product']])->row_array();
+            if ($produk_lama) {
+                $stok_lama = (int)$produk_lama['stok'];
+                $harga_beli_lama = (float)$produk_lama['harga_beli'];
+                
+                $qty_masuk = (int)$item['qty'];
+                $harga_beli_masuk = (float)$item['purchase_price'];
+                
+                $stok_baru = $stok_lama + $qty_masuk;
+                
+                // Rumus Average Cost: [(Stok Lama x Modal Lama) + (Stok Baru x Modal Baru)] / Total Stok Baru
+                if ($stok_baru > 0) {
+                    $total_nilai_lama = $stok_lama * $harga_beli_lama;
+                    $total_nilai_masuk = $qty_masuk * $harga_beli_masuk;
+                    $harga_beli_rata2 = ($total_nilai_lama + $total_nilai_masuk) / $stok_baru;
+                } else {
+                    $harga_beli_rata2 = $harga_beli_masuk; // Fallback jika stok aneh
+                }
+                
+                // Update tabel produk dengan stok baru dan modal rata-rata baru
+                $this->db->update('products', [
+                    'stok' => $stok_baru,
+                    'harga_beli' => round($harga_beli_rata2)
+                ], ['id_product' => $item['id_product']]);
+            }
         }
 
         // [5] TUTUP TRANSAKSI (Evaluasi apakah sukses total atau ada error query)

@@ -37,7 +37,7 @@ class Produk extends CI_Controller {
         $this->load->view('layout/footer');
     }
 
-    // ===== UPDATE STOK =====
+    // ===== UPDATE STOK (dengan audit trail) =====
     public function update_stok() {
         $id   = $this->input->post('id_product', TRUE);
         $stok = $this->input->post('stok', TRUE);
@@ -48,8 +48,20 @@ class Produk extends CI_Controller {
             return;
         }
 
+        // [AUDIT] Ambil stok lama sebelum ditimpa untuk keperluan log
+        $produk_lama = $this->M_produk->get_by_id($id);
+        $stok_sebelum = $produk_lama ? (int) $produk_lama['stok'] : 0;
+
         if ($this->M_produk->update($id, ['stok' => $stok])) {
-            $this->session->set_flashdata('success', 'Stok berhasil diperbarui!');
+            // [AUDIT] Catat perubahan ke tabel stok_log
+            $this->M_produk->log_stok_change(
+                $id,
+                $this->session->userdata('id_user'),
+                $stok_sebelum,
+                (int) $stok,
+                'Penyesuaian stok manual oleh Kasir'
+            );
+            $this->session->set_flashdata('success', 'Stok berhasil diperbarui! (Sebelumnya: ' . $stok_sebelum . ' → Sekarang: ' . $stok . ')');
         } else {
             $this->session->set_flashdata('error', 'Gagal memperbarui stok.');
         }

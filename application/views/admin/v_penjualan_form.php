@@ -265,6 +265,15 @@
                         <span class="label">Total Qty</span>
                         <span class="value" id="sum-qty">0</span>
                     </div>
+                    <div class="summary-row">
+                        <span class="label">Sub Total</span>
+                        <span class="value" id="sum-subtotal">Rp 0</span>
+                    </div>
+
+                    <div class="summary-row">
+                        <span class="label">PPN (11%)</span>
+                        <span class="value" id="sum-ppn">Rp 0</span>
+                    </div>
 
                     <div class="summary-total">
                         <div class="label">Total Belanja</div>
@@ -431,10 +440,14 @@
             if (!sel?.value || !qty || !harga) valid = false;
         });
 
-        grandTotal = total;
+        var subTotalVal = total;
+        var ppnVal = total * 0.11;
+        grandTotal = total + ppnVal;
         document.getElementById('sum-items').textContent = rows.length + ' item';
         document.getElementById('sum-qty').textContent   = totalQty;
-        document.getElementById('sum-total').textContent = 'Rp ' + total.toLocaleString('id-ID');
+        var subtotalEl = document.getElementById('sum-subtotal'); if(subtotalEl) subtotalEl.textContent = 'Rp ' + subTotalVal.toLocaleString('id-ID');
+        document.getElementById('sum-ppn').textContent = 'Rp ' + Math.round(ppnVal).toLocaleString('id-ID');
+        document.getElementById('sum-total').textContent = 'Rp ' + Math.round(grandTotal).toLocaleString('id-ID');
         document.getElementById('item-count-badge').textContent = rows.length + ' item';
 
         var bayarEl = document.getElementById('inputBayar');

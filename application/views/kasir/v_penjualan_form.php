@@ -638,6 +638,8 @@
                     <div class="summary-row"><span class="label">Kasir</span><span class="value" style="font-size:12px;"><?= $this->session->userdata('nama') ?: 'Kasir' ?></span></div>
                     <div class="summary-row"><span class="label">Jumlah Item</span><span class="value" id="sum-items">0 item</span></div>
                     <div class="summary-row"><span class="label">Total Qty</span><span class="value" id="sum-qty">0</span></div>
+                    <div class="summary-row"><span class="label">Sub Total</span><span class="value" id="sum-subtotal">Rp 0</span></div>
+                    <div class="summary-row"><span class="label">PPN (11%)</span><span class="value" id="sum-ppn">Rp 0</span></div>
                     <div class="summary-total"><div class="label">Total Belanja</div><div class="value" id="sum-total">Rp 0</div></div>
                     <div class="bayar-group"><label>Jumlah Bayar <span style="color:#dc2626;">*</span></label><input type="number" name="bayar" id="inputBayar" class="bayar-input" placeholder="0" min="0" oninput="updateKembalian()"></div>
                     <div class="kembalian-box" id="kembalianBox"><span class="label">Kembalian</span><span class="value" id="kembalianValue">Rp 0</span></div>
@@ -683,7 +685,18 @@
     function updateSummary() {
         var rows=document.querySelectorAll('#itemsBody tr:not(#emptyRow)'),total=0,totalQty=0;
         rows.forEach(function(row){var qty=parseInt(row.querySelector('input[name="qty[]"]')?.value)||0,harga=parseFloat(row.querySelector('input[name="harga_jual[]"]')?.value)||0;total+=qty*harga;totalQty+=qty;});
-        grandTotal=total;document.getElementById('sum-items').textContent=rows.length+' item';document.getElementById('sum-qty').textContent=totalQty;document.getElementById('sum-total').textContent='Rp '+total.toLocaleString('id-ID');document.getElementById('item-count-badge').textContent=rows.length+' item';
+        var subTotalVal = total;
+        var ppnVal = total * 0.11;
+        var grandTotalVal = total + ppnVal;
+        grandTotal = grandTotalVal;
+        
+        document.getElementById('sum-items').textContent=rows.length+' item';
+        document.getElementById('sum-qty').textContent=totalQty;
+        
+        var subtotalEl = document.getElementById('sum-subtotal'); if(subtotalEl) subtotalEl.textContent='Rp '+Math.round(subTotalVal).toLocaleString('id-ID');
+        document.getElementById('sum-ppn').textContent='Rp '+Math.round(ppnVal).toLocaleString('id-ID');
+        document.getElementById('sum-total').textContent='Rp '+Math.round(grandTotalVal).toLocaleString('id-ID');
+        document.getElementById('item-count-badge').textContent=rows.length+' item';
         var bayarEl=document.getElementById('inputBayar');if(total>0){bayarEl.value=total;}else{bayarEl.value='';}
         updateKembalian();
     }

@@ -2,323 +2,231 @@
 <html lang="id">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Nota Penjualan — <?= htmlspecialchars($header['kode_transaksi']) ?></title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <title>Nota Penjualan - <?= htmlspecialchars($header['kode_transaksi']) ?></title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'DM Sans', 'Segoe UI', sans-serif; background: #f0f2f5; color: #111827; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-
-        .nota-container {
-            max-width: 400px;
-            margin: 24px auto;
+        @page { size: A4; margin: 10mm; }
+        body { font-family: "Arial", sans-serif; font-size: 11px; margin: 0; padding: 0; background: #525659; }
+        * { box-sizing: border-box; }
+        
+        .page {
+            max-width: 210mm;
+            min-height: 297mm;
+            padding: 15mm;
+            margin: 10mm auto;
             background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.04);
-            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            position: relative;
         }
 
-        /* ===== HEADER ===== */
-        .nota-header {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 22px 24px 18px;
-            border-bottom: 3px solid #1a56db;
-        }
-        .nota-logo {
-            height: 52px;
-            flex-shrink: 0;
-        }
-        .nota-header-text { flex: 1; }
-        .nota-header-text h2 {
-            font-size: 14px;
-            font-weight: 800;
-            color: #0f2b5e;
-            letter-spacing: 0.3px;
-            margin-bottom: 1px;
-        }
-        .nota-header-text .subtitle {
-            font-size: 10px;
-            color: #6b7280;
-            font-weight: 500;
-            margin-bottom: 6px;
-        }
-        .nota-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            background: linear-gradient(135deg, #1a56db, #0d3fa6);
-            color: #fff;
-            border-radius: 6px;
-            padding: 4px 11px;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
+        .header { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .header-left { display: flex; align-items: center; width: 60%; }
+        .logo { width: 100px; height: auto; margin-right: 15px; }
+        .company-info { font-family: "Arial", sans-serif; }
+        .company-info h1 { font-size: 16px; margin: 0 0 2px 0; color: #000; font-weight: bold; }
+        .company-info h2 { font-size: 18px; margin: 0 0 2px 0; color: #0056b3; font-weight: 800; letter-spacing: -0.5px; }
+        .company-info .sub { font-size: 10px; font-style: italic; margin-bottom: 3px; }
+        .company-info .desc { font-size: 10px; font-weight: bold; }
+        .company-info .web { font-size: 12px; font-weight: bold; font-style: italic; margin-top: 2px; }
 
-        /* ===== KODE TRANSAKSI ===== */
-        .nota-kode {
-            padding: 16px 24px;
-            border-bottom: 1px dashed #e5e7eb;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .nota-kode .label { font-size: 10px; color: #9ca3af; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-        .nota-kode .value { font-size: 13px; font-weight: 700; color: #1a56db; font-family: 'Courier New', monospace; letter-spacing: 0.5px; }
+        .header-right { width: 35%; text-align: center; }
+        .header-right h3 { font-size: 14px; margin: 0 0 5px 0; font-weight: bold; word-spacing: 2px; }
+        .info-box { border: 1px dashed #000; padding: 5px; text-align: left; font-size: 10px; line-height: 1.4; display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+        .info-box div { border-right: 1px dashed #000; padding-right: 5px; }
+        .info-box div:nth-child(even) { border-right: none; padding-right: 0; padding-left: 5px; }
+        .info-box .label { margin-bottom: 2px; }
+        .info-box .value { font-weight: normal; margin-bottom: 5px; }
 
-        /* ===== INFO ===== */
-        .nota-info {
-            padding: 14px 24px;
-            border-bottom: 1px dashed #e5e7eb;
-        }
-        .nota-info-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 5px 0;
-            font-size: 12px;
-        }
-        .nota-info-row .label { color: #6b7280; font-weight: 500; }
-        .nota-info-row .value { font-weight: 600; color: #111827; }
+        .kepada { margin-bottom: 15px; font-size: 11px; line-height: 1.4; }
+        .kepada span { display: inline-block; width: 60px; }
 
-        /* ===== ITEMS ===== */
-        .nota-items-header {
-            padding: 12px 24px 6px;
-            font-size: 10px;
-            font-weight: 700;
-            color: #9ca3af;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: flex;
-            justify-content: space-between;
-        }
-        .nota-items {
-            padding: 0 24px 14px;
-            border-bottom: 1px dashed #e5e7eb;
-        }
-        .nota-item {
-            padding: 10px 0;
-            border-bottom: 1px solid #f3f4f6;
-        }
-        .nota-item:last-child { border-bottom: none; }
-        .nota-item-name {
-            font-size: 12.5px;
-            font-weight: 600;
-            color: #111827;
-            margin-bottom: 3px;
-        }
-        .nota-item-detail {
-            display: flex;
-            justify-content: space-between;
-            font-size: 11.5px;
-            color: #6b7280;
-        }
-        .nota-item-detail .subtotal { font-weight: 700; color: #111827; }
+        table.items { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 11px; }
+        table.items th, table.items td { padding: 4px 2px; text-align: right; vertical-align: top; }
+        table.items th { border-bottom: 1px solid #000; border-top: 1px solid #000; font-weight: normal; }
+        table.items th:nth-child(1), table.items td:nth-child(1) { text-align: left; width: 15%; }
+        table.items th:nth-child(2), table.items td:nth-child(2) { text-align: center; width: 5%; }
+        table.items th:nth-child(3), table.items td:nth-child(3) { text-align: left; width: 45%; }
+        table.items th:nth-child(4), table.items td:nth-child(4) { text-align: center; width: 10%; }
+        table.items th:nth-child(5), table.items td:nth-child(5) { width: 10%; }
+        table.items th:nth-child(6), table.items td:nth-child(6) { width: 15%; }
 
-        /* ===== TOTALS ===== */
-        .nota-totals {
-            padding: 16px 24px;
-        }
-        .nota-total-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 5px 0;
-            font-size: 12.5px;
-        }
-        .nota-total-row .label { color: #6b7280; font-weight: 500; }
-        .nota-total-row .value { font-weight: 700; color: #111827; }
-        .nota-total-row.grand {
-            font-size: 17px;
-            padding: 12px 0 6px;
-            border-top: 2px solid #111827;
-            margin-top: 8px;
-        }
-        .nota-total-row.grand .label { color: #111827; font-weight: 800; }
-        .nota-total-row.grand .value { color: #1a56db; font-weight: 800; }
-        .nota-total-row.change .value { color: #059669; }
+        .totals-container { display: flex; justify-content: flex-end; margin-bottom: 20px; font-size: 11px; }
+        .totals { width: 40%; }
+        .totals-row { display: flex; justify-content: space-between; padding: 3px 0; }
+        .totals-row.grand { border-bottom: 2px solid #000; border-top: 1px solid #000; margin-top: 2px; font-weight: bold; }
+        
+        .terbilang { display: flex; font-size: 11px; margin-bottom: 30px; }
+        .terbilang .label { width: 60px; }
+        .terbilang .value { flex: 1; margin-left: 5px; }
 
-        /* ===== STATUS ===== */
-        .nota-status {
-            margin: 0 24px;
-            padding: 10px 16px;
-            border-radius: 10px;
-            text-align: center;
-            font-size: 12px;
-            font-weight: 700;
-        }
-        .nota-status.lunas {
-            background: #ecfdf5;
-            color: #059669;
-            border: 1px solid #a7f3d0;
-        }
-        .nota-status.batal {
-            background: #fef2f2;
-            color: #dc2626;
-            border: 1px solid #fecaca;
-        }
+        .signatures { display: flex; justify-content: space-between; text-align: center; font-size: 11px; margin-top: 30px; }
+        .sign-box { width: 30%; }
+        .sign-box p { margin: 0; }
+        .sign-box.left { margin-left: 20px; }
+        .sign-box.right { margin-right: 20px; }
+        .sign-box .name { font-weight: bold; text-decoration: underline; }
 
-        /* ===== FOOTER ===== */
-        .nota-footer {
-            padding: 20px 24px 24px;
-            text-align: center;
-        }
-        .nota-footer .thanks {
-            font-size: 14px;
-            font-weight: 800;
-            color: #1a56db;
-            margin-bottom: 6px;
-        }
-        .nota-footer p {
-            font-size: 10.5px;
-            color: #9ca3af;
-            line-height: 1.6;
-        }
-        .nota-footer .divider {
-            width: 60px;
-            height: 2px;
-            background: linear-gradient(90deg, #1a56db, #2563eb);
-            border-radius: 2px;
-            margin: 12px auto;
-        }
+        .footer { text-align: center; font-size: 10px; font-family: monospace; border-top: 1px dashed #000; margin-top: 20px; padding-top: 5px; position: absolute; bottom: 15mm; left: 15mm; right: 15mm; }
 
-        /* ===== PRINT ===== */
         @media print {
-            body { background: #fff; }
-            .nota-container { box-shadow: none; border-radius: 0; margin: 0; max-width: 100%; }
-            .no-print { display: none !important; }
-            @page { margin: 5mm; }
-            /* Hapus URL/localhost di footer print browser */
-            @page { @bottom-center { content: none; } }
+            body { background: #fff; margin: 0; }
+            .page { box-shadow: none; margin: 0; padding: 10mm; min-height: auto; max-width: 100%; }
+            .footer { position: fixed; bottom: 10mm; left: 10mm; right: 10mm; }
         }
 
-        /* ===== PRINT BUTTONS ===== */
-        .print-actions {
-            max-width: 400px;
-            margin: 0 auto 16px;
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-        .btn-print-action {
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            padding: 11px 22px;
-            border: none;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: 'DM Sans', sans-serif;
-            transition: all 0.15s;
-            text-decoration: none;
-        }
-        .btn-print-action:hover { transform: translateY(-1px); }
-        .btn-print { background: linear-gradient(135deg, #1a56db, #0d3fa6); color: #fff; box-shadow: 0 4px 14px rgba(26,86,219,0.3); }
-        .btn-close-nota { background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; }
+        <?php 
+            $grand_total = $header['total_harga'];
+            $sub_total = $grand_total / 1.11;
+            $ppn = $grand_total - $sub_total;
+
+            function penyebut($nilai) {
+                $nilai = abs($nilai);
+                $huruf = array("", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas");
+                $temp = "";
+                if ($nilai < 12) {
+                    $temp = " ". $huruf[$nilai];
+                } else if ($nilai <20) {
+                    $temp = penyebut($nilai - 10). " belas";
+                } else if ($nilai < 100) {
+                    $temp = penyebut($nilai/10)." puluh". penyebut($nilai % 10);
+                } else if ($nilai < 200) {
+                    $temp = " seratus" . penyebut($nilai - 100);
+                } else if ($nilai < 1000) {
+                    $temp = penyebut($nilai/100) . " ratus" . penyebut($nilai % 100);
+                } else if ($nilai < 2000) {
+                    $temp = " seribu" . penyebut($nilai - 1000);
+                } else if ($nilai < 1000000) {
+                    $temp = penyebut($nilai/1000) . " ribu" . penyebut($nilai % 1000);
+                } else if ($nilai < 1000000000) {
+                    $temp = penyebut($nilai/1000000) . " juta" . penyebut($nilai % 1000000);
+                } else if ($nilai < 1000000000000) {
+                    $temp = penyebut($nilai/1000000000) . " milyar" . penyebut(fmod($nilai,1000000000));
+                } else if ($nilai < 1000000000000000) {
+                    $temp = penyebut($nilai/1000000000000) . " trilyun" . penyebut(fmod($nilai,1000000000000));
+                }     
+                return $temp;
+            }
+         
+            function terbilang($nilai) {
+                if($nilai<0) {
+                    $hasil = "minus ". trim(penyebut($nilai));
+                } else {
+                    $hasil = trim(penyebut($nilai));
+                }           
+                return ucfirst($hasil) . " rupiah";
+            }
+        ?>
     </style>
 </head>
-<body>
+<body onload="window.print()">
 
-    <!-- PRINT ACTIONS -->
-    <div class="print-actions no-print" style="margin-top:24px;">
-        <button class="btn-print-action btn-print" onclick="window.print()">
-            <i class="fas fa-print"></i> Cetak Nota
-        </button>
-        <button class="btn-print-action btn-close-nota" onclick="window.close()">
-            <i class="fas fa-times"></i> Tutup
-        </button>
-    </div>
-
-    <div class="nota-container">
-
+    <div class="page">
         <!-- HEADER -->
-        <div class="nota-header">
-            <img src="<?= base_url('assets/images/logo.png') ?>" alt="Logo PT Pordjo" class="nota-logo">
-            <div class="nota-header-text">
-                <h2>PT PORDJO STEELINDO PERKASA</h2>
-                <div class="subtitle">Distributor &amp; Supply Baja</div>
-                <div class="nota-badge"><i class="fas fa-receipt" style="margin-right:4px;"></i> Nota Penjualan</div>
+        <div class="header">
+            <div class="header-left">
+                <img src="<?= base_url('assets/images/logo.png') ?>" alt="Logo" class="logo" onerror="this.style.display='none'">
+                <div class="company-info">
+                    <h1>Distributor Atap, Besi & Baja</h1>
+                    <div class="sub">Atap Zincalume & Colorbond, Atap Lengkung, Atap Transparan<br>Wiremash, Bondek, Besi Beton, Unp, WF, Acesories DLL.</div>
+                    <h2>PT PORDJO<br>STEELINDO PERKASA</h2>
+                    <div class="desc">Distributor & Supply</div>
+                    <div class="web">www.pordjosteelindoperkasa.com</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <h3>KONFIRMASI PENJUALAN</h3>
+                <div class="info-box">
+                    <div>
+                        <div class="label">Tanggal</div>
+                        <div class="value"><?= date('d M Y', strtotime($header['tgl_jual'])) ?></div>
+                        <div class="label">T.O.P</div>
+                        <div class="value">C.O.D</div>
+                    </div>
+                    <div>
+                        <div class="label">Nomor Kontrak</div>
+                        <div class="value">SO.<?= htmlspecialchars($header['kode_transaksi']) ?></div>
+                        <div class="label">PO No</div>
+                        <div class="value">-</div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- KODE TRANSAKSI -->
-        <div class="nota-kode">
-            <span class="label">No. Transaksi</span>
-            <span class="value"><?= htmlspecialchars($header['kode_transaksi']) ?></span>
-        </div>
-
-        <!-- INFO -->
-        <div class="nota-info">
-            <div class="nota-info-row">
-                <span class="label"><i class="far fa-calendar-alt" style="margin-right:4px; font-size:11px;"></i>Tanggal</span>
-                <span class="value"><?= date('d/m/Y H:i', strtotime($header['tgl_jual'])) ?></span>
-            </div>
-            <div class="nota-info-row">
-                <span class="label"><i class="far fa-user" style="margin-right:4px; font-size:11px;"></i>Kasir</span>
-                <span class="value"><?= htmlspecialchars($header['nama_kasir'] ?? '-') ?></span>
-            </div>
-            <?php if (!empty($header['nama_pelanggan'])): ?>
-            <div class="nota-info-row">
-                <span class="label"><i class="far fa-address-card" style="margin-right:4px; font-size:11px;"></i>Pelanggan</span>
-                <span class="value"><?= htmlspecialchars($header['nama_pelanggan']) ?></span>
-            </div>
-            <?php endif; ?>
+        <!-- KEPADA -->
+        <div class="kepada">
+            <div><span>Kepada :</span> <strong><?= htmlspecialchars(!empty($header['nama_pelanggan']) ? $header['nama_pelanggan'] : 'UMUM') ?></strong></div>
+            <div style="margin-left: 60px;">-</div>
         </div>
 
         <!-- ITEMS -->
-        <div class="nota-items-header">
-            <span>Daftar Produk</span>
-            <span>Subtotal</span>
-        </div>
-        <div class="nota-items">
-            <?php foreach ($detail as $d): ?>
-            <div class="nota-item">
-                <div class="nota-item-name"><?= htmlspecialchars($d['nama_produk'] ?? '-') ?></div>
-                <div class="nota-item-detail">
-                    <span><?= $d['qty'] ?> × Rp <?= number_format($d['harga_jual'], 0, ',', '.') ?></span>
-                    <span class="subtotal">Rp <?= number_format($d['subtotal'], 0, ',', '.') ?></span>
+        <table class="items">
+            <thead>
+                <tr>
+                    <th>Kode</th>
+                    <th>No.</th>
+                    <th>Nama Barang</th>
+                    <th>Kts.</th>
+                    <th>@Harga</th>
+                    <th>Total Harga</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php $no=1; foreach($detail as $d): ?>
+                <tr>
+                    <td><?= htmlspecialchars($d['kode_barang'] ?? 'BRG-'.str_pad($no, 3, '0', STR_PAD_LEFT)) ?></td>
+                    <td><?= $no++ ?></td>
+                    <td><?= htmlspecialchars($d['nama_produk'] ?? '-') ?></td>
+                    <td><?= $d['qty'] ?></td>
+                    <td><?= number_format($d['harga_jual'], 0, ',', '.') ?></td>
+                    <td><?= number_format($d['subtotal'], 0, ',', '.') ?></td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+
+        <!-- TOTALS & TERBILANG -->
+        <div class="totals-container">
+            <div class="totals">
+                <div class="totals-row">
+                    <span>Sub Total</span>
+                    <span><?= number_format($sub_total, 0, ',', '.') ?></span>
+                </div>
+                <div class="totals-row">
+                    <span>PPN (11%)</span>
+                    <span><?= number_format($ppn, 0, ',', '.') ?></span>
+                </div>
+                <div class="totals-row grand">
+                    <span>Total</span>
+                    <span><?= number_format($grand_total, 0, ',', '.') ?></span>
                 </div>
             </div>
-            <?php endforeach; ?>
         </div>
 
-        <!-- TOTALS -->
-        <div class="nota-totals">
-            <div class="nota-total-row">
-                <span class="label">Subtotal (<?= count($detail) ?> item)</span>
-                <span class="value">Rp <?= number_format($header['total_harga'], 0, ',', '.') ?></span>
-            </div>
-            <div class="nota-total-row grand">
-                <span class="label">TOTAL</span>
-                <span class="value">Rp <?= number_format($header['total_harga'], 0, ',', '.') ?></span>
-            </div>
-            <div class="nota-total-row">
-                <span class="label">Tunai</span>
-                <span class="value">Rp <?= number_format($header['bayar'] ?? 0, 0, ',', '.') ?></span>
-            </div>
-            <div class="nota-total-row change">
-                <span class="label">Kembalian</span>
-                <span class="value">Rp <?= number_format($header['kembalian'] ?? 0, 0, ',', '.') ?></span>
-            </div>
+        <div class="terbilang">
+            <div class="label">Terbilang :</div>
+            <div class="value"><?= terbilang($grand_total) ?></div>
         </div>
 
-        <!-- STATUS -->
-        <div class="nota-status <?= $header['status'] === 'Lunas' ? 'lunas' : 'batal' ?>">
-            <i class="fas <?= $header['status'] === 'Lunas' ? 'fa-check-circle' : 'fa-times-circle' ?>" style="margin-right:4px;"></i>
-            Status: <?= $header['status'] ?>
+        <!-- SIGNATURES -->
+        <div class="signatures">
+            <div class="sign-box left">
+                <p>Disetujui,</p>
+                <div style="height: 70px;"></div>
+                <div class="name">Pihak Pertama</div>
+            </div>
+            <div class="sign-box right">
+                <p style="margin-bottom: 5px;">PT. Pordjo Steelindo Perkasa</p>
+                <div style="height: 70px; display: flex; justify-content: center; align-items: center;">
+                    <img src="<?= base_url('assets/images/logo.png') ?>" style="max-height: 70px; opacity: 0.8;" alt="Stamp" onerror="this.style.display='none'">
+                </div>
+                <div class="name">Eki Erma Yunisa</div>
+            </div>
         </div>
 
         <!-- FOOTER -->
-        <div class="nota-footer">
-            <div class="divider"></div>
-            <p class="thanks">Terima Kasih Atas Kunjungan Anda!</p>
-            <p>Barang yang sudah dibeli tidak dapat dikembalikan.<br>Simpan nota ini sebagai bukti transaksi.</p>
+        <div class="footer">
+            Jl. KH. Yakub Ghani, Babelan, Kab Bekasi &nbsp;&nbsp; Phone : 021-888-940-48 &nbsp;&nbsp; Wa: 0812-5555-4867<br>
+            email: pordjosteelindoperkasa@gmail.com
         </div>
-
     </div>
 
 </body>

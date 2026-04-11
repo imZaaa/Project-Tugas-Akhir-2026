@@ -8,34 +8,38 @@
     @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
     .main-sidebar, .main-header, .sb-label, .sb-section-label, .brand-name, .brand-sub, .user-name, .user-greeting, .nav-link { font-family: 'DM Sans', 'Segoe UI', sans-serif !important; }
     .fas, .far, .fab, .fa { font-family: "Font Awesome 5 Free" !important; font-weight: 900; }
-    .main-sidebar { position: fixed !important; top: 0; bottom: 0; left: 0; height: 100vh !important; overflow-y: auto; z-index: 1038; }
+    .main-sidebar { position: fixed !important; top: 0; bottom: 0; left: 0; height: 100vh !important; overflow-y: auto; z-index: 1038; transition: width 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), margin-left 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) !important; }
     .main-sidebar::-webkit-scrollbar { width: 4px; }
     .main-sidebar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
-    .sidebar-brand-wrapper { display: flex; align-items: center; justify-content: center; padding: 15px; border-bottom: 1px solid #e8ecf0 !important; text-decoration: none !important; background: #ffffff !important; min-height: 100px; transition: all 0.3s ease-in-out !important; }
-    .sidebar-logo-icon { height: 70px; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease-in-out !important; }
-    .sidebar-logo-icon img { height: 100%; width: auto; max-width: 180px; object-fit: contain; transition: all 0.3s ease-in-out !important; }
+    .sidebar-brand-wrapper { display: flex; align-items: center; justify-content: center; padding: 15px; border-bottom: 1px solid #e8ecf0 !important; text-decoration: none !important; background: #ffffff !important; min-height: 100px; transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) !important; }
+    .sidebar-logo-icon { height: 70px; display: flex; align-items: center; justify-content: center; transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) !important; }
+    .sidebar-logo-icon img { height: 100%; width: auto; max-width: 180px; object-fit: contain; transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) !important; }
     .sidebar { background: #ffffff !important; display: flex !important; flex-direction: column; height: calc(100vh - 100px) !important; }
     nav.mt-1 { display: flex; flex-direction: column; flex: 1; padding-bottom: 10px; }
     .sb-section-label { display: block; padding: 14px 18px 5px; font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #9ca3af; }
     .sb-nav-list { list-style: none; padding: 0 8px !important; margin: 0 !important; }
     .sb-nav-list .nav-item { margin-bottom: 1px; }
-    .main-sidebar .sb-nav-list .nav-link { display: flex !important; align-items: center !important; gap: 10px !important; padding: 8px 10px !important; border-radius: 8px !important; color: #4b5563 !important; font-size: 13px !important; font-weight: 500 !important; text-decoration: none !important; transition: background 0.15s, color 0.15s !important; background: transparent !important; width: 100%; }
-    .main-sidebar .sb-nav-list .nav-link:hover { background: #f0f4ff !important; color: #1a56db !important; }
-    .main-sidebar .sb-nav-list .nav-link.active { background: #eef2ff !important; color: #1a56db !important; font-weight: 600 !important; }
-    .sb-icon { width: 28px; height: 28px; min-width: 28px; background: #f3f4f6; border-radius: 7px; display: flex !important; align-items: center; justify-content: center; font-size: 12px; color: #6b7280; transition: background 0.15s, color 0.15s; }
-    .main-sidebar .sb-nav-list .nav-link:hover .sb-icon, .main-sidebar .sb-nav-list .nav-link.active .sb-icon { background: #dbeafe; color: #1a56db; }
-    .sb-arrow { margin-left: auto; font-size: 10px; color: #d1d5db; transition: transform 0.2s; flex-shrink: 0; }
+    .main-sidebar .sb-nav-list .nav-link { display: flex !important; align-items: center !important; gap: 12px !important; padding: 10px 12px !important; margin-bottom: 4px !important; border-radius: 10px !important; color: #4b5563 !important; font-size: 13.5px !important; font-weight: 500 !important; text-decoration: none !important; transition: background-color 0.25s ease, color 0.25s ease, padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease !important; background: transparent !important; width: 100%; border-left: 3px solid transparent !important; }
+    .main-sidebar .sb-nav-list .nav-link:hover { background: rgba(248,250,252,0.8) !important; color: #1a56db !important; padding-left: 16px !important; }
+    .main-sidebar .sb-nav-list .nav-link.active { background: linear-gradient(90deg, #f0f4ff 0%, #ffffff 100%) !important; color: #1a56db !important; font-weight: 600 !important; box-shadow: 0 4px 14px rgba(26,86,219,0.06) !important; border-left: 3px solid #1a56db !important; padding-left: 12px !important; }
+    .sb-icon { width: 30px; height: 30px; min-width: 30px; background: #f1f5f9; border-radius: 8px; display: flex !important; align-items: center; justify-content: center; font-size: 13px; color: #94a3b8; transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.25s ease, box-shadow 0.25s ease; }
+    .main-sidebar .sb-nav-list .nav-link:hover .sb-icon { background: #e0e7ff; color: #1a56db; transform: scale(1.08); }
+    .main-sidebar .sb-nav-list .nav-link.active .sb-icon { background: linear-gradient(135deg, #1a56db, #3b82f6); color: #ffffff; box-shadow: 0 6px 14px rgba(26,86,219,0.3); }
+    .sb-arrow { margin-left: auto; font-size: 10px; color: #cbd5e1; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); flex-shrink: 0; }
     .menu-open > .nav-link .sb-arrow, .nav-item.has-treeview.menu-is-opening > .nav-link .sb-arrow { transform: rotate(90deg); color: #1a56db; }
     .sb-label { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .sb-submenu { list-style: none !important; margin: 2px 0 4px 16px !important; padding: 0 0 0 10px !important; border-left: 2px solid #e5e7eb !important; }
-    .main-sidebar .sb-submenu .nav-link { gap: 8px !important; padding: 6px 10px !important; font-size: 12.5px !important; color: #6b7280 !important; }
-    .sb-dot { width: 5px; height: 5px; min-width: 5px; background: #d1d5db; border-radius: 50%; transition: background 0.15s; }
-    .main-sidebar .sb-submenu .nav-link:hover .sb-dot, .main-sidebar .sb-submenu .nav-link.active .sb-dot { background: #1a56db; }
-    .main-sidebar .sb-submenu .nav-link.active { color: #1a56db !important; font-weight: 600 !important; }
-    .sb-divider { border: none; border-top: 1px solid #e8ecf0; margin-top: auto !important; margin-bottom: 8px; margin-left: 12px; margin-right: 12px; }
-    .main-sidebar .sb-logout-link { display: flex !important; align-items: center !important; gap: 10px !important; padding: 8px 10px !important; margin: 0 8px !important; border-radius: 8px !important; color: #ef4444 !important; font-size: 13px !important; font-weight: 600 !important; text-decoration: none !important; transition: background 0.15s !important; background: transparent !important; margin-bottom: 16px !important; width: calc(100% - 16px); }
-    .main-sidebar .sb-logout-link:hover { background: #fef2f2 !important; }
-    .sb-icon-red { width: 28px; height: 28px; min-width: 28px; background: #fee2e2; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #ef4444; }
+    .sb-submenu { list-style: none !important; margin: 4px 0 8px 18px !important; padding: 0 0 0 10px !important; border-left: 2px solid #e2e8f0 !important; }
+    .main-sidebar .sb-submenu .nav-link { gap: 10px !important; padding: 8px 12px !important; font-size: 13px !important; color: #64748b !important; border: none !important; margin-bottom: 2px !important; transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.25s ease, background-color 0.25s ease !important; }
+    .main-sidebar .sb-submenu .nav-link:hover { padding-left: 17px !important; color: #1a56db !important; background: transparent !important; }
+    .sb-dot { width: 6px; height: 6px; min-width: 6px; background: #cbd5e1; border-radius: 50%; transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.25s ease, box-shadow 0.25s ease; }
+    .main-sidebar .sb-submenu .nav-link:hover .sb-dot { background: #1a56db; }
+    .main-sidebar .sb-submenu .nav-link.active { color: #1a56db !important; font-weight: 600 !important; background: transparent !important; border: none !important; padding-left: 12px !important; }
+    .main-sidebar .sb-submenu .nav-link.active .sb-dot { background: #1a56db; transform: scale(1.4); box-shadow: 0 0 8px rgba(26,86,219,0.4); }
+    .sb-divider { border: none; border-top: 1px dashed #e2e8f0; margin-top: auto !important; margin-bottom: 14px; margin-left: 14px; margin-right: 14px; }
+    .main-sidebar .sb-logout-link { display: flex !important; align-items: center !important; gap: 12px !important; padding: 10px 12px !important; margin: 0 8px 16px !important; border-radius: 10px !important; color: #dc2626 !important; font-size: 13.5px !important; font-weight: 600 !important; text-decoration: none !important; transition: background-color 0.25s ease, color 0.25s ease, padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease !important; background: transparent !important; width: calc(100% - 16px); }
+    .main-sidebar .sb-logout-link:hover { background: #fff1f2 !important; padding-left: 16px !important; }
+    .sb-icon-red { width: 30px; height: 30px; min-width: 30px; background: #fee2e2; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #dc2626; transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.25s ease; }
+    .main-sidebar .sb-logout-link:hover .sb-icon-red { transform: scale(1.08); background: #fecaca; }
     .sidebar-mini.sidebar-collapse .main-sidebar:not(:hover) .sidebar-brand-wrapper { padding: 10px 8px; }
     .sidebar-mini.sidebar-collapse .main-sidebar:not(:hover) .sidebar-logo-icon { height: 30px; }
     .sidebar-mini.sidebar-collapse .main-sidebar:not(:hover) .sidebar-logo-icon img { max-width: 35px; }

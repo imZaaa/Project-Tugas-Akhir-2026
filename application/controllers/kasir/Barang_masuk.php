@@ -16,10 +16,12 @@ class Barang_masuk extends CI_Controller {
         }
     }
 
-    // ===== LIST HISTORY =====
+    // ===== LIST HISTORY (hanya milik kasir yang sedang login) =====
     public function index() {
+        $id_user = $this->session->userdata('id_user');
+
         $data['title']     = 'Barang Masuk | PT Pordjo';
-        $data['purchases'] = $this->M_purchase->get_all();
+        $data['purchases'] = $this->M_purchase->get_by_user($id_user);
 
         $this->load->view('layout/header', $data);
         $this->load->view('layout/sidebar', $data);
@@ -111,7 +113,7 @@ class Barang_masuk extends CI_Controller {
         }
     }
 
-    // ===== DETAIL =====
+    // ===== DETAIL (dengan validasi kepemilikan) =====
     public function detail($id_purchase) {
         $data['title']  = 'Detail Barang Masuk | PT Pordjo';
         $data['header'] = $this->M_purchase->get_by_id($id_purchase);
@@ -119,6 +121,13 @@ class Barang_masuk extends CI_Controller {
 
         if (!$data['header']) {
             $this->session->set_flashdata('error', 'Data tidak ditemukan.');
+            redirect('kasir/barang_masuk');
+            return;
+        }
+
+        // Proteksi: Kasir hanya boleh lihat detail miliknya sendiri
+        if ($data['header']['id_user'] != $this->session->userdata('id_user')) {
+            $this->session->set_flashdata('error', 'Anda tidak memiliki akses ke data ini.');
             redirect('kasir/barang_masuk');
             return;
         }

@@ -34,7 +34,7 @@
         display: inline-flex;
         align-items: center;
         gap: 7px;
-        background: linear-gradient(135deg, #059669, #047857);
+        background: linear-gradient(135deg, #1a56db, #0d3fa6);
         color: #fff !important;
         border: none;
         padding: 9px 18px;
@@ -43,7 +43,7 @@
         font-weight: 600;
         cursor: pointer;
         text-decoration: none !important;
-        box-shadow: 0 3px 10px rgba(5, 150, 105, 0.3);
+        box-shadow: 0 3px 10px rgba(26, 86, 219, 0.3);
         transition: opacity 0.15s, transform 0.15s;
     }
 
@@ -120,8 +120,8 @@
         display: inline-flex;
         align-items: center;
         gap: 5px;
-        background: #ecfdf5;
-        color: #059669;
+        background: #eff6ff;
+        color: #1a56db;
         font-size: 12px;
         font-weight: 600;
         padding: 4px 10px;
@@ -140,7 +140,7 @@
     }
 
     .search-box:focus-within {
-        border-color: #059669;
+        border-color: #1a56db;
         background: #fff;
     }
 
@@ -195,13 +195,13 @@
     }
 
     .data-table tr:hover td {
-        background: #f0fdf9;
+        background: #f8fbff;
     }
 
     .faktur-code {
         font-size: 12px;
         font-weight: 700;
-        color: #059669;
+        color: #1a56db;
         font-family: 'Courier New', monospace;
     }
 
@@ -252,13 +252,13 @@
     }
 
     .btn-detail {
-        background: #f0fdf4;
-        color: #059669;
+        background: #eff6ff;
+        color: #1a56db;
     }
 
     .btn-detail:hover {
-        background: #dcfce7;
-        color: #059669;
+        background: #dbeafe;
+        color: #1a56db;
     }
 
     .btn-delete {
@@ -337,16 +337,16 @@
     }
 
     .page-btn:hover:not(:disabled) {
-        background: #ecfdf5;
-        border-color: #6ee7b7;
-        color: #059669;
+        background: #eff6ff;
+        border-color: #93c5fd;
+        color: #1a56db;
     }
 
     .page-btn.active {
-        background: #059669;
-        border-color: #059669;
+        background: #1a56db;
+        border-color: #1a56db;
         color: #fff;
-        box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3);
+        box-shadow: 0 2px 8px rgba(26, 86, 219, 0.3);
     }
 
     .page-btn:disabled {
@@ -358,148 +358,6 @@
         width: auto;
         padding: 0 10px;
         font-size: 12px;
-    }
-
-    /* ===== MODAL DELETE ===== */
-    .modal-overlay {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.45);
-        z-index: 99999;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-        backdrop-filter: blur(3px);
-    }
-
-    .modal-overlay.show {
-        display: flex;
-    }
-
-    .modal-box {
-        background: #fff;
-        border-radius: 16px;
-        width: 100%;
-        max-width: 380px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-        overflow: hidden;
-        animation: modalIn 0.2s ease;
-    }
-
-    @keyframes modalIn {
-        from {
-            opacity: 0;
-            transform: translateY(-16px) scale(0.97);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-    }
-
-    .modal-header {
-        padding: 18px 22px;
-        border-bottom: 1px solid #f1f3f5;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    .modal-header h4 {
-        font-size: 15px;
-        font-weight: 700;
-        color: #111827;
-        margin: 0;
-    }
-
-    .modal-close {
-        width: 30px;
-        height: 30px;
-        background: #f3f4f6;
-        border: none;
-        border-radius: 7px;
-        cursor: pointer;
-        color: #6b7280;
-        font-size: 13px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .modal-close:hover {
-        background: #e5e7eb;
-    }
-
-    .delete-modal-body {
-        padding: 24px 22px;
-        text-align: center;
-    }
-
-    .delete-icon {
-        width: 56px;
-        height: 56px;
-        background: #fef2f2;
-        border-radius: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 24px;
-        color: #dc2626;
-        margin: 0 auto 14px;
-    }
-
-    .delete-modal-body h5 {
-        font-size: 15px;
-        font-weight: 700;
-        color: #111827;
-        margin: 0 0 8px;
-    }
-
-    .delete-modal-body p {
-        font-size: 12.5px;
-        color: #6b7280;
-        margin: 0;
-        line-height: 1.6;
-    }
-
-    .modal-footer {
-        padding: 14px 22px;
-        border-top: 1px solid #f1f3f5;
-        display: flex;
-        justify-content: flex-end;
-        gap: 10px;
-    }
-
-    .btn-cancel {
-        padding: 9px 18px;
-        border: 1.5px solid #e5e7eb;
-        border-radius: 9px;
-        background: #fff;
-        color: #6b7280;
-        font-size: 13px;
-        font-weight: 600;
-        cursor: pointer;
-        font-family: 'DM Sans', sans-serif;
-    }
-
-    .btn-cancel:hover {
-        background: #f9fafb;
-    }
-
-    .btn-delete-confirm {
-        padding: 9px 20px;
-        border: none;
-        border-radius: 9px;
-        background: linear-gradient(135deg, #dc2626, #b91c1c);
-        color: #fff;
-        font-size: 13px;
-        font-weight: 600;
-        cursor: pointer;
-        font-family: 'DM Sans', sans-serif;
-        display: flex;
-        align-items: center;
-        gap: 6px;
     }
 
     /* ===== ALERT ===== */
@@ -515,15 +373,21 @@
     }
 
     .alert-custom.success {
-        background: #f0fdf4;
-        color: #16a34a;
-        border: 1px solid #bbf7d0;
+        background: #eff6ff;
+        color: #1a56db;
+        border: 1px solid #bfdbfe;
     }
 
     .alert-custom.error {
         background: #fef2f2;
         color: #dc2626;
         border: 1px solid #fecaca;
+    }
+
+    @media (max-width: 768px) {
+        .bm-stats { grid-template-columns: 1fr; }
+        .page-title-row, .main-card { margin-left: 14px; margin-right: 14px; }
+        .bm-stats { padding-left: 14px; padding-right: 14px; }
     }
 </style>
 
@@ -532,7 +396,7 @@
             <h1>Barang Masuk</h1>
             <p>Histori transaksi pembelian & penerimaan barang</p>
         </div>
-        <a href="<?= site_url($this->session->userdata('role') === 'admin' ? 'admin/barang_masuk/create' : 'kasir/barang_masuk/create') ?>" class="btn-primary-custom">
+        <a href="<?= site_url('kasir/barang_masuk/create') ?>" class="btn-primary-custom">
             <i class="fas fa-plus"></i> Input Barang Masuk
         </a>
     </div>
@@ -552,7 +416,7 @@
     ?>
     <div class="bm-stats">
         <div class="bm-stat-card">
-            <div class="bm-stat-icon" style="background:#ecfdf5; color:#059669;"><i class="fas fa-arrow-circle-down"></i></div>
+            <div class="bm-stat-icon" style="background:#eff6ff; color:#1a56db;"><i class="fas fa-arrow-circle-down"></i></div>
             <div>
                 <div class="bm-stat-value"><?= $total_trx ?></div>
                 <div class="bm-stat-label">Total Transaksi</div>
@@ -594,7 +458,6 @@
                     <th>No Faktur</th>
                     <th>Tanggal</th>
                     <th>Supplier</th>
-                    <th>Input Oleh</th>
                     <th>Total Bayar</th>
                     <th>Aksi</th>
                 </tr>
@@ -612,24 +475,22 @@
                                 <?= htmlspecialchars($p['nama_supplier'] ?? '-') ?>
                             </span>
                         </td>
-                        <td style="font-size:12.5px; color:#6b7280;"><?= htmlspecialchars($p['nama_kasir'] ?? '-') ?></td>
                         <td><span class="total-text">Rp <?= number_format($p['total_bayar'], 0, ',', '.') ?></span></td>
                         <td>
                             <div style="display:flex; gap:6px;">
-                                <a href="<?= site_url(($this->session->userdata('role') === 'admin' ? 'admin' : 'kasir') . '/barang_masuk/detail/' . $p['id_purchase']) ?>" class="btn-action btn-detail">
+                                <a href="<?= site_url('kasir/barang_masuk/detail/' . $p['id_purchase']) ?>" class="btn-action btn-detail">
                                     <i class="fas fa-eye"></i> Detail
                                 </a>
-
                             </div>
                         </td>
                     </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
                     <tr class="no-data-row">
-                        <td colspan="7">
+                        <td colspan="6">
                             <div class="no-data-icon"><i class="fas fa-truck-loading"></i></div>
                             <div>Belum terdapat data transaksi barang masuk.</div>
-                            <div style="margin-top:6px;"><a href="<?= site_url(($this->session->userdata('role') === 'admin' ? 'admin' : 'kasir') . '/barang_masuk/create') ?>" class="btn-primary-custom" style="margin:0 auto; display:inline-flex;"><i class="fas fa-plus"></i> Input Sekarang</a></div>
+                            <div style="margin-top:6px;"><a href="<?= site_url('kasir/barang_masuk/create') ?>" class="btn-primary-custom" style="margin:0 auto; display:inline-flex;"><i class="fas fa-plus"></i> Input Sekarang</a></div>
                         </td>
                     </tr>
                 <?php endif; ?>
@@ -641,8 +502,6 @@
             <div class="pagination-controls" id="paginationControls"></div>
         </div>
     </div>
-
-
 
 <script>
 

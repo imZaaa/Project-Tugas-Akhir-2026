@@ -64,4 +64,20 @@ class M_produk extends CI_Model {
     public function count_all() {
         return $this->db->count_all($this->table);
     }
+
+    // ===== LOG PERUBAHAN STOK (AUDIT TRAIL) =====
+    // Mencatat setiap perubahan stok manual ke tabel stok_log
+    // agar dapat dilacak siapa mengubah, kapan, dari berapa ke berapa
+    public function log_stok_change($id_product, $id_user, $stok_sebelum, $stok_sesudah, $keterangan = null) {
+        date_default_timezone_set('Asia/Jakarta');
+        return $this->db->insert('stok_log', [
+            'id_product'   => $id_product,
+            'id_user'      => $id_user,
+            'stok_sebelum' => $stok_sebelum,
+            'stok_sesudah' => $stok_sesudah,
+            'selisih'      => $stok_sesudah - $stok_sebelum,
+            'keterangan'   => $keterangan,
+            'created_at'   => date('Y-m-d H:i:s'),
+        ]);
+    }
 }

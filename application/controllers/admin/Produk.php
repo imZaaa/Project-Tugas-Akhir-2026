@@ -43,6 +43,7 @@ class Produk extends CI_Controller {
         $data = [
             'nama_produk'  => $this->input->post('nama_produk', TRUE),
             'id_category'  => $this->input->post('id_category', TRUE), // Foreign key ke tabel kategori
+            'harga_beli'   => $this->input->post('harga_beli', TRUE),
             'harga_jual'   => $this->input->post('harga_jual', TRUE),
             'stok'         => $this->input->post('stok', TRUE), // Stok awal
             'satuan'       => $this->input->post('satuan', TRUE), // Misal: Pcs, Kg, Box
@@ -56,6 +57,12 @@ class Produk extends CI_Controller {
                 $this->session->set_flashdata('error', 'Semua isian formulir produk wajib dilengkapi sebelum disimpan!');
                 redirect('admin/produk'); return;
             }
+        }
+        
+        // VALIDASI ANTI JUAL RUGI
+        if ($data['harga_jual'] <= $data['harga_beli']) {
+            $this->session->set_flashdata('error', 'Gagal menyimpan! Harga Jual (' . number_format($data['harga_jual'],0,',','.') . ') tidak boleh lebih rendah atau setara dengan Harga Modal (' . number_format($data['harga_beli'],0,',','.') . ').');
+            redirect('admin/produk'); return;
         }
 
         // [3] PROSES QUERY KE MODEL
@@ -76,10 +83,17 @@ class Produk extends CI_Controller {
         $data = [
             'nama_produk'  => $this->input->post('nama_produk', TRUE),
             'id_category'  => $this->input->post('id_category', TRUE),
+            'harga_beli'   => $this->input->post('harga_beli', TRUE),
             'harga_jual'   => $this->input->post('harga_jual', TRUE),
             'stok'         => $this->input->post('stok', TRUE),
             'satuan'       => $this->input->post('satuan', TRUE),
         ];
+
+        // VALIDASI ANTI JUAL RUGI
+        if ($data['harga_jual'] <= $data['harga_beli']) {
+            $this->session->set_flashdata('error', 'Gagal menyimpan! Harga Jual (' . number_format($data['harga_jual'],0,',','.') . ') tidak boleh lebih rendah atau setara dengan Harga Modal (' . number_format($data['harga_beli'],0,',','.') . ').');
+            redirect('admin/produk'); return;
+        }
 
         if ($this->M_produk->update($id, $data)) {
             $this->session->set_flashdata('success', 'Produk berhasil diperbarui!');
@@ -101,9 +115,21 @@ class Produk extends CI_Controller {
             redirect('admin/produk'); return;
         }
 
+        // [AUDIT] Ambil stok lama sebelum ditimpa untuk keperluan log
+        $produk_lama = $this->M_produk->get_by_id($id);
+        $stok_sebelum = $produk_lama ? (int) $produk_lama['stok'] : 0;
+
         // Timpa stok lama dengan hasil perhitungan opname gudang terbaru
         if ($this->M_produk->update($id, ['stok' => $stok])) {
-            $this->session->set_flashdata('success', 'Sistem berhasil menyesuaikan sisa stok gudang!');
+            // [AUDIT] Catat perubahan ke tabel stok_log
+            $this->M_produk->log_stok_change(
+                $id,
+                $this->session->userdata('id_user'),
+                $stok_sebelum,
+                (int) $stok,
+                'Penyesuaian stok manual oleh Admin'
+            );
+            $this->session->set_flashdata('success', 'Sistem berhasil menyesuaikan sisa stok gudang! (Sebelumnya: ' . $stok_sebelum . ' → Sekarang: ' . $stok . ')');
         } else {
             $this->session->set_flashdata('error', 'Gagal membongkar ruang penyimpanan database.');
         }

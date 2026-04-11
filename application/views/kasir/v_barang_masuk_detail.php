@@ -23,6 +23,12 @@
         margin: 0 0 3px;
     }
 
+    .page-title-row p {
+        font-size: 12.5px;
+        color: #9ca3af;
+        margin: 0;
+    }
+
     .btn-back {
         display: inline-flex;
         align-items: center;
@@ -43,15 +49,13 @@
         background: #e5e7eb;
     }
 
-    /* ===== LAYOUT — 1 kolom ke bawah ===== */
+    /* ===== LAYOUT — full width 2 kolom ===== */
     .detail-layout {
-        margin: 20px auto 28px;
-        padding: 0 24px;
+        margin: 20px 24px 28px;
         display: grid;
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 320px;
         gap: 20px;
         align-items: start;
-        max-width: 860px;
     }
 
     .det-card {
@@ -76,8 +80,8 @@
 
     /* ===== NOTA BANNER ===== */
     .nota-banner {
-        background: linear-gradient(135deg, #059669, #047857);
-        padding: 20px 24px;
+        background: linear-gradient(135deg, #1a56db, #0d3fa6);
+        padding: 22px 24px;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -128,7 +132,7 @@
     }
 
     .info-cell:last-child,
-    .info-cell:nth-last-child(2) {
+    .info-cell:nth-last-child(2):nth-child(odd) {
         border-bottom: none;
     }
 
@@ -177,6 +181,10 @@
         border-bottom: none;
     }
 
+    .items-table tr:hover td {
+        background: #f8fbff;
+    }
+
     .prod-name {
         font-weight: 600;
         color: #111827;
@@ -207,11 +215,7 @@
         color: #111827;
     }
 
-    /* ===== SIDEBAR INFO — sekarang jadi card bawah ===== */
-    .summary-card {
-        position: static;
-    }
-
+    /* ===== SIDEBAR INFO ===== */
     .side-info-row {
         display: flex;
         align-items: center;
@@ -269,30 +273,30 @@
     .total-footer .value {
         font-size: 18px;
         font-weight: 800;
-        color: #059669;
+        color: #1a56db;
     }
 
     @media (max-width: 900px) {
         .detail-layout { grid-template-columns: 1fr; margin: 16px 14px 24px; }
         .info-grid { grid-template-columns: 1fr; }
-        .info-cell { border-right: none; }
+        .info-cell { border-right: none !important; }
         .page-title-row { padding-left: 16px; padding-right: 16px; }
     }
 </style>
 
     <div class="page-title-row">
         <div>
-            <h1>Detail Barang Masuk</h1>
+            <h1><i class="fas fa-arrow-circle-down" style="color:#1a56db; margin-right:6px;"></i>Detail Barang Masuk</h1>
             <p>Rincian transaksi penerimaan barang</p>
         </div>
-        <a href="<?= site_url($this->session->userdata('role') === 'admin' ? 'admin/barang_masuk' : 'kasir/barang_masuk') ?>" class="btn-back">
+        <a href="<?= site_url('kasir/barang_masuk') ?>" class="btn-back">
             <i class="fas fa-arrow-left"></i> Kembali
         </a>
     </div>
 
     <div class="detail-layout">
 
-        <!-- LEFT -->
+        <!-- LEFT — MAIN CONTENT -->
         <div style="display:flex; flex-direction:column; gap:18px;">
 
             <!-- NOTA BANNER -->
@@ -333,11 +337,11 @@
                 </div>
             </div>
 
-            <!-- ITEMS -->
+            <!-- ITEMS TABLE -->
             <div class="det-card">
                 <div class="det-card-header" style="display:flex; align-items:center; justify-content:space-between;">
                     <h3>Daftar Produk</h3>
-                    <span style="background:#ecfdf5; color:#059669; font-size:12px; font-weight:600; padding:4px 10px; border-radius:20px;">
+                    <span style="background:#eff6ff; color:#1a56db; font-size:12px; font-weight:600; padding:4px 10px; border-radius:20px;">
                         <?= count($detail) ?> item
                     </span>
                 </div>
@@ -378,13 +382,13 @@
 
         <!-- RIGHT SIDEBAR -->
         <div>
-            <div class="det-card">
+            <div class="det-card" style="position:sticky; top:80px;">
                 <div class="det-card-header"><h3>Info Transaksi</h3></div>
                 <div class="side-info-row">
-                    <div class="side-icon" style="background:#ecfdf5; color:#059669;"><i class="fas fa-receipt"></i></div>
+                    <div class="side-icon" style="background:#eff6ff; color:#1a56db;"><i class="fas fa-receipt"></i></div>
                     <div>
                         <span class="side-label">No. Faktur</span>
-                        <span class="side-value" style="font-family:'Courier New',monospace; font-size:12px; color:#059669;"><?= htmlspecialchars($header['no_faktur']) ?></span>
+                        <span class="side-value" style="font-family:'Courier New',monospace; font-size:12px; color:#1a56db;"><?= htmlspecialchars($header['no_faktur']) ?></span>
                     </div>
                 </div>
                 <div class="side-info-row">
@@ -409,10 +413,10 @@
                     </div>
                 </div>
                 <div class="side-info-row">
-                    <div class="side-icon" style="background:#f0fdf4; color:#16a34a;"><i class="fas fa-check-circle"></i></div>
+                    <div class="side-icon" style="background:#eff6ff; color:#1a56db;"><i class="fas fa-check-circle"></i></div>
                     <div>
                         <span class="side-label">Status Stok</span>
-                        <span class="side-value" style="color:#059669;">Sudah Diperbarui ✓</span>
+                        <span class="side-value" style="color:#1a56db;">Sudah Diperbarui ✓</span>
                     </div>
                 </div>
             </div>

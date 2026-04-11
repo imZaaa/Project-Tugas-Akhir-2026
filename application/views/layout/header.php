@@ -21,6 +21,11 @@
   </script>
 
   <style>
+    /* ===== SMOOTH ADMINLTE COLLAPSE ===== */
+    .main-header, .content-wrapper, .main-footer {
+      transition: margin-left 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+    }
+
     /* ===== GREETING CARD TRIGGER ===== */
     .account-dropdown-wrap {
       position: relative;

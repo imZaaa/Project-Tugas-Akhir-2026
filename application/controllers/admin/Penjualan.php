@@ -78,6 +78,14 @@ class Penjualan extends CI_Controller {
             if (empty($id_product) || empty($qtys[$i]) || empty($harga_juals[$i])) continue;
 
             $qty        = (int) $qtys[$i];
+            
+            // --- PERLINDUNGAN NEGATIVE QUANTITY (ANTI BUG MINUS) ---
+            if ($qty <= 0) {
+                $this->session->set_flashdata('error', 'Gagal memproses kasir! Terdapat input kuantitas barang yang tidak valid (kurang dari 1).');
+                redirect('admin/penjualan/create');
+                return;
+            }
+
             $harga_jual = (float) $harga_juals[$i];
             $subtotal   = $qty * $harga_jual;
 
@@ -96,7 +104,14 @@ class Penjualan extends CI_Controller {
                 return; // Batalkan SELURUH simpan belanja karena salah satu stoknya habis
             }
 
-            // Jika stok aman, masukkan ke keranjang belanja (array)
+            // --- PERLINDUNGAN JUAL RUGI ---
+            if ($harga_jual <= (float)$produk['harga_beli']) {
+                $this->session->set_flashdata('error', 'Gagal memproses kasir! Harga jual "' . $produk['nama_produk'] . '" (Rp ' . number_format($harga_jual, 0, ',', '.') . ') dilarang lebih rendah atau sama dengan harga modal (Rp ' . number_format($produk['harga_beli'], 0, ',', '.') . ').');
+                redirect('admin/penjualan/create');
+                return;
+            }
+
+            // Jika stok dan harga aman, masukkan ke keranjang belanja (array)
             $items[] = [
                 'id_product' => $id_product,
                 'qty'        => $qty,
@@ -113,31 +128,36 @@ class Penjualan extends CI_Controller {
             return;
         }
 
-        // [4] VALIDASI PEMBAYARAN: Uang pelanggan harus lebih besar dari tagihan
-        if ($bayar < $total_harga) {
-            $this->session->set_flashdata('error', 'Nominal pembayaran (Rp ' . number_format($bayar, 0, ',', '.') . ') kurang dari total belanja (Rp ' . number_format($total_harga, 0, ',', '.') . ').');
+        // [4] KALKULASI PPN & TOTAL BELANJA KESELURUHAN
+        $ppn = $total_harga * 0.11;
+        $grand_total = $total_harga + $ppn;
+
+        // [5] VALIDASI LOGIKA PEMBAYARAN KASIR
+        // Mencegah kasir ngasih kembalian jika pembayaran pelanggan kurang
+        if ($bayar < $grand_total) {
+            $this->session->set_flashdata('error', 'Nominal pembayaran (Rp ' . number_format($bayar, 0, ',', '.') . ') kurang dari total belanja (Rp ' . number_format($grand_total, 0, ',', '.') . ').');
             redirect('admin/penjualan/create');
             return;
         }
 
-        // Hitung uang kembalian
-        $kembalian = $bayar - $total_harga;
+        $kembalian = $bayar - $grand_total; // Math SD: Uang pembeli dikurang Tagihan System
 
-        // [5] SIAPKAN KEPALA STRUK (HEADER) YANG FINAL
+        // [6] PENYUSUNAN STRUK HEADER AKHIR (Kunci data ke Database)
         date_default_timezone_set('Asia/Jakarta');
         $header = [
-            'kode_transaksi'  => $kode_transaksi,
-            'id_user'         => $this->session->userdata('id_user'), // Siapa admin/kasir yang melayani
+            'kode_transaksi'  => $kode_transaksi, // TRX-202610xxx
+            'id_user'         => $this->session->userdata('id_user'), // Siapa akun kasirnya? Supaya bs masuk Laporan Komisi Kasir
             'nama_pelanggan'  => $nama_pelanggan ?: null,
-            'tgl_jual'        => date('Y-m-d H:i:s'),
-            'total_harga'     => $total_harga,
+            'tgl_jual'        => date('Y-m-d H:i:s'), // Tanggal real server skrg
+            'total_harga'     => $grand_total,
             'bayar'           => $bayar,
             'kembalian'       => $kembalian,
-            'status'          => 'Lunas', // Status langsung lunas
+            'status'          => 'Lunas', // POS retail default lunas
             'created_at'      => date('Y-m-d H:i:s'),
         ];
 
-        // [6] LEMPAR KE MODEL UNTUK DISIMPAN (Proses Potong Stok & Pembuatan ID)
+        // [7] PENGIRIMAN DATA KE MODEL (DATABASE QUERY)
+        // Disinilah fungsi ATOMIC TRANSACTIONS M_sale dipanggil
         $id_sale = $this->M_sale->simpan_transaksi($header, $items);
 
         // Jika operasi sukses, lempar pengguna (redirect) ke halaman detail/cetak nota
