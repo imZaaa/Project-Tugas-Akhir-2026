@@ -17,3 +17,4 @@ CREATE TABLE IF NOT EXISTS `stok_log` (
     KEY `idx_user` (`id_user`),
     KEY `idx_created` (`created_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Log audit perubahan stok manual (opname)';
+    

@@ -57,6 +57,10 @@
         animation: pulseRing 2s ease infinite;
     }
 
+    .notif-bar[style*="fef2f2"] .notif-pulse::after {
+        border-color: #dc2626;
+    }
+
     @keyframes pulseRing {
         0%   { transform: scale(1);   opacity: 0.5; }
         70%  { transform: scale(1.2); opacity: 0; }
@@ -906,6 +910,37 @@
         <i class="fas fa-inbox" style="font-size:18px;"></i>
         Belum terdapat data barang masuk hari ini.
     </div>
+    <?php endif; ?>
+
+    <!-- ===== ALERT HARGA JUAL DI BAWAH MODAL ===== -->
+    <?php if (!empty($produk_rugi)): ?>
+    <a href="<?= site_url('admin/produk') ?>" class="notif-bar" style="background:linear-gradient(135deg,#fef2f2,#fee2e2); border-color:#fca5a5;">
+        <div class="notif-pulse" style="background:#dc2626;">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <div class="notif-bar-text">
+            <strong style="color:#991b1b;">
+                <i class="fas fa-chart-line-down" style="margin-right:4px;"></i>⚠️ <?= count($produk_rugi) ?> produk harga jualnya di bawah/sama dengan harga modal!
+            </strong>
+            <span style="color:#dc2626;">
+                <i class="fas fa-circle" style="font-size:6px;vertical-align:middle;margin-right:4px;"></i>
+                Segera sesuaikan harga jual agar tidak jual rugi &nbsp;&bull;&nbsp; Klik untuk edit
+            </span>
+        </div>
+        <div class="notif-bar-tags">
+            <?php foreach (array_slice($produk_rugi, 0, 3) as $pr): ?>
+            <span class="notif-tag" style="background:rgba(220,38,38,0.1); border-color:#fca5a5; color:#b91c1c;">
+                <i class="fas fa-tag" style="font-size:9px;"></i>
+                <?= htmlspecialchars($pr['nama_produk']) ?>
+                <small style="opacity:0.7;">(Jual: <?= number_format($pr['harga_jual'],0,',','.') ?> / Modal: <?= number_format($pr['harga_beli'],0,',','.') ?>)</small>
+            </span>
+            <?php endforeach; ?>
+            <?php if (count($produk_rugi) > 3): ?>
+            <span class="notif-tag" style="background:rgba(220,38,38,0.15); border-color:#fca5a5; color:#b91c1c;">+<?= count($produk_rugi) - 3 ?> lainnya</span>
+            <?php endif; ?>
+        </div>
+        <i class="fas fa-chevron-right notif-bar-arrow" style="color:#dc2626;"></i>
+    </a>
     <?php endif; ?>
 
     <!-- ===== STAT CARDS ===== -->

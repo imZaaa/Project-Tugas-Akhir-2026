@@ -94,7 +94,7 @@
                             <li class="nav-item">
                                 <a href="<?= site_url('admin/produk') ?>" class="nav-link <?= ($current_menu == 'produk') ? 'active' : '' ?>">
                                     <span class="sb-dot"></span>
-                                    <span class="sb-label">Stok Produk</span>
+                                    <span class="sb-label">Data Produk</span>
                                 </a>
                             </li>
                         </ul>
@@ -163,7 +163,7 @@
                             <li class="nav-item">
                                 <a href="<?= site_url('kasir/produk') ?>" class="nav-link <?= ($current_menu == 'produk') ? 'active' : '' ?>">
                                     <span class="sb-dot"></span>
-                                    <span class="sb-label">Stok Produk</span>
+                                    <span class="sb-label">Data Produk</span>
                                 </a>
                             </li>
                         </ul>

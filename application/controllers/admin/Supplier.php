@@ -16,7 +16,8 @@ class Supplier extends CI_Controller {
 
     public function index() {
         $data['title']     = 'Data Supplier | PT Pordjo';
-        $data['suppliers'] = $this->M_supplier->get_all();
+        // Ambil semua (aktif + nonaktif) agar view bisa mengelompokkan keduanya
+        $data['suppliers'] = $this->M_supplier->get_all_including_nonaktif();
         $this->load->view('layout/header', $data);
         $this->load->view('layout/sidebar', $data);
         $this->load->view('admin/v_supplier', $data);
@@ -155,10 +156,45 @@ class Supplier extends CI_Controller {
 
     public function hapus() {
         $id = $this->input->post('id_supplier', TRUE);
-        if ($this->M_supplier->delete($id)) {
-            $this->session->set_flashdata('success', 'Supplier berhasil dihapus!');
+
+        if (empty($id)) {
+            $this->session->set_flashdata('error', 'ID supplier tidak valid.');
+            redirect('admin/supplier');
+            return;
+        }
+
+        // Cek apakah supplier ini masih punya riwayat transaksi barang masuk
+        if ($this->M_supplier->has_transaksi($id)) {
+            // Tidak bisa dihapus permanen, nonaktifkan saja (soft delete)
+            if ($this->M_supplier->nonaktifkan($id)) {
+                $this->session->set_flashdata('warning', 'Supplier tidak dapat dihapus permanen karena memiliki riwayat transaksi. Supplier telah <strong>dinonaktifkan</strong> dan tidak akan muncul di form transaksi baru.');
+            } else {
+                $this->session->set_flashdata('error', 'Gagal menonaktifkan supplier.');
+            }
         } else {
-            $this->session->set_flashdata('error', 'Gagal menghapus supplier.');
+            // Tidak punya transaksi, aman untuk dihapus permanen
+            if ($this->M_supplier->delete($id)) {
+                $this->session->set_flashdata('success', 'Supplier berhasil dihapus secara permanen.');
+            } else {
+                $this->session->set_flashdata('error', 'Gagal menghapus supplier.');
+            }
+        }
+        redirect('admin/supplier');
+    }
+
+    public function aktifkan() {
+        $id = $this->input->post('id_supplier', TRUE);
+
+        if (empty($id)) {
+            $this->session->set_flashdata('error', 'ID supplier tidak valid.');
+            redirect('admin/supplier');
+            return;
+        }
+
+        if ($this->M_supplier->aktifkan($id)) {
+            $this->session->set_flashdata('success', 'Supplier berhasil diaktifkan kembali.');
+        } else {
+            $this->session->set_flashdata('error', 'Gagal mengaktifkan supplier.');
         }
         redirect('admin/supplier');
     }

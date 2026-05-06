@@ -18,7 +18,7 @@
     .detail-card-header .header-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; }
     .detail-card-body { padding: 20px; }
 
-    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
     .info-item { }
     .info-label { font-size: 11px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
     .info-value { font-size: 14px; font-weight: 600; color: #111827; }
@@ -109,6 +109,10 @@
                             <div class="info-value"><?= date('d M Y — H:i', strtotime($header['tgl_jual'])) ?></div>
                         </div>
                         <div class="info-item">
+                            <div class="info-label">Nama Pelanggan</div>
+                            <div class="info-value"><?= htmlspecialchars(!empty($header['nama_pelanggan']) ? $header['nama_pelanggan'] : 'Umum') ?></div>
+                        </div>
+                        <div class="info-item">
                             <div class="info-label">Kasir</div>
                             <div class="info-value"><?= htmlspecialchars($header['nama_kasir'] ?? '-') ?></div>
                         </div>
@@ -118,7 +122,7 @@
                                 <?php if ($header['status'] === 'Lunas'): ?>
                                     <span class="status-badge status-lunas"><i class="fas fa-check-circle" style="font-size:10px;"></i> Lunas</span>
                                 <?php else: ?>
-                                    <span class="status-badge status-batal"><i class="fas fa-times-circle" style="font-size:10px;"></i> Batal</span>
+                                    <span class="status-badge status-batal"><i class="fas fa-times-circle" style="font-size:10px;" ></i> Batal</span>
                                 <?php endif; ?>
                             </div>
                         </div>

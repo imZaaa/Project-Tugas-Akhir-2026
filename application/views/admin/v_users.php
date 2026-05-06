@@ -149,111 +149,308 @@
     .btn-delete { background: #fef2f2; color: #dc2626; }
     .btn-delete:hover { background: #fee2e2; color: #dc2626; }
 
-    /* DETAIL MODAL */
-    .detail-profile-header {
-        background: linear-gradient(135deg, #1a56db 0%, #0d3fa6 100%);
-        padding: 28px 22px;
+    /* ===== DETAIL MODAL — Two-Panel Side-by-Side ===== */
+    .detail-modal-box {
+        background: #ffffff;
+        border-radius: 14px;
+        width: 100%;
+        max-width: 540px;
+        box-shadow: 0 24px 64px rgba(0,0,0,0.2);
+        overflow: hidden;
+        animation: modalIn 0.2s ease;
+        display: flex;
+    }
+
+    /* ---- LEFT PANEL: Avatar block ---- */
+    .dp-left {
+        width: 160px;
+        flex-shrink: 0;
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 14px;
+        justify-content: center;
+        gap: 12px;
+        padding: 28px 16px;
+        position: relative;
+    }
+    .dp-left.admin { background: linear-gradient(160deg, #1e40af, #2563eb); }
+    .dp-left.kasir { background: linear-gradient(160deg, #065f46, #059669); }
+
+    /* subtle pattern overlay */
+    .dp-left::before {
+        content: '';
+        position: absolute; inset: 0;
+        background-image: radial-gradient(rgba(255,255,255,0.07) 1px, transparent 1px);
+        background-size: 18px 18px;
+        pointer-events: none;
+    }
+
+    .dp-avatar-big {
+        width: 78px; height: 78px;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.18);
+        border: 2px solid rgba(255,255,255,0.35);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 32px; font-weight: 800; color: #fff;
+        letter-spacing: -1px;
+        position: relative; z-index: 1;
+    }
+    .dp-left-role {
+        font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.7);
+        text-transform: uppercase; letter-spacing: 1px;
+        position: relative; z-index: 1;
+    }
+
+    /* ---- RIGHT PANEL: Info ---- */
+    .dp-right {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Right header — name + close */
+    .dp-right-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        padding: 20px 20px 14px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    .dp-fullname {
+        font-size: 16px; font-weight: 700; color: #0f172a;
+        letter-spacing: -0.3px; display: block; line-height: 1.2;
+    }
+    .dp-handle {
+        font-size: 12px; color: #64748b;
+        display: block; margin-top: 4px;
+    }
+    .dp-close {
+        width: 28px; height: 28px; flex-shrink: 0;
+        background: #f1f5f9;
+        border: none; border-radius: 7px;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; color: #64748b; font-size: 11px;
+        transition: background 0.15s, color 0.15s;
+        margin-top: 2px;
+    }
+    .dp-close:hover { background: #e2e8f0; color: #334155; }
+
+    /* Info rows in right panel */
+    .dp-info-list {
+        flex: 1;
+        padding: 4px 0;
+    }
+    .dp-info-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 20px;
+        border-bottom: 1px solid #f8fafc;
+        transition: background 0.1s;
+    }
+    .dp-info-row:last-child { border-bottom: none; }
+    .dp-info-row:hover { background: #fafbff; }
+
+    .dp-info-icon {
+        width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 12px;
+    }
+    .dp-info-icon.c-blue   { background: #eff6ff; color: #2563eb; }
+    .dp-info-icon.c-green  { background: #f0fdf4; color: #16a34a; }
+    .dp-info-icon.c-amber  { background: #fffbeb; color: #d97706; }
+    .dp-info-icon.c-purple { background: #f5f3ff; color: #7c3aed; }
+
+    .dp-info-lbl {
+        font-size: 10px; color: #94a3b8; font-weight: 600;
+        display: block; letter-spacing: 0.3px; text-transform: uppercase;
+    }
+    .dp-info-val {
+        font-size: 13px; color: #0f172a; font-weight: 600;
+        display: block; margin-top: 1px;
+    }
+
+    /* Footer inside right panel */
+    .dp-footer {
+        padding: 12px 20px;
+        border-top: 1px solid #f1f5f9;
+        display: flex;
+        justify-content: flex-end;
+        background: #f8fafc;
+    }
+    .dp-btn-close {
+        padding: 7px 18px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 8px;
+        background: #ffffff;
+        color: #475569;
+        font-size: 12.5px; font-weight: 600;
+        cursor: pointer; font-family: 'DM Sans', sans-serif;
+        transition: all 0.15s;
+    }
+    .dp-btn-close:hover { background: #f1f5f9; border-color: #cbd5e1; }
+    .dp-btn-close:hover { background: #f1f5f9; border-color: #cbd5e1; }
+
+    /* --- Header banner with mesh-gradient --- */
+    .detail-profile-header {
+        background: linear-gradient(145deg, #1e40af 0%, #3b82f6 50%, #06b6d4 100%);
+        padding: 36px 24px 48px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
         position: relative;
         overflow: hidden;
     }
+    /* Decorative blobs */
     .detail-profile-header::before {
         content: '';
         position: absolute;
-        top: -30px; right: -30px;
-        width: 100px; height: 100px;
-        background: rgba(255,255,255,0.06);
+        top: -40px; right: -40px;
+        width: 160px; height: 160px;
+        background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
         border-radius: 50%;
     }
     .detail-profile-header::after {
         content: '';
         position: absolute;
-        bottom: -20px; left: -20px;
-        width: 80px; height: 80px;
-        background: rgba(255,255,255,0.04);
+        bottom: -40px; left: -20px;
+        width: 130px; height: 130px;
+        background: radial-gradient(circle, rgba(6,182,212,0.25) 0%, transparent 70%);
         border-radius: 50%;
     }
-    .detail-avatar {
-        width: 72px; height: 72px;
-        border-radius: 18px;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 28px; font-weight: 800; color: #ffffff;
+
+    /* Close button inside header */
+    .detail-close-topright {
+        position: absolute;
+        top: 14px; right: 14px;
+        width: 30px; height: 30px;
         background: rgba(255,255,255,0.18);
-        border: 3px solid rgba(255,255,255,0.3);
-        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-        position: relative; z-index: 1;
+        border: 1px solid rgba(255,255,255,0.25);
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; color: rgba(255,255,255,0.85);
+        font-size: 11px; z-index: 5;
+        transition: background 0.15s;
     }
+    .detail-close-topright:hover { background: rgba(255,255,255,0.3); }
+
+    /* Avatar — large circle with ring glow */
+    .detail-avatar {
+        width: 84px; height: 84px;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 34px; font-weight: 800; color: #ffffff;
+        background: rgba(255,255,255,0.22);
+        border: 3px solid rgba(255,255,255,0.5);
+        box-shadow: 0 0 0 6px rgba(255,255,255,0.1), 0 8px 24px rgba(0,0,0,0.2);
+        position: relative; z-index: 2;
+        backdrop-filter: blur(6px);
+        letter-spacing: -1px;
+        transition: transform 0.2s;
+    }
+    .detail-avatar:hover { transform: scale(1.05); }
+    .detail-avatar.admin-avatar { background: rgba(99,102,241,0.35); }
+    .detail-avatar.kasir-avatar { background: rgba(16,185,129,0.35); }
+
     .detail-name {
-        font-size: 18px; font-weight: 700; color: #ffffff;
-        text-align: center; letter-spacing: -0.3px;
-        position: relative; z-index: 1;
+        font-size: 19px; font-weight: 700; color: #ffffff;
+        text-align: center; letter-spacing: -0.4px;
+        position: relative; z-index: 2;
+        text-shadow: 0 1px 8px rgba(0,0,0,0.15);
     }
     .detail-username {
-        font-size: 13px; color: rgba(255,255,255,0.7);
-        margin-top: -6px; position: relative; z-index: 1;
+        font-size: 12.5px; color: rgba(255,255,255,0.72);
+        position: relative; z-index: 2; margin-top: -4px;
+        letter-spacing: 0.2px;
     }
     .detail-role-badge {
         display: inline-flex; align-items: center; gap: 6px;
-        padding: 4px 14px; border-radius: 20px;
-        font-size: 12px; font-weight: 600;
-        position: relative; z-index: 1;
+        padding: 5px 16px; border-radius: 99px;
+        font-size: 11.5px; font-weight: 700; letter-spacing: 0.3px;
+        text-transform: uppercase;
+        position: relative; z-index: 2;
+        backdrop-filter: blur(6px);
     }
     .detail-role-badge.admin {
-        background: rgba(255,255,255,0.18);
-        border: 1px solid rgba(255,255,255,0.25);
-        color: rgba(255,255,255,0.95);
+        background: rgba(255,255,255,0.2);
+        border: 1px solid rgba(255,255,255,0.35);
+        color: #ffffff;
     }
     .detail-role-badge.kasir {
-        background: rgba(74,222,128,0.2);
-        border: 1px solid rgba(74,222,128,0.35);
-        color: #bbf7d0;
+        background: rgba(52,211,153,0.25);
+        border: 1px solid rgba(52,211,153,0.45);
+        color: #a7f3d0;
     }
-    .detail-role-dot {
-        width: 7px; height: 7px; border-radius: 50%;
+    .detail-role-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .detail-role-badge.admin .detail-role-dot { background: #bfdbfe; }
+    .detail-role-badge.kasir .detail-role-dot { background: #34d399; }
+
+    /* --- Lifted stats-card overlap --- */
+    .detail-info-body {
+        padding: 0 20px 20px;
+        margin-top: -22px;
+        position: relative; z-index: 3;
     }
-    .detail-role-badge.admin .detail-role-dot { background: #93c5fd; }
-    .detail-role-badge.kasir .detail-role-dot { background: #4ade80; }
-    .detail-info-body { padding: 20px 22px; }
+    .detail-info-grid {
+        background: #ffffff;
+        border-radius: 18px;
+        border: 1px solid #e8ecf5;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+        overflow: hidden;
+    }
     .detail-info-item {
-        display: flex; align-items: center; gap: 12px;
-        padding: 12px 14px; border-radius: 10px;
-        transition: background 0.12s;
-        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 18px;
+        border-bottom: 1px solid #f1f5f9;
+        transition: background 0.13s;
     }
-    .detail-info-item:hover { background: #f8fafc; }
+    .detail-info-item:last-child { border-bottom: none; }
+    .detail-info-item:hover { background: #f8faff; }
+
     .detail-info-icon {
-        width: 38px; height: 38px; min-width: 38px;
-        border-radius: 10px;
+        width: 40px; height: 40px; min-width: 40px;
+        border-radius: 12px;
         display: flex; align-items: center; justify-content: center;
-        font-size: 14px;
+        font-size: 14px; flex-shrink: 0;
     }
+    .detail-info-icon.blue   { background: #eff6ff; color: #2563eb; }
+    .detail-info-icon.green  { background: #f0fdf4; color: #16a34a; }
+    .detail-info-icon.amber  { background: #fffbeb; color: #d97706; }
+    .detail-info-icon.purple { background: #faf5ff; color: #7c3aed; }
+
     .detail-info-label {
-        font-size: 11px; color: #9ca3af; font-weight: 500;
-        display: block; line-height: 1;
+        font-size: 10.5px; color: #94a3b8; font-weight: 600;
+        display: block; line-height: 1; letter-spacing: 0.4px;
+        text-transform: uppercase;
     }
     .detail-info-value {
-        font-size: 13.5px; color: #111827; font-weight: 600;
-        display: block; margin-top: 3px;
+        font-size: 14px; color: #0f172a; font-weight: 600;
+        display: block; margin-top: 4px; letter-spacing: -0.2px;
     }
+
+    /* --- Footer --- */
     .detail-footer {
-        padding: 14px 22px;
-        border-top: 1px solid #f1f3f5;
-        display: flex; justify-content: center;
+        padding: 14px 20px 20px;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
     }
     .btn-detail-close {
-        padding: 9px 28px;
-        border: 1.5px solid #e5e7eb;
-        border-radius: 9px;
-        background: #ffffff;
-        color: #6b7280;
+        flex: 1;
+        padding: 10px 20px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        background: #f8fafc;
+        color: #64748b;
         font-size: 13px; font-weight: 600;
         cursor: pointer; font-family: 'DM Sans', sans-serif;
-        transition: background 0.15s;
+        transition: all 0.15s;
+        display: flex; align-items: center; justify-content: center; gap: 6px;
     }
-    .btn-detail-close:hover { background: #f9fafb; }
+    .btn-detail-close:hover { background: #f1f5f9; border-color: #cbd5e1; color: #475569; }
 
     /* NO DATA */
     .no-data-row td {
@@ -713,58 +910,70 @@
 
     <!-- ===== MODAL DETAIL ===== -->
     <div class="modal-overlay" id="modalDetail">
-        <div class="modal-box" style="max-width:400px;">
-            <div class="detail-profile-header">
-                <div class="detail-avatar" id="detail_avatar">A</div>
-                <div class="detail-name" id="detail_nama">-</div>
-                <div class="detail-username" id="detail_username">@-</div>
-                <span class="detail-role-badge admin" id="detail_role_badge">
-                    <span class="detail-role-dot"></span>
-                    <span id="detail_role_text">Admin</span>
-                </span>
+        <div class="detail-modal-box">
+
+            <!-- LEFT: Avatar Panel -->
+            <div class="dp-left admin" id="dp_left">
+                <div class="dp-avatar-big" id="detail_avatar">A</div>
+                <span class="dp-left-role" id="dp_left_role">Admin</span>
             </div>
-            <div class="detail-info-body">
-                <div class="detail-info-item">
-                    <div class="detail-info-icon" style="background:#eff6ff; color:#1a56db;">
-                        <i class="fas fa-user"></i>
-                    </div>
+
+            <!-- RIGHT: Info Panel -->
+            <div class="dp-right">
+
+                <!-- Name + Close -->
+                <div class="dp-right-header">
                     <div>
-                        <span class="detail-info-label">Username</span>
-                        <span class="detail-info-value" id="detail_info_username">-</span>
+                        <span class="dp-fullname" id="detail_nama">-</span>
+                        <span class="dp-handle" id="detail_username">@-</span>
                     </div>
+                    <button class="dp-close" onclick="closeModal('modalDetail')">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
-                <div class="detail-info-item">
-                    <div class="detail-info-icon" style="background:#f0fdf4; color:#059669;">
-                        <i class="fas fa-shield-alt"></i>
+
+                <!-- Info Rows -->
+                <div class="dp-info-list">
+
+                    <div class="dp-info-row">
+                        <div class="dp-info-icon c-blue"><i class="fas fa-at"></i></div>
+                        <div>
+                            <span class="dp-info-lbl">Username</span>
+                            <span class="dp-info-val" id="detail_info_username">-</span>
+                        </div>
                     </div>
-                    <div>
-                        <span class="detail-info-label">Role / Jabatan</span>
-                        <span class="detail-info-value" id="detail_info_role">-</span>
+
+                    <div class="dp-info-row">
+                        <div class="dp-info-icon c-green"><i class="fas fa-shield-alt"></i></div>
+                        <div>
+                            <span class="dp-info-lbl">Role / Jabatan</span>
+                            <span class="dp-info-val" id="detail_info_role">-</span>
+                        </div>
                     </div>
+
+                    <div class="dp-info-row">
+                        <div class="dp-info-icon c-amber"><i class="fas fa-calendar-alt"></i></div>
+                        <div>
+                            <span class="dp-info-lbl">Tanggal Dibuat</span>
+                            <span class="dp-info-val" id="detail_info_created">-</span>
+                        </div>
+                    </div>
+
+                    <div class="dp-info-row">
+                        <div class="dp-info-icon c-purple"><i class="fas fa-fingerprint"></i></div>
+                        <div>
+                            <span class="dp-info-lbl">ID Pengguna</span>
+                            <span class="dp-info-val" id="detail_info_id">-</span>
+                        </div>
+                    </div>
+
                 </div>
-                <div class="detail-info-item">
-                    <div class="detail-info-icon" style="background:#fffbeb; color:#d97706;">
-                        <i class="fas fa-calendar-alt"></i>
-                    </div>
-                    <div>
-                        <span class="detail-info-label">Tanggal Dibuat</span>
-                        <span class="detail-info-value" id="detail_info_created">-</span>
-                    </div>
+
+                <!-- Footer -->
+                <div class="dp-footer">
+                    <button class="dp-btn-close" onclick="closeModal('modalDetail')">Tutup</button>
                 </div>
-                <div class="detail-info-item">
-                    <div class="detail-info-icon" style="background:#fdf4ff; color:#9333ea;">
-                        <i class="fas fa-fingerprint"></i>
-                    </div>
-                    <div>
-                        <span class="detail-info-label">ID User</span>
-                        <span class="detail-info-value" id="detail_info_id">-</span>
-                    </div>
-                </div>
-            </div>
-            <div class="detail-footer">
-                <button class="btn-detail-close" onclick="closeModal('modalDetail')">
-                    <i class="fas fa-times" style="margin-right:5px;"></i> Tutup
-                </button>
+
             </div>
         </div>
     </div>
@@ -777,17 +986,26 @@
     }
 
     function openModalDetail(nama, username, role, created, id) {
-        document.getElementById('detail_avatar').textContent = nama.charAt(0).toUpperCase();
-        document.getElementById('detail_nama').textContent = nama;
-        document.getElementById('detail_username').textContent = '@' + username;
-        document.getElementById('detail_info_username').textContent = username;
-        document.getElementById('detail_info_role').textContent = role.charAt(0).toUpperCase() + role.slice(1);
-        document.getElementById('detail_info_created').textContent = created;
-        document.getElementById('detail_info_id').textContent = '#' + id;
+        var roleCap = role.charAt(0).toUpperCase() + role.slice(1);
 
-        var badge = document.getElementById('detail_role_badge');
-        badge.className = 'detail-role-badge ' + role;
-        document.getElementById('detail_role_text').textContent = role.charAt(0).toUpperCase() + role.slice(1);
+        // Left panel color
+        document.getElementById('dp_left').className = 'dp-left ' + role;
+
+        // Avatar initial
+        document.getElementById('detail_avatar').textContent = nama.charAt(0).toUpperCase();
+
+        // Role label on left panel
+        document.getElementById('dp_left_role').textContent = roleCap;
+
+        // Identity
+        document.getElementById('detail_nama').textContent     = nama;
+        document.getElementById('detail_username').textContent = '@' + username;
+
+        // Info rows
+        document.getElementById('detail_info_username').textContent = username;
+        document.getElementById('detail_info_role').textContent     = roleCap;
+        document.getElementById('detail_info_created').textContent  = created;
+        document.getElementById('detail_info_id').textContent       = '#' + id;
 
         document.getElementById('modalDetail').classList.add('show');
     }

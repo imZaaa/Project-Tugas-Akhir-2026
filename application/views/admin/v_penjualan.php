@@ -193,7 +193,7 @@
                                 </a>
                                 <?php if (($s['status'] ?? '') === 'Lunas'): ?>
                                 <button class="btn-action btn-void" onclick="openVoid('<?= $s['id_sale'] ?>', '<?= htmlspecialchars($s['kode_transaksi'], ENT_QUOTES) ?>')">
-                                    <i class="fas fa-ban"></i> Void
+                                    <i class="fas fa-ban"></i> Batalkan
                                 </button>
                                 <?php endif; ?>
                             </div>
@@ -233,13 +233,13 @@
                 <input type="hidden" name="id_sale" id="void_id">
                 <div class="void-modal-body">
                     <div class="void-icon"><i class="fas fa-exclamation-triangle"></i></div>
-                    <h5>Void Transaksi?</h5>
+                    <h5>Batalkan Transaksi?</h5>
                     <p>Transaksi <strong id="void_kode"></strong> akan dibatalkan.<br>
                     <span style="color:#dc2626; font-weight:600;">⚠ Stok produk akan dikembalikan sesuai qty transaksi ini.</span></p>
                 </div>
                 <div class="modal-footer-custom">
-                    <button type="button" class="btn-cancel" onclick="document.getElementById('modalVoid').classList.remove('show')">Batal</button>
-                    <button type="submit" class="btn-void-confirm"><i class="fas fa-ban"></i> Ya, Void</button>
+                    <button type="button" class="btn-cancel" onclick="document.getElementById('modalVoid').classList.remove('show')">Kembali</button>
+                    <button type="submit" class="btn-void-confirm"><i class="fas fa-ban"></i> Ya, Batalkan</button>
                 </div>
             </form>
         </div>

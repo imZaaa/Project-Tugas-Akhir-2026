@@ -71,4 +71,29 @@ class Kategori extends CI_Controller {
         }
         redirect('admin/kategori');
     }
+
+    // ===== DETAIL KATEGORI =====
+    public function detail($id_category = null) {
+        if (empty($id_category)) {
+            redirect('admin/kategori');
+            return;
+        }
+        $this->load->model('admin/M_produk');
+
+        $kat = $this->M_kategori->get_by_id($id_category);
+        if (!$kat) {
+            $this->session->set_flashdata('error', 'Kategori tidak ditemukan.');
+            redirect('admin/kategori');
+            return;
+        }
+
+        $data['title']    = 'Detail Kategori: ' . $kat['nama_kategori'] . ' | PT Pordjo';
+        $data['kategori'] = $kat;
+        $data['produk']   = $this->M_produk->get_by_category($id_category);
+
+        $this->load->view('layout/header', $data);
+        $this->load->view('layout/sidebar', $data);
+        $this->load->view('admin/v_kategori_detail', $data);
+        $this->load->view('layout/footer');
+    }
 }

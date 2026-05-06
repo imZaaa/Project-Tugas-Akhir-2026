@@ -9,7 +9,7 @@ class M_purchase extends CI_Model {
     // ===== GET ALL (untuk list history — semua user, admin scope) =====
     public function get_all() {
         return $this->db
-            ->select('p.*, s.nama_supplier, s.kode_supplier, u.username AS nama_kasir')
+            ->select('p.*, COALESCE(p.nama_supplier_snapshot, s.nama_supplier) AS nama_supplier, s.kode_supplier, u.username AS nama_kasir')
             ->from($this->tbl_header . ' p')
             ->join('suppliers s', 's.id_supplier = p.id_supplier', 'left')
             ->join('users u',    'u.id_user = p.id_user',         'left')
@@ -20,7 +20,7 @@ class M_purchase extends CI_Model {
     // ===== GET BY USER (hanya data milik kasir tertentu) =====
     public function get_by_user($id_user) {
         return $this->db
-            ->select('p.*, s.nama_supplier, s.kode_supplier, u.username AS nama_kasir')
+            ->select('p.*, COALESCE(p.nama_supplier_snapshot, s.nama_supplier) AS nama_supplier, s.kode_supplier, u.username AS nama_kasir')
             ->from($this->tbl_header . ' p')
             ->join('suppliers s', 's.id_supplier = p.id_supplier', 'left')
             ->join('users u',    'u.id_user = p.id_user',         'left')
@@ -43,7 +43,7 @@ class M_purchase extends CI_Model {
     // ===== GET HEADER BY ID =====
     public function get_by_id($id_purchase) {
         return $this->db
-            ->select('p.*, s.nama_supplier, s.kode_supplier, u.username AS nama_kasir')
+            ->select('p.*, COALESCE(p.nama_supplier_snapshot, s.nama_supplier) AS nama_supplier, s.kode_supplier, u.username AS nama_kasir')
             ->from($this->tbl_header . ' p')
             ->join('suppliers s', 's.id_supplier = p.id_supplier', 'left')
             ->join('users u',    'u.id_user = p.id_user',         'left')
@@ -124,10 +124,26 @@ class M_purchase extends CI_Model {
                     $harga_beli_rata2 = $harga_beli_masuk; // Fallback jika stok aneh
                 }
                 
+                $harga_beli_rata2_final = round($harga_beli_rata2);
+
+                if ($harga_beli_lama != $harga_beli_rata2_final) {
+                    // Load M_produk inside a model just in case it's not loaded
+                    $CI =& get_instance();
+                    $CI->load->model('admin/M_produk');
+                    $CI->M_produk->log_harga_change(
+                        $item['id_product'],
+                        $header['id_user'] ?? $CI->session->userdata('id_user'),
+                        'Harga Beli/Modal',
+                        $harga_beli_lama,
+                        $harga_beli_rata2_final,
+                        'Auto-Average Cost dari Restock'
+                    );
+                }
+                
                 // Update tabel produk dengan stok baru dan modal rata-rata baru
                 $this->db->update('products', [
                     'stok' => $stok_baru,
-                    'harga_beli' => round($harga_beli_rata2)
+                    'harga_beli' => $harga_beli_rata2_final
                 ], ['id_product' => $item['id_product']]);
             }
         }
@@ -175,7 +191,7 @@ class M_purchase extends CI_Model {
     public function get_today() {
         date_default_timezone_set('Asia/Jakarta');
         return $this->db
-            ->select('p.id_purchase, p.no_faktur, p.created_at, p.total_bayar, s.nama_supplier, u.username AS nama_input')
+            ->select('p.id_purchase, p.no_faktur, p.created_at, p.total_bayar, COALESCE(p.nama_supplier_snapshot, s.nama_supplier) AS nama_supplier, u.username AS nama_input')
             ->from($this->tbl_header . ' p')
             ->join('suppliers s', 's.id_supplier = p.id_supplier', 'left')
             ->join('users u',    'u.id_user = p.id_user',          'left')
@@ -200,7 +216,7 @@ class M_purchase extends CI_Model {
     public function get_today_items() {
         date_default_timezone_set('Asia/Jakarta');
         return $this->db
-            ->select('pd.qty, pd.purchase_price, pd.subtotal, pr.nama_produk, pr.satuan, c.nama_kategori, p.no_faktur, p.created_at, s.nama_supplier')
+            ->select('pd.qty, pd.purchase_price, pd.subtotal, pr.nama_produk, pr.satuan, c.nama_kategori, p.no_faktur, p.created_at, COALESCE(p.nama_supplier_snapshot, s.nama_supplier) AS nama_supplier')
             ->from($this->tbl_detail . ' pd')
             ->join($this->tbl_header . ' p', 'p.id_purchase = pd.id_purchase', 'inner')
             ->join('products pr',   'pr.id_product  = pd.id_product',  'left')

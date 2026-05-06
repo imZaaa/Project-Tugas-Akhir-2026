@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERD — Sistem POS (db_ta)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f1117;
+            --surface: #1a1d27;
+            --surface-2: #22263a;
+            --border: #2d3250;
+            --border-active: #6366f1;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --pk-color: #f59e0b;
+            --fk-color: #6366f1;
+            --entity-header-1: linear-gradient(135deg, #6366f1, #8b5cf6);
+            --entity-header-2: linear-gradient(135deg, #06b6d4, #3b82f6);
+            --entity-header-3: linear-gradient(135deg, #10b981, #059669);
+            --entity-header-4: linear-gradient(135deg, #f43f5e, #e11d48);
+            --entity-header-5: linear-gradient(135deg, #f59e0b, #d97706);
+            --entity-header-6: linear-gradient(135deg, #8b5cf6, #a78bfa);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Top Bar */
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: rgba(15, 17, 23, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            z-index: 1000;
+        }
+
+        .topbar-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .topbar-title .icon {
+            width: 36px;
+            height: 36px;
+            background: var(--entity-header-1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .topbar-title h1 {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .topbar-title span {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .topbar-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat-pill {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .stat-pill strong {
+            color: var(--text);
+            font-weight: 700;
+        }
+
+        .topbar-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .topbar-actions button {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .topbar-actions button:hover {
+            border-color: var(--border-active);
+            background: var(--surface-2);
+        }
+
+        /* Canvas */
+        #canvas {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: auto;
+            cursor: grab;
+        }
+
+        #canvas:active {
+            cursor: grabbing;
+        }
+
+        #canvas-inner {
+            position: relative;
+            width: 2400px;
+            height: 1800px;
+        }
+
+        /* SVG Lines */
+        #svg-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        #svg-lines line {
+            stroke: #3d4260;
+            stroke-width: 1.5;
+            stroke-dasharray: 6 4;
+            opacity: 0.6;
+        }
+
+        #svg-lines .line-hover {
+            stroke: var(--fk-color);
+            stroke-width: 2.5;
+            stroke-dasharray: none;
+            opacity: 1;
+        }
+
+        /* Entity */
+        .entity {
+            position: absolute;
+            width: 280px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+            z-index: 10;
+            cursor: move;
+            transition: box-shadow 0.3s, border-color 0.3s;
+            overflow: hidden;
+        }
+
+        .entity:hover {
+            box-shadow: 0 8px 40px rgba(99, 102, 241, 0.15);
+            border-color: var(--border-active);
+            z-index: 50;
+        }
+
+        .entity-header {
+            padding: 14px 16px;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: -0.3px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .entity-header .table-icon {
+            width: 24px;
+            height: 24px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+        }
+
+        .entity-header .table-count {
+            margin-left: auto;
+            font-size: 10px;
+            font-weight: 500;
+            background: rgba(255,255,255,0.2);
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .entity-cols {
+            padding: 4px 0;
+        }
+
+        .entity-col {
+            display: flex;
+            align-items: center;
+            padding: 7px 16px;
+            font-size: 12px;
+            font-weight: 400;
+            gap: 8px;
+            transition: background 0.15s;
+        }
+
+        .entity-col:hover {
+            background: var(--surface-2);
+        }
+
+        .col-badge {
+            font-size: 9px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            min-width: 22px;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+
+        .col-badge.pk {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--pk-color);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .col-badge.fk {
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--fk-color);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .col-name {
+            flex: 1;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .col-name.pk-col {
+            color: var(--pk-color);
+            font-weight: 600;
+        }
+
+        .col-name.fk-col {
+            color: var(--fk-color);
+        }
+
+        .col-type {
+            font-size: 10px;
+            color: var(--text-muted);
+            font-weight: 400;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Legend */
+        .legend {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(26, 29, 39, 0.9);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 20px;
+            z-index: 999;
+            display: flex;
+            gap: 20px;
+            font-size: 12px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+        }
+
+        .legend-line {
+            width: 28px;
+            height: 2px;
+            border-top: 2px dashed #3d4260;
+        }
+
+        /* Relationship tooltip */
+        .rel-tooltip {
+            position: fixed;
+            background: var(--surface);
+            border: 1px solid var(--border-active);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 12px;
+            z-index: 9999;
+            pointer-events: none;
+            display: none;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+
+        .rel-tooltip .rel-type {
+            color: var(--fk-color);
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        /* Zoom indicator */
+        .zoom-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(26, 29, 39, 0.9);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px 16px;
+            z-index: 999;
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .zoom-indicator button {
+            width: 28px;
+            height: 28px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .zoom-indicator button:hover {
+            border-color: var(--border-active);
+        }
+
+        /* Minimap */
+        .minimap {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 200px;
+            height: 150px;
+            background: rgba(26, 29, 39, 0.9);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            z-index: 999;
+            overflow: hidden;
+        }
+
+        .minimap canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Dark grid background */
+        #canvas-inner {
+            background-image:
+                radial-gradient(circle, #2d3250 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        /* Relationship label */
+        .rel-label {
+            position: absolute;
+            font-size: 9px;
+            color: var(--text-muted);
+            background: var(--bg);
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            pointer-events: none;
+            z-index: 5;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        /* Cardinality */
+        .card-label {
+            position: absolute;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--fk-color);
+            pointer-events: none;
+            z-index: 5;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<div class="topbar">
+    <div class="topbar-title">
+        <div class="icon">◇</div>
+        <div>
+            <h1>Entity Relationship Diagram</h1>
+            <span>Database: db_ta — Sistem POS Tugas Akhir</span>
+        </div>
+    </div>
+    <div class="topbar-stats">
+        <div class="stat-pill"><strong>10</strong> Tabel</div>
+        <div class="stat-pill"><strong>12</strong> Relasi</div>
+        <div class="stat-pill"><strong>69</strong> Kolom</div>
+    </div>
+    <div class="topbar-actions">
+        <button onclick="resetPositions()">⟲ Reset Layout</button>
+        <button onclick="fitToView()">⊞ Fit View</button>
+    </div>
+</div>
+
+<!-- Canvas -->
+<div id="canvas">
+    <div id="canvas-inner">
+        <svg id="svg-lines"></svg>
+        <!-- Entities will be injected here -->
+    </div>
+</div>
+
+<!-- Legend -->
+<div class="legend">
+    <div class="legend-item">
+        <div class="legend-dot" style="background: var(--pk-color)"></div>
+        <span>Primary Key (PK)</span>
+    </div>
+    <div class="legend-item">
+        <div class="legend-dot" style="background: var(--fk-color)"></div>
+        <span>Foreign Key (FK)</span>
+    </div>
+    <div class="legend-item">
+        <div class="legend-line"></div>
+        <span>Relasi</span>
+    </div>
+    <div class="legend-item">
+        <span style="font-weight:600;color:var(--text)">1 — N</span>
+        <span>One to Many</span>
+    </div>
+</div>
+
+<!-- Zoom controls -->
+<div class="zoom-indicator">
+    <button onclick="zoomOut()">−</button>
+    <span id="zoom-level">100%</span>
+    <button onclick="zoomIn()">+</button>
+</div>
+
+<script>
+// ==========================================
+// DATA: Entities
+// ==========================================
+const entities = [
+    {
+        name: 'users',
+        gradient: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+        icon: '👤',
+        x: 100, y: 100,
+        columns: [
+            { name: 'id_user', type: 'INT', pk: true },
+            { name: 'username', type: 'VARCHAR(50)' },
+            { name: 'password', type: 'VARCHAR(255)' },
+            { name: 'nama_lengkap', type: 'VARCHAR(100)' },
+            { name: 'role', type: "ENUM('admin','kasir')" },
+            { name: 'created_at', type: 'TIMESTAMP' },
+        ]
+    },
+    {
+        name: 'categories',
+        gradient: 'linear-gradient(135deg, #10b981, #059669)',
+        icon: '📁',
+        x: 100, y: 440,
+        columns: [
+            { name: 'id_category', type: 'INT', pk: true },
+            { name: 'nama_kategori', type: 'VARCHAR(100)' },
+        ]
+    },
+    {
+        name: 'products',
+        gradient: 'linear-gradient(135deg, #06b6d4, #3b82f6)',
+        icon: '📦',
+        x: 450, y: 320,
+        columns: [
+            { name: 'id_product', type: 'INT', pk: true },
+            { name: 'id_category', type: 'INT', fk: 'categories' },
+            { name: 'nama_produk', type: 'VARCHAR(150)' },
+            { name: 'harga_jual', type: 'INT' },
+            { name: 'harga_beli', type: 'INT' },
+            { name: 'stok', type: 'INT' },
+            { name: 'satuan', type: 'VARCHAR(20)' },
+        ]
+    },
+    {
+        name: 'suppliers',
+        gradient: 'linear-gradient(135deg, #f59e0b, #d97706)',
+        icon: '🏭',
+        x: 100, y: 620,
+        columns: [
+            { name: 'id_supplier', type: 'INT', pk: true },
+            { name: 'kode_supplier', type: 'VARCHAR(20)' },
+            { name: 'nama_supplier', type: 'VARCHAR(100)' },
+            { name: 'nama_kontak', type: 'VARCHAR(50)' },
+            { name: 'alamat', type: 'TEXT' },
+            { name: 'keterangan', type: 'TEXT' },
+            { name: 'no_telp', type: 'VARCHAR(15)' },
+            { name: 'email', type: 'VARCHAR(50)' },
+            { name: 'created_at', type: 'DATETIME' },
+            { name: 'updated_at', type: 'DATETIME' },
+        ]
+    },
+    {
+        name: 'purchases',
+        gradient: 'linear-gradient(135deg, #f43f5e, #e11d48)',
+        icon: '🧾',
+        x: 450, y: 700,
+        columns: [
+            { name: 'id_purchase', type: 'INT', pk: true },
+            { name: 'no_faktur', type: 'VARCHAR(50)' },
+            { name: 'id_supplier', type: 'INT', fk: 'suppliers' },
+            { name: 'id_user', type: 'INT', fk: 'users' },
+            { name: 'tgl_beli', type: 'DATE' },
+            { name: 'total_bayar', type: 'INT' },
+            { name: 'keterangan', type: 'TEXT' },
+            { name: 'created_at', type: 'DATETIME' },
+        ]
+    },
+    {
+        name: 'purchase_details',
+        gradient: 'linear-gradient(135deg, #f43f5e, #fb7185)',
+        icon: '📋',
+        x: 810, y: 700,
+        columns: [
+            { name: 'id_purchase_detail', type: 'INT', pk: true },
+            { name: 'id_purchase', type: 'INT', fk: 'purchases' },
+            { name: 'id_product', type: 'INT', fk: 'products' },
+            { name: 'qty', type: 'INT' },
+            { name: 'purchase_price', type: 'DOUBLE' },
+            { name: 'subtotal', type: 'DOUBLE' },
+        ]
+    },
+    {
+        name: 'sales',
+        gradient: 'linear-gradient(135deg, #8b5cf6, #a78bfa)',
+        icon: '💰',
+        x: 450, y: 60,
+        columns: [
+            { name: 'id_sale', type: 'INT', pk: true },
+            { name: 'kode_transaksi', type: 'VARCHAR(50)' },
+            { name: 'id_user', type: 'INT', fk: 'users' },
+            { name: 'nama_pelanggan', type: 'VARCHAR(100)' },
+            { name: 'tgl_jual', type: 'TIMESTAMP' },
+            { name: 'total_harga', type: 'INT' },
+            { name: 'bayar', type: 'INT' },
+            { name: 'kembalian', type: 'INT' },
+            { name: 'status', type: "ENUM('Lunas','Batal')" },
+            { name: 'created_at', type: 'DATETIME' },
+        ]
+    },
+    {
+        name: 'sale_details',
+        gradient: 'linear-gradient(135deg, #a78bfa, #c4b5fd)',
+        icon: '🛒',
+        x: 810, y: 60,
+        columns: [
+            { name: 'id_detail', type: 'INT', pk: true },
+            { name: 'id_sale', type: 'INT', fk: 'sales' },
+            { name: 'id_product', type: 'INT', fk: 'products' },
+            { name: 'harga_jual', type: 'DOUBLE' },
+            { name: 'qty', type: 'INT' },
+            { name: 'subtotal', type: 'INT' },
+        ]
+    },
+    {
+        name: 'stok_log',
+        gradient: 'linear-gradient(135deg, #22d3ee, #06b6d4)',
+        icon: '📊',
+        x: 810, y: 350,
+        columns: [
+            { name: 'id_log', type: 'INT UNSIGNED', pk: true },
+            { name: 'id_product', type: 'INT', fk: 'products' },
+            { name: 'id_user', type: 'INT', fk: 'users' },
+            { name: 'stok_sebelum', type: 'INT' },
+            { name: 'stok_sesudah', type: 'INT' },
+            { name: 'selisih', type: 'INT' },
+            { name: 'keterangan', type: 'VARCHAR(255)' },
+            { name: 'created_at', type: 'DATETIME' },
+        ]
+    },
+    {
+        name: 'harga_log',
+        gradient: 'linear-gradient(135deg, #fbbf24, #f59e0b)',
+        icon: '📈',
+        x: 1150, y: 350,
+        columns: [
+            { name: 'id_log', type: 'INT', pk: true },
+            { name: 'id_product', type: 'INT', fk: 'products' },
+            { name: 'id_user', type: 'INT', fk: 'users' },
+            { name: 'tipe_harga', type: 'VARCHAR(50)' },
+            { name: 'harga_lama', type: 'INT' },
+            { name: 'harga_baru', type: 'INT' },
+            { name: 'keterangan', type: 'VARCHAR(255)' },
+            { name: 'created_at', type: 'DATETIME' },
+        ]
+    },
+];
+
+// ==========================================
+// DATA: Relationships
+// ==========================================
+const relationships = [
+    { from: 'categories', to: 'products', fromCol: 'id_category', toCol: 'id_category', label: '1:N', desc: '1 kategori → banyak produk' },
+    { from: 'products', to: 'purchase_details', fromCol: 'id_product', toCol: 'id_product', label: '1:N', desc: '1 produk → banyak detail beli' },
+    { from: 'products', to: 'sale_details', fromCol: 'id_product', toCol: 'id_product', label: '1:N', desc: '1 produk → banyak detail jual' },
+    { from: 'products', to: 'stok_log', fromCol: 'id_product', toCol: 'id_product', label: '1:N', desc: '1 produk → banyak log stok' },
+    { from: 'products', to: 'harga_log', fromCol: 'id_product', toCol: 'id_product', label: '1:N', desc: '1 produk → banyak log harga' },
+    { from: 'suppliers', to: 'purchases', fromCol: 'id_supplier', toCol: 'id_supplier', label: '1:N', desc: '1 supplier → banyak pembelian' },
+    { from: 'users', to: 'purchases', fromCol: 'id_user', toCol: 'id_user', label: '1:N', desc: '1 user → banyak pembelian' },
+    { from: 'users', to: 'sales', fromCol: 'id_user', toCol: 'id_user', label: '1:N', desc: '1 user → banyak penjualan' },
+    { from: 'users', to: 'stok_log', fromCol: 'id_user', toCol: 'id_user', label: '1:N', desc: '1 user → banyak log stok' },
+    { from: 'users', to: 'harga_log', fromCol: 'id_user', toCol: 'id_user', label: '1:N', desc: '1 user → banyak log harga' },
+    { from: 'purchases', to: 'purchase_details', fromCol: 'id_purchase', toCol: 'id_purchase', label: '1:N', desc: '1 nota beli → banyak detail' },
+    { from: 'sales', to: 'sale_details', fromCol: 'id_sale', toCol: 'id_sale', label: '1:N', desc: '1 nota jual → banyak detail' },
+];
+
+// ==========================================
+// RENDER
+// ==========================================
+const canvasInner = document.getElementById('canvas-inner');
+const svgLines = document.getElementById('svg-lines');
+
+// Store entity elements
+const entityElements = {};
+
+function createEntity(ent) {
+    const el = document.createElement('div');
+    el.className = 'entity';
+    el.id = 'entity-' + ent.name;
+    el.style.left = ent.x + 'px';
+    el.style.top = ent.y + 'px';
+
+    let colsHtml = '';
+    ent.columns.forEach(col => {
+        let badge = '';
+        let nameClass = '';
+        if (col.pk) {
+            badge = '<span class="col-badge pk">PK</span>';
+            nameClass = 'pk-col';
+        } else if (col.fk) {
+            badge = '<span class="col-badge fk">FK</span>';
+            nameClass = 'fk-col';
+        }
+        colsHtml += `
+            <div class="entity-col" data-col="${col.name}">
+                ${badge || '<span style="width:28px;display:inline-block"></span>'}
+                <span class="col-name ${nameClass}">${col.name}</span>
+                <span class="col-type">${col.type}</span>
+            </div>
+        `;
+    });
+
+    el.innerHTML = `
+        <div class="entity-header" style="background: ${ent.gradient}">
+            <div class="table-icon">${ent.icon}</div>
+            ${ent.name}
+            <span class="table-count">${ent.columns.length} cols</span>
+        </div>
+        <div class="entity-cols">${colsHtml}</div>
+    `;
+
+    canvasInner.appendChild(el);
+    entityElements[ent.name] = el;
+    makeDraggable(el, ent);
+}
+
+// ==========================================
+// DRAGGING
+// ==========================================
+function makeDraggable(el, ent) {
+    let isDragging = false;
+    let startX, startY, origX, origY;
+
+    el.addEventListener('mousedown', (e) => {
+        if (e.target.closest('.entity-col')) return;
+        isDragging = true;
+        const rect = el.getBoundingClientRect();
+        startX = e.clientX;
+        startY = e.clientY;
+        origX = parseInt(el.style.left);
+        origY = parseInt(el.style.top);
+        el.style.zIndex = 100;
+        e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        el.style.left = (origX + dx) + 'px';
+        el.style.top = (origY + dy) + 'px';
+        ent.x = origX + dx;
+        ent.y = origY + dy;
+        drawLines();
+    });
+
+    document.addEventListener('mouseup', () => {
+        if (isDragging) {
+            isDragging = false;
+            el.style.zIndex = 10;
+        }
+    });
+}
+
+// ==========================================
+// DRAW RELATIONSHIP LINES
+// ==========================================
+function getEntityCenter(name) {
+    const el = entityElements[name];
+    const x = parseInt(el.style.left) + el.offsetWidth / 2;
+    const y = parseInt(el.style.top) + el.offsetHeight / 2;
+    return { x, y };
+}
+
+function getEntityEdge(fromName, toName) {
+    const fromEl = entityElements[fromName];
+    const toEl = entityElements[toName];
+
+    const fromX = parseInt(fromEl.style.left);
+    const fromY = parseInt(fromEl.style.top);
+    const fromW = fromEl.offsetWidth;
+    const fromH = fromEl.offsetHeight;
+    const fromCx = fromX + fromW / 2;
+    const fromCy = fromY + fromH / 2;
+
+    const toX = parseInt(toEl.style.left);
+    const toY = parseInt(toEl.style.top);
+    const toW = toEl.offsetWidth;
+    const toH = toEl.offsetHeight;
+    const toCx = toX + toW / 2;
+    const toCy = toY + toH / 2;
+
+    // Determine best sides
+    let fromPt, toPt;
+
+    const dx = toCx - fromCx;
+    const dy = toCy - fromCy;
+
+    if (Math.abs(dx) > Math.abs(dy)) {
+        // Horizontal connection
+        if (dx > 0) {
+            fromPt = { x: fromX + fromW, y: fromCy };
+            toPt = { x: toX, y: toCy };
+        } else {
+            fromPt = { x: fromX, y: fromCy };
+            toPt = { x: toX + toW, y: toCy };
+        }
+    } else {
+        // Vertical connection
+        if (dy > 0) {
+            fromPt = { x: fromCx, y: fromY + fromH };
+            toPt = { x: toCx, y: toY };
+        } else {
+            fromPt = { x: fromCx, y: fromY };
+            toPt = { x: toCx, y: toY + toH };
+        }
+    }
+
+    return { from: fromPt, to: toPt };
+}
+
+function drawLines() {
+    // Clear existing
+    svgLines.innerHTML = '';
+    // Remove old labels
+    document.querySelectorAll('.rel-label, .card-label').forEach(el => el.remove());
+
+    relationships.forEach(rel => {
+        const edge = getEntityEdge(rel.from, rel.to);
+
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', edge.from.x);
+        line.setAttribute('y1', edge.from.y);
+        line.setAttribute('x2', edge.to.x);
+        line.setAttribute('y2', edge.to.y);
+        svgLines.appendChild(line);
+
+        // Cardinality labels at ends
+        const oneLabel = document.createElement('div');
+        oneLabel.className = 'card-label';
+        oneLabel.textContent = '1';
+        oneLabel.style.left = (edge.from.x - 5) + 'px';
+        oneLabel.style.top = (edge.from.y - 18) + 'px';
+        canvasInner.appendChild(oneLabel);
+
+        const manyLabel = document.createElement('div');
+        manyLabel.className = 'card-label';
+        manyLabel.textContent = 'N';
+        manyLabel.style.left = (edge.to.x - 5) + 'px';
+        manyLabel.style.top = (edge.to.y - 18) + 'px';
+        canvasInner.appendChild(manyLabel);
+
+        // Middle label
+        const midX = (edge.from.x + edge.to.x) / 2;
+        const midY = (edge.from.y + edge.to.y) / 2;
+        const label = document.createElement('div');
+        label.className = 'rel-label';
+        label.textContent = rel.desc;
+        label.style.left = midX + 'px';
+        label.style.top = (midY - 10) + 'px';
+        canvasInner.appendChild(label);
+    });
+}
+
+// ==========================================
+// INIT
+// ==========================================
+entities.forEach(ent => createEntity(ent));
+
+// Delay to allow DOM rendering for dimensions
+requestAnimationFrame(() => {
+    drawLines();
+});
+
+// ==========================================
+// ZOOM
+// ==========================================
+let currentZoom = 1;
+
+function zoomIn() {
+    currentZoom = Math.min(currentZoom + 0.1, 2);
+    applyZoom();
+}
+
+function zoomOut() {
+    currentZoom = Math.max(currentZoom - 0.1, 0.3);
+    applyZoom();
+}
+
+function applyZoom() {
+    document.getElementById('canvas-inner').style.transform = `scale(${currentZoom})`;
+    document.getElementById('canvas-inner').style.transformOrigin = 'top left';
+    document.getElementById('zoom-level').textContent = Math.round(currentZoom * 100) + '%';
+}
+
+function resetPositions() {
+    entities.forEach((ent, i) => {
+        const el = entityElements[ent.name];
+        // Reset to original positions
+        const defaults = [
+            { x: 100, y: 100 },   // users
+            { x: 100, y: 440 },   // categories
+            { x: 450, y: 320 },   // products
+            { x: 100, y: 620 },   // suppliers
+            { x: 450, y: 700 },   // purchases
+            { x: 810, y: 700 },   // purchase_details
+            { x: 450, y: 60 },    // sales
+            { x: 810, y: 60 },    // sale_details
+            { x: 810, y: 350 },   // stok_log
+            { x: 1150, y: 350 },  // harga_log
+        ];
+        ent.x = defaults[i].x;
+        ent.y = defaults[i].y;
+        el.style.left = ent.x + 'px';
+        el.style.top = ent.y + 'px';
+    });
+    drawLines();
+}
+
+function fitToView() {
+    currentZoom = 0.8;
+    applyZoom();
+    document.getElementById('canvas').scrollTo(0, 0);
+}
+
+// Mouse wheel zoom
+document.getElementById('canvas').addEventListener('wheel', (e) => {
+    if (e.ctrlKey) {
+        e.preventDefault();
+        if (e.deltaY < 0) zoomIn();
+        else zoomOut();
+    }
+});
+</script>
+</body>
+</html>

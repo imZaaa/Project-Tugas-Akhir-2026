@@ -26,6 +26,9 @@ class Admin extends CI_Controller {
         $data['stok_menipis']   = count($produk_menipis);
         $data['produk_habis']   = array_filter($produk_menipis, fn($p) => (int)$p['stok'] === 0);
 
+        // ===== ALERT HARGA JUAL DI BAWAH MODAL =====
+        $data['produk_rugi'] = $this->M_produk->get_jual_dibawah_modal();
+
         // ===== SUPPLIER =====
         $data['total_supplier'] = $this->M_supplier->count_all();
 

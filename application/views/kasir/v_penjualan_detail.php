@@ -361,9 +361,10 @@
             <div class="detail-card">
                 <div class="detail-card-header"><div class="detail-card-header header-icon" style="background:#eff6ff; color:#1a56db;"><i class="fas fa-info-circle"></i></div><h3>Informasi Transaksi</h3></div>
                 <div class="detail-card-body">
-                    <div class="info-grid">
+                    <div class="info-grid" style="grid-template-columns: 1fr 1fr 1fr;">
                         <div><div class="info-label">Kode Transaksi</div><div class="info-value code"><?= htmlspecialchars($header['kode_transaksi']) ?></div></div>
                         <div><div class="info-label">Tanggal</div><div class="info-value"><?= date('d M Y — H:i', strtotime($header['tgl_jual'])) ?></div></div>
+                        <div><div class="info-label">Nama Pelanggan</div><div class="info-value"><?= htmlspecialchars(!empty($header['nama_pelanggan']) ? $header['nama_pelanggan'] : 'Umum') ?></div></div>
                         <div><div class="info-label">Kasir</div><div class="info-value"><?= htmlspecialchars($header['nama_kasir'] ?? '-') ?></div></div>
                         <div><div class="info-label">Status</div><div><?php if ($header['status'] === 'Lunas'): ?><span class="status-badge status-lunas"><i class="fas fa-check-circle" style="font-size:10px;"></i> Lunas</span><?php else: ?><span class="status-badge status-batal"><i class="fas fa-times-circle" style="font-size:10px;"></i> Batal</span><?php endif; ?></div></div>
                     </div>

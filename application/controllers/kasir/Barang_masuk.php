@@ -92,14 +92,20 @@ class Barang_masuk extends CI_Controller {
         }
 
         date_default_timezone_set('Asia/Jakarta');
+
+        // Snapshot nama supplier saat transaksi dibuat
+        $supplier_data = $this->M_supplier->get_by_id($id_supplier);
+        $nama_supplier_snapshot = $supplier_data['nama_supplier'] ?? '';
+
         $header = [
-            'no_faktur'   => $no_faktur,
-            'id_supplier' => $id_supplier,
-            'id_user'     => $this->session->userdata('id_user'),
-            'tgl_beli'    => $tgl_beli,
-            'total_bayar' => $total_bayar,
-            'keterangan'  => $keterangan,
-            'created_at'  => date('Y-m-d H:i:s'),
+            'no_faktur'              => $no_faktur,
+            'id_supplier'            => $id_supplier,
+            'nama_supplier_snapshot' => $nama_supplier_snapshot,
+            'id_user'                => $this->session->userdata('id_user'),
+            'tgl_beli'               => $tgl_beli,
+            'total_bayar'            => $total_bayar,
+            'keterangan'             => $keterangan,
+            'created_at'             => date('Y-m-d H:i:s'),
         ];
 
         $result = $this->M_purchase->simpan_transaksi($header, $items);

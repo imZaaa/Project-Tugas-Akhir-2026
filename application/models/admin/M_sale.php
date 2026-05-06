@@ -55,7 +55,7 @@ class M_sale extends CI_Model {
     // ===== GET HEADER BY ID =====
     public function get_by_id($id_sale) {
         return $this->db
-            ->select('s.id_sale, s.kode_transaksi, s.tgl_jual, s.total_harga, s.bayar, s.kembalian, s.status, s.created_at, u.username AS nama_kasir, u.id_user')
+            ->select('s.id_sale, s.kode_transaksi, s.nama_pelanggan, s.tgl_jual, s.total_harga, s.bayar, s.kembalian, s.status, s.created_at, u.username AS nama_kasir, u.id_user')
             ->from($this->tbl_header . ' s')
             ->join('users u', 'u.id_user = s.id_user', 'left')
             ->where('s.id_sale', $id_sale)

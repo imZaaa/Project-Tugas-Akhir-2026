@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERD Chen Notation — Sistem POS (db_ta)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f1117;
+            --surface: #1a1d27;
+            --border: #2d3250;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --entity-fill: #1e3a5f;
+            --entity-stroke: #3b82f6;
+            --attr-fill: #1a2744;
+            --attr-stroke: #475569;
+            --pk-fill: #2d1b4e;
+            --pk-stroke: #f59e0b;
+            --fk-fill: #1b2e4a;
+            --fk-stroke: #6366f1;
+            --rel-fill: #2c1338;
+            --rel-stroke: #e11d48;
+            --line-color: #475569;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .topbar {
+            position: fixed; top: 0; left: 0; right: 0; height: 56px;
+            background: rgba(15,17,23,0.9); backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 24px; z-index: 1000;
+        }
+        .topbar h1 { font-size: 15px; font-weight: 700; }
+        .topbar span { font-size: 11px; color: var(--text-muted); }
+        .topbar-left { display: flex; align-items: center; gap: 12px; }
+        .topbar-icon {
+            width: 34px; height: 34px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            font-size: 16px;
+        }
+        .topbar-actions { display: flex; gap: 8px; }
+        .topbar-actions button {
+            background: var(--surface); border: 1px solid var(--border);
+            color: var(--text); padding: 7px 14px; border-radius: 8px;
+            font-size: 11px; font-weight: 500; cursor: pointer;
+            font-family: 'Inter', sans-serif; transition: all 0.2s;
+        }
+        .topbar-actions button:hover { border-color: #6366f1; }
+
+        #canvas {
+            position: absolute; top: 56px; left: 0; right: 0; bottom: 0;
+            overflow: auto;
+        }
+        #world {
+            position: relative;
+            width: 4200px;
+            height: 3200px;
+            background-image: radial-gradient(circle, #1e2030 1px, transparent 1px);
+            background-size: 24px 24px;
+            transform-origin: top left;
+        }
+
+        /* SVG connector lines */
+        #svg-layer {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none; z-index: 1;
+        }
+        #svg-layer line {
+            stroke: var(--line-color);
+            stroke-width: 1.8;
+        }
+
+        /* ======== ENTITY (Rectangle) ======== */
+        .ent-rect {
+            position: absolute; z-index: 20;
+            background: var(--entity-fill);
+            border: 2.5px solid var(--entity-stroke);
+            border-radius: 6px;
+            padding: 14px 28px;
+            font-size: 14px; font-weight: 700;
+            color: #93c5fd;
+            text-align: center;
+            cursor: move;
+            white-space: nowrap;
+            box-shadow: 0 4px 20px rgba(59,130,246,0.15);
+            transition: box-shadow 0.2s;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .ent-rect:hover {
+            box-shadow: 0 6px 30px rgba(59,130,246,0.3);
+        }
+
+        /* ======== ATTRIBUTE (Oval) ======== */
+        .attr-oval {
+            position: absolute; z-index: 15;
+            background: var(--attr-fill);
+            border: 1.5px solid var(--attr-stroke);
+            border-radius: 50%;
+            min-width: 70px; height: 34px;
+            padding: 0 14px;
+            font-size: 10px; font-weight: 500;
+            color: var(--text-muted);
+            display: flex; align-items: center; justify-content: center;
+            white-space: nowrap;
+            cursor: default;
+            transition: border-color 0.2s, color 0.2s;
+        }
+        .attr-oval:hover {
+            border-color: #64748b;
+            color: var(--text);
+        }
+
+        /* Primary Key oval */
+        .attr-oval.pk {
+            background: var(--pk-fill);
+            border-color: var(--pk-stroke);
+            color: #fbbf24;
+            font-weight: 600;
+        }
+        .attr-oval.pk .attr-text {
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+
+        /* Foreign Key oval */
+        .attr-oval.fk {
+            background: var(--fk-fill);
+            border-color: var(--fk-stroke);
+            color: #818cf8;
+            font-weight: 500;
+            border-style: dashed;
+        }
+
+        /* ======== RELATIONSHIP (Diamond) ======== */
+        .rel-diamond {
+            position: absolute; z-index: 18;
+            width: 120px; height: 60px;
+            cursor: default;
+        }
+        .rel-diamond-shape {
+            width: 100%; height: 100%;
+            background: var(--rel-fill);
+            border: 2px solid var(--rel-stroke);
+            transform: rotate(45deg);
+            border-radius: 4px;
+            box-shadow: 0 2px 16px rgba(225,29,72,0.15);
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 55px; height: 55px;
+            margin-left: -27.5px;
+            margin-top: -27.5px;
+        }
+        .rel-diamond-label {
+            position: absolute;
+            width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 9px; font-weight: 600;
+            color: #fb7185;
+            text-align: center;
+            z-index: 2;
+            line-height: 1.2;
+        }
+
+        /* Cardinality labels */
+        .card-label {
+            position: absolute;
+            font-size: 11px; font-weight: 700;
+            color: #f43f5e;
+            pointer-events: none;
+            z-index: 25;
+        }
+
+        /* ======== LEGEND ======== */
+        .legend {
+            position: fixed; bottom: 20px; left: 20px;
+            background: rgba(26,29,39,0.92); backdrop-filter: blur(12px);
+            border: 1px solid var(--border); border-radius: 12px;
+            padding: 16px 20px; z-index: 999;
+        }
+        .legend h3 {
+            font-size: 11px; color: var(--text-muted); margin-bottom: 10px;
+            font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .legend-items { display: flex; flex-direction: column; gap: 8px; }
+        .legend-item { display: flex; align-items: center; gap: 10px; font-size: 11px; color: var(--text-muted); }
+        .legend-shape {
+            width: 32px; height: 20px; border-radius: 3px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .legend-shape.rect {
+            background: var(--entity-fill); border: 2px solid var(--entity-stroke);
+        }
+        .legend-shape.oval {
+            border-radius: 50%; background: var(--attr-fill); border: 1.5px solid var(--attr-stroke);
+            width: 28px;
+        }
+        .legend-shape.oval-pk {
+            border-radius: 50%; background: var(--pk-fill); border: 1.5px solid var(--pk-stroke);
+            width: 28px; font-size: 7px; color: #fbbf24; font-weight: 700; text-decoration: underline;
+        }
+        .legend-shape.oval-fk {
+            border-radius: 50%; background: var(--fk-fill); border: 1.5px dashed var(--fk-stroke);
+            width: 28px;
+        }
+        .legend-shape.diamond {
+            width: 18px; height: 18px; transform: rotate(45deg);
+            background: var(--rel-fill); border: 2px solid var(--rel-stroke);
+            border-radius: 2px;
+        }
+        .legend-shape.line-sample {
+            width: 28px; height: 2px; background: var(--line-color);
+        }
+
+        /* Zoom */
+        .zoom-controls {
+            position: fixed; bottom: 20px; right: 20px;
+            background: rgba(26,29,39,0.92); backdrop-filter: blur(12px);
+            border: 1px solid var(--border); border-radius: 10px;
+            padding: 8px 14px; z-index: 999;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .zoom-controls button {
+            width: 28px; height: 28px; background: var(--surface);
+            border: 1px solid var(--border); color: var(--text);
+            border-radius: 6px; cursor: pointer; font-size: 14px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .zoom-controls button:hover { border-color: #6366f1; }
+        .zoom-controls span { font-size: 11px; color: var(--text-muted); min-width: 36px; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <div class="topbar-left">
+        <div class="topbar-icon">◇</div>
+        <div>
+            <h1>ERD — Notasi Chen</h1>
+            <span>Database: db_ta — Sistem POS Tugas Akhir</span>
+        </div>
+    </div>
+    <div class="topbar-actions">
+        <button onclick="resetView()">⟲ Reset View</button>
+    </div>
+</div>
+
+<div id="canvas">
+    <div id="world">
+        <svg id="svg-layer"></svg>
+    </div>
+</div>
+
+<div class="legend">
+    <h3>Notasi Chen</h3>
+    <div class="legend-items">
+        <div class="legend-item"><div class="legend-shape rect"></div> Entitas (Tabel)</div>
+        <div class="legend-item"><div class="legend-shape oval-pk">PK</div> Primary Key (garis bawah)</div>
+        <div class="legend-item"><div class="legend-shape oval-fk"></div> Foreign Key (garis putus)</div>
+        <div class="legend-item"><div class="legend-shape oval"></div> Atribut Biasa</div>
+        <div class="legend-item"><div class="legend-shape diamond"></div> Relasi</div>
+        <div class="legend-item"><div class="legend-shape line-sample"></div> Garis penghubung</div>
+    </div>
+</div>
+
+<div class="zoom-controls">
+    <button onclick="zoomOut()">−</button>
+    <span id="zoom-level">100%</span>
+    <button onclick="zoomIn()">+</button>
+</div>
+
+<script>
+// ========================================================
+// DATA DEFINITION
+// ========================================================
+
+const entitiesData = [
+    {
+        id: 'users', label: 'USERS',
+        x: 320, y: 200,
+        attrs: [
+            { name: 'id_user', pk: true },
+            { name: 'username' },
+            { name: 'password' },
+            { name: 'nama_lengkap' },
+            { name: 'role' },
+            { name: 'created_at' },
+        ]
+    },
+    {
+        id: 'categories', label: 'CATEGORIES',
+        x: 320, y: 900,
+        attrs: [
+            { name: 'id_category', pk: true },
+            { name: 'nama_kategori' },
+        ]
+    },
+    {
+        id: 'products', label: 'PRODUCTS',
+        x: 900, y: 900,
+        attrs: [
+            { name: 'id_product', pk: true },
+            { name: 'id_category', fk: true },
+            { name: 'nama_produk' },
+            { name: 'harga_jual' },
+            { name: 'harga_beli' },
+            { name: 'stok' },
+            { name: 'satuan' },
+        ]
+    },
+    {
+        id: 'suppliers', label: 'SUPPLIERS',
+        x: 320, y: 1600,
+        attrs: [
+            { name: 'id_supplier', pk: true },
+            { name: 'kode_supplier' },
+            { name: 'nama_supplier' },
+            { name: 'nama_kontak' },
+            { name: 'alamat' },
+            { name: 'keterangan' },
+            { name: 'no_telp' },
+            { name: 'email' },
+            { name: 'created_at' },
+            { name: 'updated_at' },
+        ]
+    },
+    {
+        id: 'purchases', label: 'PURCHASES',
+        x: 900, y: 1600,
+        attrs: [
+            { name: 'id_purchase', pk: true },
+            { name: 'no_faktur' },
+            { name: 'id_supplier', fk: true },
+            { name: 'id_user', fk: true },
+            { name: 'tgl_beli' },
+            { name: 'total_bayar' },
+            { name: 'keterangan' },
+            { name: 'created_at' },
+        ]
+    },
+    {
+        id: 'purchase_details', label: 'PURCHASE\nDETAILS',
+        x: 1500, y: 1600,
+        attrs: [
+            { name: 'id_purchase_detail', pk: true },
+            { name: 'id_purchase', fk: true },
+            { name: 'id_product', fk: true },
+            { name: 'qty' },
+            { name: 'purchase_price' },
+            { name: 'subtotal' },
+        ]
+    },
+    {
+        id: 'sales', label: 'SALES',
+        x: 900, y: 200,
+        attrs: [
+            { name: 'id_sale', pk: true },
+            { name: 'kode_transaksi' },
+            { name: 'id_user', fk: true },
+            { name: 'nama_pelanggan' },
+            { name: 'tgl_jual' },
+            { name: 'total_harga' },
+            { name: 'bayar' },
+            { name: 'kembalian' },
+            { name: 'status' },
+            { name: 'created_at' },
+        ]
+    },
+    {
+        id: 'sale_details', label: 'SALE\nDETAILS',
+        x: 1500, y: 200,
+        attrs: [
+            { name: 'id_detail', pk: true },
+            { name: 'id_sale', fk: true },
+            { name: 'id_product', fk: true },
+            { name: 'harga_jual' },
+            { name: 'qty' },
+            { name: 'subtotal' },
+        ]
+    },
+    {
+        id: 'stok_log', label: 'STOK_LOG',
+        x: 1500, y: 900,
+        attrs: [
+            { name: 'id_log', pk: true },
+            { name: 'id_product', fk: true },
+            { name: 'id_user', fk: true },
+            { name: 'stok_sebelum' },
+            { name: 'stok_sesudah' },
+            { name: 'selisih' },
+            { name: 'keterangan' },
+            { name: 'created_at' },
+        ]
+    },
+    {
+        id: 'harga_log', label: 'HARGA_LOG',
+        x: 2100, y: 900,
+        attrs: [
+            { name: 'id_log', pk: true },
+            { name: 'id_product', fk: true },
+            { name: 'id_user', fk: true },
+            { name: 'tipe_harga' },
+            { name: 'harga_lama' },
+            { name: 'harga_baru' },
+            { name: 'keterangan' },
+            { name: 'created_at' },
+        ]
+    },
+];
+
+const relationshipsData = [
+    { id: 'r1', from: 'users', to: 'sales', label: 'Melayani', fromCard: '1', toCard: 'N', x: 610, y: 200 },
+    { id: 'r2', from: 'users', to: 'purchases', label: 'Mencatat', fromCard: '1', toCard: 'N', x: 610, y: 900 },
+    { id: 'r3', from: 'categories', to: 'products', label: 'Memiliki', fromCard: '1', toCard: 'N', x: 610, y: 900 },
+    { id: 'r4', from: 'suppliers', to: 'purchases', label: 'Memasok', fromCard: '1', toCard: 'N', x: 610, y: 1600 },
+    { id: 'r5', from: 'purchases', to: 'purchase_details', label: 'Memiliki', fromCard: '1', toCard: 'N', x: 1200, y: 1600 },
+    { id: 'r6', from: 'sales', to: 'sale_details', label: 'Memiliki', fromCard: '1', toCard: 'N', x: 1200, y: 200 },
+    { id: 'r7', from: 'products', to: 'purchase_details', label: 'Dibeli', fromCard: '1', toCard: 'N', x: 1200, y: 1250 },
+    { id: 'r8', from: 'products', to: 'sale_details', label: 'Dijual', fromCard: '1', toCard: 'N', x: 1200, y: 550 },
+    { id: 'r9', from: 'products', to: 'stok_log', label: 'Dicatat\nStok', fromCard: '1', toCard: 'N', x: 1200, y: 900 },
+    { id: 'r10', from: 'products', to: 'harga_log', label: 'Dicatat\nHarga', fromCard: '1', toCard: 'N', x: 1500, y: 900 },
+    { id: 'r11', from: 'users', to: 'stok_log', label: 'Mengubah\nStok', fromCard: '1', toCard: 'N', x: 900, y: 550 },
+    { id: 'r12', from: 'users', to: 'harga_log', label: 'Mengubah\nHarga', fromCard: '1', toCard: 'N', x: 1200, y: 200 },
+];
+
+// ========================================================
+// BETTER LAYOUT — compute attribute positions around entity
+// ========================================================
+function computeAttrPositions(ent) {
+    const count = ent.attrs.length;
+    const positions = [];
+    const radiusX = 160;
+    const radiusY = 115;
+
+    // Fan out above and below the entity
+    const startAngle = -Math.PI;
+    const endAngle = 0;
+    // distribute across top half (above entity)
+    // For left-side entities spread around left, for others spread on top
+
+    for (let i = 0; i < count; i++) {
+        const angle = Math.PI + (i / (count - 1 || 1)) * Math.PI; // bottom semicircle (PI to 2PI)
+        // Actually let's spread them evenly around
+        const fullAngle = (i / count) * 2 * Math.PI - Math.PI / 2;
+        const ax = ent.x + Math.cos(fullAngle) * radiusX;
+        const ay = ent.y + Math.sin(fullAngle) * radiusY;
+        positions.push({ x: ax, y: ay });
+    }
+    return positions;
+}
+
+// ========================================================
+// RENDER ENGINE
+// ========================================================
+const world = document.getElementById('world');
+const svgLayer = document.getElementById('svg-layer');
+
+// Element storage
+const entElements = {};
+const relElements = {};
+const attrElements = {};
+const lines = [];
+
+function createSVGLine(x1, y1, x2, y2, extra) {
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', x1);
+    line.setAttribute('y1', y1);
+    line.setAttribute('x2', x2);
+    line.setAttribute('y2', y2);
+    if (extra) {
+        Object.keys(extra).forEach(k => line.setAttribute(k, extra[k]));
+    }
+    svgLayer.appendChild(line);
+    return line;
+}
+
+function createEntity(ent) {
+    const el = document.createElement('div');
+    el.className = 'ent-rect';
+    el.id = 'ent-' + ent.id;
+    el.style.left = (ent.x - 60) + 'px';
+    el.style.top = (ent.y - 22) + 'px';
+    el.textContent = ent.label.replace('\n', ' ');
+    el.style.whiteSpace = 'pre-line';
+    world.appendChild(el);
+    entElements[ent.id] = el;
+
+    // Make draggable
+    makeDraggable(el, ent, 'entity');
+}
+
+function createAttributes(ent) {
+    const count = ent.attrs.length;
+    const positions = [];
+
+    const radiusX = 170;
+    const radiusY = count <= 4 ? 100 : (count <= 7 ? 130 : 160);
+
+    for (let i = 0; i < count; i++) {
+        const angle = (i / count) * 2 * Math.PI - Math.PI / 2;
+        const ax = ent.x + Math.cos(angle) * radiusX;
+        const ay = ent.y + Math.sin(angle) * radiusY;
+        positions.push({ x: ax, y: ay });
+    }
+
+    ent.attrs.forEach((attr, i) => {
+        const el = document.createElement('div');
+        el.className = 'attr-oval';
+        if (attr.pk) el.classList.add('pk');
+        if (attr.fk) el.classList.add('fk');
+
+        const textSpan = document.createElement('span');
+        textSpan.className = 'attr-text';
+        textSpan.textContent = attr.name;
+        el.appendChild(textSpan);
+
+        el.style.left = (positions[i].x - 40) + 'px';
+        el.style.top = (positions[i].y - 17) + 'px';
+
+        world.appendChild(el);
+
+        if (!attrElements[ent.id]) attrElements[ent.id] = [];
+        attrElements[ent.id].push({
+            el,
+            pos: positions[i],
+            attr,
+            entId: ent.id
+        });
+    });
+}
+
+function createRelationship(rel) {
+    const el = document.createElement('div');
+    el.className = 'rel-diamond';
+    el.id = 'rel-' + rel.id;
+    el.style.left = (rel.x - 60) + 'px';
+    el.style.top = (rel.y - 30) + 'px';
+
+    el.innerHTML = `
+        <div class="rel-diamond-shape"></div>
+        <div class="rel-diamond-label">${rel.label}</div>
+    `;
+
+    world.appendChild(el);
+    relElements[rel.id] = el;
+}
+
+function getCenter(el) {
+    const l = parseInt(el.style.left);
+    const t = parseInt(el.style.top);
+    const w = el.offsetWidth;
+    const h = el.offsetHeight;
+    return { x: l + w / 2, y: t + h / 2 };
+}
+
+function drawAllLines() {
+    svgLayer.innerHTML = '';
+    // Remove old card labels
+    document.querySelectorAll('.card-label').forEach(e => e.remove());
+
+    // 1) Entity → Attribute lines
+    entitiesData.forEach(ent => {
+        const entEl = entElements[ent.id];
+        const entCenter = getCenter(entEl);
+
+        if (attrElements[ent.id]) {
+            attrElements[ent.id].forEach(a => {
+                const attrCenter = getCenter(a.el);
+                createSVGLine(entCenter.x, entCenter.y, attrCenter.x, attrCenter.y);
+            });
+        }
+    });
+
+    // 2) Entity → Relationship → Entity lines
+    relationshipsData.forEach(rel => {
+        const relEl = relElements[rel.id];
+        const relCenter = getCenter(relEl);
+
+        const fromEl = entElements[rel.from];
+        const toEl = entElements[rel.to];
+        const fromCenter = getCenter(fromEl);
+        const toCenter = getCenter(toEl);
+
+        // Line from entity → diamond
+        createSVGLine(fromCenter.x, fromCenter.y, relCenter.x, relCenter.y, {
+            stroke: '#e11d48',
+            'stroke-width': '2',
+            'stroke-opacity': '0.5'
+        });
+
+        // Line from diamond → entity
+        createSVGLine(relCenter.x, relCenter.y, toCenter.x, toCenter.y, {
+            stroke: '#e11d48',
+            'stroke-width': '2',
+            'stroke-opacity': '0.5'
+        });
+
+        // Cardinality labels
+        const card1 = document.createElement('div');
+        card1.className = 'card-label';
+        card1.textContent = rel.fromCard;
+        const dx1 = relCenter.x - fromCenter.x;
+        const dy1 = relCenter.y - fromCenter.y;
+        const dist1 = Math.sqrt(dx1*dx1 + dy1*dy1);
+        if (dist1 > 0) {
+            card1.style.left = (fromCenter.x + dx1 * 0.25 - 8) + 'px';
+            card1.style.top = (fromCenter.y + dy1 * 0.25 - 14) + 'px';
+        }
+        world.appendChild(card1);
+
+        const cardN = document.createElement('div');
+        cardN.className = 'card-label';
+        cardN.textContent = rel.toCard;
+        const dx2 = toCenter.x - relCenter.x;
+        const dy2 = toCenter.y - relCenter.y;
+        if (Math.sqrt(dx2*dx2+dy2*dy2) > 0) {
+            cardN.style.left = (relCenter.x + dx2 * 0.75 - 8) + 'px';
+            cardN.style.top = (relCenter.y + dy2 * 0.75 - 14) + 'px';
+        }
+        world.appendChild(cardN);
+    });
+}
+
+// ========================================================
+// DRAG & DROP
+// ========================================================
+function makeDraggable(el, data, type) {
+    let isDragging = false;
+    let startX, startY, origL, origT;
+
+    el.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        origL = parseInt(el.style.left);
+        origT = parseInt(el.style.top);
+        el.style.zIndex = 100;
+        e.preventDefault();
+    });
+
+    const onMove = (e) => {
+        if (!isDragging) return;
+        const z = currentZoom;
+        const dx = (e.clientX - startX) / z;
+        const dy = (e.clientY - startY) / z;
+        const newL = origL + dx;
+        const newT = origT + dy;
+        el.style.left = newL + 'px';
+        el.style.top = newT + 'px';
+
+        // If entity, also move its attributes
+        if (type === 'entity') {
+            const entData = entitiesData.find(d => d.id === data.id);
+            const oldX = entData.x;
+            const oldY = entData.y;
+            const elW = el.offsetWidth;
+            const elH = el.offsetHeight;
+            entData.x = newL + elW / 2;
+            entData.y = newT + elH / 2;
+
+            const diffX = entData.x - oldX;
+            const diffY = entData.y - oldY;
+
+            if (attrElements[data.id]) {
+                attrElements[data.id].forEach(a => {
+                    const al = parseInt(a.el.style.left) + diffX;
+                    const at_ = parseInt(a.el.style.top) + diffY;
+                    a.el.style.left = al + 'px';
+                    a.el.style.top = at_ + 'px';
+                });
+            }
+        }
+
+        drawAllLines();
+    };
+
+    const onUp = () => {
+        if (isDragging) {
+            isDragging = false;
+            el.style.zIndex = type === 'entity' ? 20 : 15;
+        }
+    };
+
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+}
+
+// ========================================================
+// IMPROVED LAYOUT
+// ========================================================
+function layoutEntities() {
+    /*
+        Layout plan (conceptual grid):
+        
+        Row 0 (y=200):   [users]  ---Melayani---  [sales]  ---Memiliki---  [sale_details]
+        Row 1 (y=900):   [categories] ---Memiliki--- [products] ---Dicatat--- [stok_log] --- [harga_log]
+        Row 2 (y=1600):  [suppliers] ---Memasok--- [purchases] ---Memiliki--- [purchase_details]
+        
+        Cross-row relations handled by diagonal diamonds
+    */
+
+    const layout = {
+        'users':             { x: 350,  y: 260 },
+        'sales':             { x: 1050, y: 260 },
+        'sale_details':      { x: 1750, y: 260 },
+        'categories':        { x: 350,  y: 960 },
+        'products':          { x: 1050, y: 960 },
+        'stok_log':          { x: 1750, y: 960 },
+        'harga_log':         { x: 2450, y: 960 },
+        'suppliers':         { x: 350,  y: 1660 },
+        'purchases':         { x: 1050, y: 1660 },
+        'purchase_details':  { x: 1750, y: 1660 },
+    };
+
+    entitiesData.forEach(ent => {
+        if (layout[ent.id]) {
+            ent.x = layout[ent.id].x;
+            ent.y = layout[ent.id].y;
+        }
+    });
+
+    // Relationship diamonds — positioned between their two entities
+    const relLayout = {
+        'r1':  { x: 700,  y: 260 },    // users — Melayani — sales
+        'r2':  { x: 700, y: 620 },     // users — Mencatat — purchases (up-diagonal)
+        'r3':  { x: 700,  y: 960 },    // categories — Memiliki — products
+        'r4':  { x: 700,  y: 1660 },   // suppliers — Memasok — purchases
+        'r5':  { x: 1400, y: 1660 },   // purchases — Memiliki — purchase_details
+        'r6':  { x: 1400, y: 260 },    // sales — Memiliki — sale_details
+        'r7':  { x: 1400, y: 1310 },   // products — Dibeli — purchase_details
+        'r8':  { x: 1400, y: 610 },    // products — Dijual — sale_details
+        'r9':  { x: 1400, y: 960 },    // products — Dicatat Stok — stok_log
+        'r10': { x: 2100, y: 960 },    // products — Dicatat Harga — harga_log
+        'r11': { x: 1050, y: 620 },    // users — Mengubah Stok — stok_log
+        'r12': { x: 1400, y: 620 },    // users — Mengubah Harga — harga_log
+    };
+
+    relationshipsData.forEach(rel => {
+        if (relLayout[rel.id]) {
+            rel.x = relLayout[rel.id].x;
+            rel.y = relLayout[rel.id].y;
+        }
+    });
+}
+
+// ========================================================
+// INIT
+// ========================================================
+layoutEntities();
+
+entitiesData.forEach(ent => {
+    createEntity(ent);
+    createAttributes(ent);
+});
+
+relationshipsData.forEach(rel => {
+    createRelationship(rel);
+});
+
+requestAnimationFrame(() => {
+    drawAllLines();
+});
+
+// ========================================================
+// ZOOM
+// ========================================================
+let currentZoom = 0.65;
+
+function applyZoom() {
+    document.getElementById('world').style.transform = `scale(${currentZoom})`;
+    document.getElementById('zoom-level').textContent = Math.round(currentZoom * 100) + '%';
+}
+
+function zoomIn() {
+    currentZoom = Math.min(currentZoom + 0.1, 2);
+    applyZoom();
+}
+
+function zoomOut() {
+    currentZoom = Math.max(currentZoom - 0.05, 0.2);
+    applyZoom();
+}
+
+function resetView() {
+    currentZoom = 0.65;
+    applyZoom();
+    document.getElementById('canvas').scrollTo(0, 0);
+}
+
+// Init zoom
+applyZoom();
+
+document.getElementById('canvas').addEventListener('wheel', (e) => {
+    if (e.ctrlKey) {
+        e.preventDefault();
+        if (e.deltaY < 0) zoomIn();
+        else zoomOut();
+    }
+});
+</script>
+</body>
+</html>

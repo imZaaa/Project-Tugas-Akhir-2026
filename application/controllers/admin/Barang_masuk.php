@@ -104,14 +104,21 @@ class Barang_masuk extends CI_Controller {
 
         // [4] SUSUN HEADER FINAL UNTUK DIKIRIM KE DATABASE
         date_default_timezone_set('Asia/Jakarta');
+
+        // Ambil nama supplier saat ini sebagai snapshot historis
+        // Tujuan: jika nama supplier diedit di kemudian hari, data transaksi ini tidak berubah
+        $supplier_data = $this->M_supplier->get_by_id($id_supplier);
+        $nama_supplier_snapshot = $supplier_data['nama_supplier'] ?? '';
+
         $header = [
-            'no_faktur'   => $no_faktur,
-            'id_supplier' => $id_supplier,
-            'id_user'     => $this->session->userdata('id_user'), // Siapa petugas admin yang mendata ini
-            'tgl_beli'    => $tgl_beli,
-            'total_bayar' => $total_bayar, // Menentukan pencatatan beban piutang/uang keluar
-            'keterangan'  => $keterangan,
-            'created_at'  => date('Y-m-d H:i:s'), // Waktu aktual disistem
+            'no_faktur'               => $no_faktur,
+            'id_supplier'             => $id_supplier,
+            'nama_supplier_snapshot'  => $nama_supplier_snapshot, // Snapshot nama saat transaksi dibuat
+            'id_user'                 => $this->session->userdata('id_user'), // Siapa petugas admin yang mendata ini
+            'tgl_beli'                => $tgl_beli,
+            'total_bayar'             => $total_bayar, // Menentukan pencatatan beban piutang/uang keluar
+            'keterangan'              => $keterangan,
+            'created_at'              => date('Y-m-d H:i:s'), // Waktu aktual disistem
         ];
 
         // [5] EKSEKUSI DATABASE LEVEL TINGGI

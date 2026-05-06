@@ -777,7 +777,7 @@
     <!-- PAGE HEADER -->
     <div class="kp-header">
         <div>
-            <h1><i class="fas fa-boxes" style="color:#1a56db; margin-right:6px; font-size:20px;"></i>Stok Produk</h1>
+            <h1><i class="fas fa-boxes" style="color:#1a56db; margin-right:6px; font-size:20px;"></i>Data Produk</h1>
             <p>Pantau dan perbarui stok produk — Gudang PT Pordjo</p>
         </div>
     </div>

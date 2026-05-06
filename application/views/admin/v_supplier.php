@@ -123,6 +123,15 @@
     .alert-custom { margin: 16px 24px 0; padding: 11px 16px; border-radius: 10px; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 9px; }
     .alert-custom.success { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
     .alert-custom.error   { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+    .alert-custom.warning { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+
+    /* NONAKTIF BADGE */
+    .badge-nonaktif { display: inline-flex; align-items: center; gap: 4px; background: #fef2f2; color: #dc2626; font-size: 10.5px; font-weight: 700; padding: 3px 8px; border-radius: 20px; border: 1px solid #fecaca; }
+    .btn-reaktif { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 600; padding: 5px 10px; border-radius: 7px; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.15s; background: #f0fdf4; color: #16a34a; }
+    .btn-reaktif:hover { background: #dcfce7; }
+    .section-nonaktif { margin: 0 24px 28px; background: #fff; border-radius: 14px; border: 1.5px dashed #fecaca; box-shadow: 0 2px 8px rgba(220,38,38,0.05); overflow: hidden; }
+    .section-nonaktif .card-toolbar { border-bottom: 1px solid #fef2f2; background: #fffbeb; }
+    .section-nonaktif .data-table th { background: #fff8f8; }
 
     @media (max-width: 900px) {
         .supplier-stats { grid-template-columns: 1fr; }
@@ -147,23 +156,29 @@
     <?php if ($this->session->flashdata('success')): ?>
     <div class="alert-custom success"><i class="fas fa-check-circle"></i> <div><?= $this->session->flashdata('success') ?></div></div>
     <?php endif; ?>
+    <?php if ($this->session->flashdata('warning')): ?>
+    <div class="alert-custom warning"><i class="fas fa-exclamation-triangle"></i> <div><?= $this->session->flashdata('warning') ?></div></div>
+    <?php endif; ?>
     <?php if ($this->session->flashdata('error')): ?>
     <div class="alert-custom error" style="align-items: flex-start;"><i class="fas fa-exclamation-circle" style="margin-top: 2px;"></i> <div><?= $this->session->flashdata('error') ?></div></div>
     <?php endif; ?>
 
     <!-- STAT CARDS -->
     <?php
-        $total_sup   = count($suppliers);
-        $lengkap     = count(array_filter($suppliers, fn($s) => !empty($s['nama_kontak']) && !empty($s['no_telp']) && !empty($s['email']) && !empty($s['alamat'])));
+        $total_sup     = count(array_filter($suppliers, fn($s) => ($s['status'] ?? 'aktif') === 'aktif'));
+        $lengkap       = count(array_filter($suppliers, fn($s) => ($s['status'] ?? 'aktif') === 'aktif' && !empty($s['nama_kontak']) && !empty($s['no_telp']) && !empty($s['email']) && !empty($s['alamat'])));
         $tidak_lengkap = $total_sup - $lengkap;
-        $bulan_ini   = count(array_filter($suppliers, fn($s) => date('Y-m', strtotime($s['created_at'])) === date('Y-m')));
+        $nonaktif      = count(array_filter($suppliers, fn($s) => ($s['status'] ?? 'aktif') === 'nonaktif'));
+        $bulan_ini     = count(array_filter($suppliers, fn($s) => ($s['status'] ?? 'aktif') === 'aktif' && date('Y-m', strtotime($s['created_at'])) === date('Y-m')));
+        $suppliers_aktif    = array_values(array_filter($suppliers, fn($s) => ($s['status'] ?? 'aktif') === 'aktif'));
+        $suppliers_nonaktif = array_values(array_filter($suppliers, fn($s) => ($s['status'] ?? 'aktif') === 'nonaktif'));
     ?>
     <div class="supplier-stats">
         <div class="sstat-card">
             <div class="sstat-icon" style="background:#eff6ff; color:#1a56db;"><i class="fas fa-truck"></i></div>
             <div>
                 <div class="sstat-value"><?= $total_sup ?></div>
-                <div class="sstat-label">Total Supplier</div>
+                <div class="sstat-label">Supplier Aktif</div>
             </div>
         </div>
         <div class="sstat-card">
@@ -181,11 +196,16 @@
             </div>
         </div>
         <div class="sstat-card">
-            <div class="sstat-icon" style="background:#fffbeb; color:#d97706;"><i class="fas fa-calendar-plus"></i></div>
+            <div class="sstat-icon" style="background:#fef2f2; color:#dc2626;"><i class="fas fa-ban"></i></div>
             <div>
-                <div class="sstat-value"><?= $bulan_ini ?></div>
-                <div class="sstat-label">Ditambah Bulan Ini</div>
+                <div class="sstat-value"><?= $nonaktif ?></div>
+                <div class="sstat-label">Supplier Nonaktif</div>
             </div>
+            <?php if ($nonaktif > 0): ?>
+            <div style="margin-left:auto;">
+                <span style="font-size:10.5px; color:#dc2626; font-weight:600; background:#fef2f2; padding:3px 8px; border-radius:20px; border:1px solid #fecaca;"> <?= $nonaktif ?></span>
+            </div>
+            <?php endif; ?>
         </div>
     </div>
 
@@ -193,8 +213,8 @@
     <div class="main-card">
         <div class="card-toolbar">
             <div style="display:flex; align-items:center; gap:10px;">
-                <span style="font-size:14px; font-weight:700; color:#111827;">Daftar Supplier</span>
-                <span class="count-badge"><i class="fas fa-truck" style="font-size:10px;"></i><?= count($suppliers) ?> supplier</span>
+                <span style="font-size:14px; font-weight:700; color:#111827;">Daftar Supplier Aktif</span>
+                <span class="count-badge"><i class="fas fa-truck" style="font-size:10px;"></i><?= count($suppliers_aktif) ?> supplier</span>
             </div>
             <div class="search-box">
                 <i class="fas fa-search"></i>
@@ -214,8 +234,8 @@
                 </tr>
             </thead>
             <tbody>
-                <?php if (!empty($suppliers)): ?>
-                    <?php foreach ($suppliers as $i => $s): ?>
+                <?php if (!empty($suppliers_aktif)): ?>
+                    <?php foreach ($suppliers_aktif as $i => $s): ?>
                     <tr>
                         <td style="color:#9ca3af; font-size:12px; width:40px;"><?= $i + 1 ?></td>
                         <td>
@@ -273,6 +293,92 @@
         <div class="pagination-wrap" id="paginationWrap">
             <div class="pagination-info" id="paginationInfo"></div>
             <div class="pagination-controls" id="paginationControls"></div>
+        </div>
+    </div>
+
+    <!-- ===== SECTION SUPPLIER NONAKTIF ===== -->
+    <?php if (!empty($suppliers_nonaktif)): ?>
+    <div class="section-nonaktif">
+        <div class="card-toolbar">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:14px; font-weight:700; color:#b45309;"><i class="fas fa-ban" style="margin-right:6px; color:#dc2626;"></i>Supplier Nonaktif</span>
+                <span style="display:inline-flex; align-items:center; gap:4px; background:#fef2f2; color:#dc2626; font-size:12px; font-weight:600; padding:4px 10px; border-radius:20px; border:1px solid #fecaca;">
+                    <i class="fas fa-exclamation-circle" style="font-size:10px;"></i><?= count($suppliers_nonaktif) ?> supplier
+                </span>
+            </div>
+            <span style="font-size:11.5px; color:#9ca3af;">Supplier ini memiliki riwayat transaksi sehingga tidak dapat dihapus permanen.</span>
+        </div>
+        <table class="data-table" id="supTableNonaktif">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Supplier</th>
+                    <th>Kontak</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($suppliers_nonaktif as $i => $s): ?>
+                <tr style="opacity:0.8;">
+                    <td style="color:#9ca3af; font-size:12px; width:40px;"><?= $i + 1 ?></td>
+                    <td>
+                        <div class="sup-wrap">
+                            <div class="sup-avatar" style="background:linear-gradient(135deg,#9ca3af,#6b7280);"><?= strtoupper(substr($s['nama_supplier'], 0, 1)) ?></div>
+                            <div>
+                                <span class="sup-name" style="color:#6b7280;"><?= htmlspecialchars($s['nama_supplier']) ?></span>
+                                <span class="sup-kode"><?= htmlspecialchars($s['kode_supplier']) ?></span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="kontak-wrap">
+                            <span class="kontak-nama"><?= htmlspecialchars($s['nama_kontak'] ?: '-') ?></span>
+                            <span class="kontak-telp"><?= !empty($s['no_telp']) ? htmlspecialchars($s['no_telp']) : '-' ?></span>
+                        </div>
+                    </td>
+                    <td style="font-size:12.5px; color:#6b7280;"><?= htmlspecialchars($s['email'] ?: '—') ?></td>
+                    <td>
+                        <span class="badge-nonaktif"><i class="fas fa-ban" style="font-size:9px;"></i> Nonaktif</span>
+                    </td>
+                    <td>
+                        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                            <button class="btn-action btn-detail" onclick="openDetail(<?= htmlspecialchars(json_encode($s), ENT_QUOTES) ?>)">
+                                <i class="fas fa-eye"></i> Detail
+                            </button>
+                            <button class="btn-reaktif btn-action"
+                                onclick="openAktifkan('<?= $s['id_supplier'] ?>', '<?= htmlspecialchars($s['nama_supplier'], ENT_QUOTES) ?>')">
+                                <i class="fas fa-redo"></i> Aktifkan
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <?php endif; ?>
+
+    <!-- ===== MODAL AKTIFKAN ===== -->
+    <div class="modal-overlay" id="modalAktifkan">
+        <div class="modal-box modal-sm">
+            <div class="modal-header">
+                <h4><i class="fas fa-redo" style="color:#16a34a; margin-right:8px;"></i>Aktifkan Supplier</h4>
+                <button class="modal-close" onclick="closeModal('modalAktifkan')"><i class="fas fa-times"></i></button>
+            </div>
+            <form action="<?= site_url('admin/supplier/aktifkan') ?>" method="post">
+                <input type="hidden" name="id_supplier" id="aktif_id">
+                <div class="delete-modal-body">
+                    <div class="delete-icon" style="background:#f0fdf4; color:#16a34a;"><i class="fas fa-redo"></i></div>
+                    <h5>Aktifkan Kembali Supplier?</h5>
+                    <p>Supplier <strong id="aktif_nama"></strong> akan diaktifkan dan dapat dipilih kembali di form transaksi baru.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeModal('modalAktifkan')">Batal</button>
+                    <button type="submit" class="btn-submit"><i class="fas fa-check"></i> Ya, Aktifkan</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -552,6 +658,12 @@
         document.getElementById('del_id').value          = id;
         document.getElementById('del_nama').textContent  = nama;
         openModal('modalDelete');
+    }
+
+    function openAktifkan(id, nama) {
+        document.getElementById('aktif_id').value         = id;
+        document.getElementById('aktif_nama').textContent = nama;
+        openModal('modalAktifkan');
     }
 
     document.querySelectorAll('.modal-overlay').forEach(function(o) {

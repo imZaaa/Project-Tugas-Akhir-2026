@@ -1,0 +1,106 @@
+// =============================================
+// ERD — Sistem POS Tugas Akhir (db_ta)
+// Paste kode ini ke https://dbdiagram.io
+// =============================================
+
+Table users {
+  id_user int [pk, increment, note: 'Primary Key']
+  username varchar(50) [not null]
+  password varchar(255) [not null]
+  nama_lengkap varchar(100)
+  role enum('admin','kasir') [not null]
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+Table categories {
+  id_category int [pk, increment, note: 'Primary Key']
+  nama_kategori varchar(100) [not null]
+}
+
+Table products {
+  id_product int [pk, increment, note: 'Primary Key']
+  id_category int [ref: > categories.id_category, note: 'FK ke categories']
+  nama_produk varchar(150) [not null]
+  harga_jual int [not null]
+  harga_beli int [not null, default: 0]
+  stok int [default: 0]
+  satuan varchar(20)
+}
+
+Table suppliers {
+  id_supplier int [pk, increment, note: 'Primary Key']
+  kode_supplier varchar(20)
+  nama_supplier varchar(100) [not null]
+  nama_kontak varchar(50)
+  alamat text
+  keterangan text
+  no_telp varchar(15)
+  email varchar(50)
+  status enum('aktif','nonaktif') [default: 'aktif', note: 'Soft delete flag']
+  created_at datetime [default: `CURRENT_TIMESTAMP`]
+  updated_at datetime [default: `CURRENT_TIMESTAMP`]
+}
+
+Table purchases {
+  id_purchase int [pk, increment, note: 'Primary Key']
+  no_faktur varchar(50)
+  id_supplier int [ref: > suppliers.id_supplier, note: 'FK ke suppliers']
+  id_user int [ref: > users.id_user, not null, note: 'FK ke users']
+  tgl_beli date [not null]
+  total_bayar int
+  keterangan text
+  created_at datetime [default: `CURRENT_TIMESTAMP`]
+}
+
+Table purchase_details {
+  id_purchase_detail int [pk, increment, note: 'Primary Key']
+  id_purchase int [ref: > purchases.id_purchase, not null, note: 'FK ke purchases']
+  id_product int [ref: > products.id_product, not null, note: 'FK ke products']
+  qty int [not null]
+  purchase_price double [not null]
+  subtotal double [not null]
+}
+
+Table sales {
+  id_sale int [pk, increment, note: 'Primary Key']
+  kode_transaksi varchar(50)
+  id_user int [ref: > users.id_user, note: 'FK ke users']
+  nama_pelanggan varchar(100)
+  tgl_jual timestamp [default: `CURRENT_TIMESTAMP`]
+  total_harga int
+  bayar int
+  kembalian int
+  status enum('Lunas','Batal') [default: 'Lunas']
+  created_at datetime [default: `CURRENT_TIMESTAMP`]
+}
+
+Table sale_details {
+  id_detail int [pk, increment, note: 'Primary Key']
+  id_sale int [ref: > sales.id_sale, note: 'FK ke sales']
+  id_product int [ref: > products.id_product, note: 'FK ke products']
+  harga_jual double
+  qty int [not null]
+  subtotal int [not null]
+}
+
+Table stok_log {
+  id_log int [pk, increment, note: 'Primary Key - Audit Trail Stok']
+  id_product int [ref: > products.id_product, not null, note: 'FK ke products']
+  id_user int [ref: > users.id_user, not null, note: 'FK ke users']
+  stok_sebelum int [not null]
+  stok_sesudah int [not null]
+  selisih int [not null]
+  keterangan varchar(255)
+  created_at datetime [default: `CURRENT_TIMESTAMP`]
+}
+
+Table harga_log {
+  id_log int [pk, increment, note: 'Primary Key - Audit Trail Harga']
+  id_product int [ref: > products.id_product, not null, note: 'FK ke products']
+  id_user int [ref: > users.id_user, note: 'FK ke users']
+  tipe_harga varchar(50) [not null]
+  harga_lama int [not null]
+  harga_baru int [not null]
+  keterangan varchar(255)
+  created_at datetime [not null]
+}

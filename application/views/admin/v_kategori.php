@@ -44,8 +44,8 @@
     .btn-edit:hover   { background: #dbeafe; color: #1a56db; }
     .btn-delete { background: #fef2f2; color: #dc2626; }
     .btn-delete:hover { background: #fee2e2; color: #dc2626; }
-    .btn-stok   { background: #ecfdf5; color: #059669; }
-    .btn-stok:hover   { background: #d1fae5; color: #059669; }
+    .btn-detail { background: #eff6ff; color: #1a56db; }
+    .btn-detail:hover { background: #dbeafe; color: #1a56db; }
 
     .no-data-row td { text-align: center; padding: 48px 20px; color: #9ca3af; font-size: 13px; }
     .no-data-icon { width: 52px; height: 52px; background: #f3f4f6; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; color: #d1d5db; margin: 0 auto 12px; }
@@ -54,6 +54,7 @@
     .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 99999; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(3px); }
     .modal-overlay.show { display: flex; }
     .modal-box { background: #fff; border-radius: 16px; width: 100%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); overflow: hidden; animation: modalIn 0.2s ease; }
+    .modal-box.modal-lg { max-width: 680px; }
     @keyframes modalIn { from { opacity: 0; transform: translateY(-16px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
     .modal-header { padding: 18px 22px; border-bottom: 1px solid #f1f3f5; display: flex; align-items: center; justify-content: space-between; }
     .modal-header h4 { font-size: 15px; font-weight: 700; color: #111827; margin: 0; }
@@ -136,8 +137,8 @@
                         </td>
                         <td>
                             <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                                <a href="<?= site_url('admin/produk?id_category=' . $k['id_category']) ?>" class="btn-action btn-stok">
-                                    <i class="fas fa-boxes"></i> Lihat Stok
+                                <a href="<?= site_url('admin/kategori/detail/' . $k['id_category']) ?>" class="btn-action btn-detail">
+                                    <i class="fas fa-list"></i> Detail
                                 </a>
                                 <button class="btn-action btn-edit"
                                     onclick="openModalEdit('<?= $k['id_category'] ?>', '<?= htmlspecialchars($k['nama_kategori'], ENT_QUOTES) ?>')">
