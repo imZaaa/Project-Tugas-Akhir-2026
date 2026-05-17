@@ -33,7 +33,7 @@ class Produk extends CI_Controller {
 
         $this->load->view('layout/header', $data);
         $this->load->view('layout/sidebar', $data);
-        $this->load->view('kasir/v_produk', $data);
+        $this->load->view('kasir/produk/v_produk', $data);
         $this->load->view('layout/footer');
     }
 

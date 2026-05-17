@@ -35,7 +35,6 @@
     .trx-code { font-size: 12px; font-weight: 700; color: #1a56db; font-family: 'Courier New', monospace; }
     .status-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; }
     .status-lunas { background: #ecfdf5; color: #059669; }
-    .status-batal { background: #fef2f2; color: #dc2626; }
     .total-text { font-weight: 700; color: #111827; font-size: 13px; }
 
     .btn-action { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 600; padding: 5px 10px; border-radius: 7px; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.15s; text-decoration: none; }
@@ -43,8 +42,7 @@
     .btn-detail:hover { background: #dbeafe; color: #1a56db; }
     .btn-print { background: #ecfdf5; color: #059669; }
     .btn-print:hover { background: #d1fae5; color: #059669; }
-    .btn-void { background: #fef2f2; color: #dc2626; }
-    .btn-void:hover { background: #fee2e2; color: #dc2626; }
+
 
     .no-data-row td { text-align: center; padding: 48px 20px; color: #9ca3af; font-size: 13px; }
     .no-data-icon { width: 52px; height: 52px; background: #f3f4f6; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; color: #d1d5db; margin: 0 auto 12px; }
@@ -60,23 +58,7 @@
     .page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
     .page-btn.nav-btn { width: auto; padding: 0 10px; font-size: 12px; }
 
-    /* MODAL VOID */
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 99999; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(3px); }
-    .modal-overlay.show { display: flex; }
-    .modal-box { background: #fff; border-radius: 16px; width: 100%; max-width: 380px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); overflow: hidden; animation: modalIn 0.2s ease; }
-    @keyframes modalIn { from { opacity: 0; transform: translateY(-16px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
-    .modal-header-custom { padding: 18px 22px; border-bottom: 1px solid #f1f3f5; display: flex; align-items: center; justify-content: space-between; }
-    .modal-header-custom h4 { font-size: 15px; font-weight: 700; color: #111827; margin: 0; }
-    .modal-close { width: 30px; height: 30px; background: #f3f4f6; border: none; border-radius: 7px; cursor: pointer; color: #6b7280; font-size: 13px; display: flex; align-items: center; justify-content: center; }
-    .modal-close:hover { background: #e5e7eb; }
-    .void-modal-body { padding: 24px 22px; text-align: center; }
-    .void-icon { width: 56px; height: 56px; background: #fef2f2; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #dc2626; margin: 0 auto 14px; }
-    .void-modal-body h5 { font-size: 15px; font-weight: 700; color: #111827; margin: 0 0 8px; }
-    .void-modal-body p { font-size: 12.5px; color: #6b7280; margin: 0; line-height: 1.6; }
-    .modal-footer-custom { padding: 14px 22px; border-top: 1px solid #f1f3f5; display: flex; justify-content: flex-end; gap: 10px; }
-    .btn-cancel { padding: 9px 18px; border: 1.5px solid #e5e7eb; border-radius: 9px; background: #fff; color: #6b7280; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; }
-    .btn-cancel:hover { background: #f9fafb; }
-    .btn-void-confirm { padding: 9px 20px; border: none; border-radius: 9px; background: linear-gradient(135deg, #dc2626, #b91c1c); color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; display: flex; align-items: center; gap: 6px; }
+
 
     .alert-custom { margin: 16px 24px 0; padding: 11px 16px; border-radius: 10px; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 9px; }
     .alert-custom.success { background: #eff6ff; color: #1a56db; border: 1px solid #bfdbfe; }
@@ -177,11 +159,7 @@
                         <td style="font-size:12.5px;">Rp <?= number_format($s['bayar'] ?? 0, 0, ',', '.') ?></td>
                         <td style="font-size:12.5px;">Rp <?= number_format($s['kembalian'] ?? 0, 0, ',', '.') ?></td>
                         <td>
-                            <?php if (($s['status'] ?? '') === 'Lunas'): ?>
-                                <span class="status-badge status-lunas"><i class="fas fa-check-circle" style="font-size:9px;"></i> Lunas</span>
-                            <?php else: ?>
-                                <span class="status-badge status-batal"><i class="fas fa-times-circle" style="font-size:9px;"></i> Batal</span>
-                            <?php endif; ?>
+                            <span class="status-badge status-lunas"><i class="fas fa-check-circle" style="font-size:9px;"></i> Lunas</span>
                         </td>
                         <td>
                             <div style="display:flex; gap:5px; flex-wrap:wrap;">
@@ -191,11 +169,6 @@
                                 <a href="<?= site_url('admin/penjualan/cetak/' . $s['id_sale']) ?>" class="btn-action btn-print" target="_blank">
                                     <i class="fas fa-print"></i> Nota
                                 </a>
-                                <?php if (($s['status'] ?? '') === 'Lunas'): ?>
-                                <button class="btn-action btn-void" onclick="openVoid('<?= $s['id_sale'] ?>', '<?= htmlspecialchars($s['kode_transaksi'], ENT_QUOTES) ?>')">
-                                    <i class="fas fa-ban"></i> Batalkan
-                                </button>
-                                <?php endif; ?>
                             </div>
                         </td>
                     </tr>
@@ -222,41 +195,8 @@
         </div>
     </div>
 
-    <!-- MODAL VOID -->
-    <div class="modal-overlay" id="modalVoid">
-        <div class="modal-box">
-            <div class="modal-header-custom">
-                <h4><i class="fas fa-ban" style="color:#dc2626; margin-right:8px;"></i>Batalkan Transaksi</h4>
-                <button class="modal-close" onclick="document.getElementById('modalVoid').classList.remove('show')"><i class="fas fa-times"></i></button>
-            </div>
-            <form action="<?= site_url('admin/penjualan/void') ?>" method="post">
-                <input type="hidden" name="id_sale" id="void_id">
-                <div class="void-modal-body">
-                    <div class="void-icon"><i class="fas fa-exclamation-triangle"></i></div>
-                    <h5>Batalkan Transaksi?</h5>
-                    <p>Transaksi <strong id="void_kode"></strong> akan dibatalkan.<br>
-                    <span style="color:#dc2626; font-weight:600;">⚠ Stok produk akan dikembalikan sesuai qty transaksi ini.</span></p>
-                </div>
-                <div class="modal-footer-custom">
-                    <button type="button" class="btn-cancel" onclick="document.getElementById('modalVoid').classList.remove('show')">Kembali</button>
-                    <button type="submit" class="btn-void-confirm"><i class="fas fa-ban"></i> Ya, Batalkan</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
 <script>
-    function openVoid(id, kode) {
-        document.getElementById('void_id').value = id;
-        document.getElementById('void_kode').textContent = kode;
-        document.getElementById('modalVoid').classList.add('show');
-    }
-    document.querySelectorAll('.modal-overlay').forEach(function(o) {
-        o.addEventListener('click', function(e) { if (e.target === o) o.classList.remove('show'); });
-    });
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.show').forEach(function(m) { m.classList.remove('show'); });
-    });
 
     // PAGINATION
     var ROWS_PER_PAGE = 10, currentPage = 1, allRows = [], filteredRows = [];

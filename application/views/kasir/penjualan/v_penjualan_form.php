@@ -151,12 +151,12 @@
             <h1><i class="fas fa-cash-register" style="color:#1a56db; margin-right:6px;"></i>Transaksi Baru</h1>
             <p>Input penjualan offline — Gudang PT Pordjo Kaliabang</p>
         </div>
-        <a href="<?= site_url('admin/penjualan') ?>" class="btn-back">
+        <a href="<?= site_url('kasir/penjualan') ?>" class="btn-back">
             <i class="fas fa-arrow-left"></i> Kembali
         </a>
     </div>
 
-    <form action="<?= site_url('admin/penjualan/simpan') ?>" method="post" id="formPenjualan">
+    <form action="<?= site_url('kasir/penjualan/simpan') ?>" method="post" id="formPenjualan" enctype="multipart/form-data">
     <div class="form-layout">
 
         <!-- LEFT: FORM -->
@@ -195,6 +195,13 @@
                             <div class="input-wrap">
                                 <i class="fas fa-user input-icon"></i>
                                 <input type="text" name="nama_pelanggan" class="form-control" placeholder="Opsional (untuk nota)">
+                            </div>
+                        </div>
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label class="form-label">Alamat Pelanggan</label>
+                            <div class="input-wrap">
+                                <i class="fas fa-map-marker-alt input-icon" style="top:14px; transform:none;"></i>
+                                <textarea name="alamat_pelanggan" class="form-control" placeholder="Opsional (alamat tujuan pengiriman/nota)" style="min-height: 60px; padding-top:10px;"></textarea>
                             </div>
                         </div>
                     </div>
@@ -282,8 +289,35 @@
 
                     <!-- BAYAR & KEMBALIAN -->
                     <div class="bayar-group">
+                        <label>Metode Pembayaran <span style="color:#dc2626;">*</span></label>
+                        <select name="metode_pembayaran" id="inputMetode" class="form-control" style="margin-bottom:12px; font-weight:600; padding:10px 14px;" onchange="updateSummary()">
+                            <option value="Cash">Cash (Tunai)</option>
+                            <option value="Transfer">Transfer Bank</option>
+                        </select>
+                    </div>
+                    <!-- Info Transfer (Hidden by default) -->
+                    <div id="transfer-info" style="display: none; background: #eff6ff; border: 1px dashed #93c5fd; border-radius: 10px; padding: 14px; margin-bottom: 12px;">
+                        <div style="font-size:12px; color:#1e3a8a; font-weight:600; margin-bottom:8px;"><i class="fas fa-university"></i> Rekening Tujuan:</div>
+                        <div style="background:#fff; border-radius:6px; padding:8px 10px; border:1px solid #bfdbfe; font-size:13px; font-weight:700; color:#1e40af; margin-bottom:10px; font-family:'Courier New', monospace;">
+                            BCA - 1234 567 890<br>
+                            <span style="font-size:11px; color:#6b7280; font-family:'DM Sans', sans-serif;">a/n PT Pordjo Steelindo</span>
+                        </div>
+                        
+                        <div class="form-group" style="margin-bottom:10px;">
+                            <label style="font-size:11.5px; font-weight:600; color:#374151; display:block; margin-bottom:4px;">Nomor Referensi / Nama Pengirim <span style="color:#dc2626;">*</span></label>
+                            <input type="text" name="nomor_referensi" id="inputRef" class="form-control" placeholder="Contoh: Budi Transfer BCA" style="padding:8px 10px; font-size:12px;">
+                        </div>
+
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label style="font-size:11.5px; font-weight:600; color:#374151; display:block; margin-bottom:4px;">Upload Bukti Transfer <span style="color:#dc2626;">*</span></label>
+                            <input type="file" name="bukti_transfer" id="inputBukti" class="form-control" accept="image/*,.pdf" style="padding:6px; font-size:11px;">
+                        </div>
+                    </div>
+
+
+                    <div class="bayar-group" style="margin-top:0;">
                         <label>Jumlah Bayar <span style="color:#dc2626;">*</span></label>
-                        <input type="number" name="bayar" id="inputBayar" class="bayar-input" placeholder="0" min="0" oninput="updateKembalian()">
+                        <input type="text" name="bayar" id="inputBayar" class="bayar-input" placeholder="0" oninput="formatRupiahInput(this); updateKembalian()" required>
                     </div>
 
                     <div class="kembalian-box" id="kembalianBox">
@@ -320,6 +354,19 @@
     }, $produk)) ?>;
 
     var grandTotal = 0;
+
+    function formatRupiahInput(el) {
+        var raw = el.value.replace(/[^0-9]/g, '');
+        if (raw) {
+            el.value = parseInt(raw, 10).toLocaleString('id-ID');
+        } else {
+            el.value = '';
+        }
+    }
+    function unformatRupiah(val) {
+        if (!val) return 0;
+        return parseFloat(val.toString().replace(/\./g, '')) || 0;
+    }
 
     function addItem() {
         var emptyRow = document.getElementById('emptyRow');
@@ -451,17 +498,42 @@
         document.getElementById('item-count-badge').textContent = rows.length + ' item';
 
         var bayarEl = document.getElementById('inputBayar');
-        if (total > 0) {
-            bayarEl.value = total;
+        var metode = document.getElementById('inputMetode').value;
+        if (metode === 'Transfer') {
+            document.getElementById('transfer-info').style.display = 'block';
+            document.getElementById('inputRef').required = true;
+            document.getElementById('inputBukti').required = true;
+            bayarEl.value = Math.round(grandTotal).toLocaleString('id-ID');
+            bayarEl.readOnly = true;
+            bayarEl.style.background = '#f3f4f6';
+            bayarEl.style.color = '#6b7280';
         } else {
-            bayarEl.value = '';
+            document.getElementById('transfer-info').style.display = 'none';
+            document.getElementById('inputRef').required = false;
+            document.getElementById('inputBukti').required = false;
+            bayarEl.readOnly = false;
+            bayarEl.style.background = '#ffffff';
+            bayarEl.style.color = '#111827';
+            if (total > 0) {
+                bayarEl.value = Math.round(grandTotal).toLocaleString('id-ID');
+            } else {
+                bayarEl.value = '';
+            }
         }
+
+
 
         updateKembalian();
     }
 
     function updateKembalian() {
-        var bayar     = parseFloat(document.getElementById('inputBayar').value) || 0;
+        var bayar     = unformatRupiah(document.getElementById('inputBayar').value);
+        var metode    = document.getElementById('inputMetode').value;
+        if (metode === 'Transfer') {
+            bayar = grandTotal;
+            document.getElementById('inputBayar').value = Math.round(grandTotal).toLocaleString('id-ID');
+        }
+        
         var kembalian = bayar - grandTotal;
         var box       = document.getElementById('kembalianBox');
         var valEl     = document.getElementById('kembalianValue');
@@ -507,17 +579,30 @@
         });
         if (!valid) { alert('Lengkapi semua data produk (pilih produk, qty, dan harga jual)!'); return; }
         if (!stokOk) { alert('Ada produk yang qty-nya melebihi stok! Periksa kembali.'); return; }
-        var bayar = parseFloat(document.getElementById('inputBayar').value) || 0;
+
+        var metode = document.getElementById('inputMetode').value;
+        if(metode === 'Transfer'){
+            var ref = document.getElementById('inputRef').value;
+            var buk = document.getElementById('inputBukti').value;
+            if(!ref || !buk){
+                alert('Nomor Referensi dan Bukti Transfer wajib diisi untuk metode Transfer!');
+                return;
+            }
+        }
+        var bayar = unformatRupiah(document.getElementById('inputBayar').value);
         if (bayar < grandTotal) { alert('Jumlah bayar kurang dari total belanja!'); return; }
         var kembalian = bayar - grandTotal;
+        var metode = document.getElementById('inputMetode').value;
         document.getElementById('confirmTotal').textContent = 'Rp ' + grandTotal.toLocaleString('id-ID');
         document.getElementById('confirmBayar').textContent = 'Rp ' + bayar.toLocaleString('id-ID');
         document.getElementById('confirmKembalian').textContent = 'Rp ' + kembalian.toLocaleString('id-ID');
+        document.getElementById('confirmMetode').textContent = metode;
         document.getElementById('confirmItems').textContent = rows.length + ' item';
         document.getElementById('modalConfirmBayar').classList.add('show');
     });
 
     function confirmSubmitPenjualan() {
+        document.getElementById('inputBayar').value = unformatRupiah(document.getElementById('inputBayar').value);
         document.getElementById('modalConfirmBayar').classList.remove('show');
         document.getElementById('formPenjualan').submit();
     }
@@ -571,8 +656,9 @@
             <div class="confirm-summary-grid">
                 <div class="confirm-summary-item"><span class="csi-label">Jumlah Item</span><span class="csi-value" id="confirmItems">0</span></div>
                 <div class="confirm-summary-item highlight"><span class="csi-label">Total Belanja</span><span class="csi-value" id="confirmTotal">Rp 0</span></div>
+                <div class="confirm-summary-item"><span class="csi-label">Metode Pembayaran</span><span class="csi-value" id="confirmMetode">Cash</span></div>
                 <div class="confirm-summary-item"><span class="csi-label">Jumlah Bayar</span><span class="csi-value" id="confirmBayar">Rp 0</span></div>
-                <div class="confirm-summary-item"><span class="csi-label">Kembalian</span><span class="csi-value" id="confirmKembalian" style="color:#059669;">Rp 0</span></div>
+                <div class="confirm-summary-item" style="grid-column: 1 / -1;"><span class="csi-label">Kembalian</span><span class="csi-value" id="confirmKembalian" style="color:#059669; font-size:16px;">Rp 0</span></div>
             </div>
         </div>
         <div class="confirm-modal-footer">

@@ -12,8 +12,9 @@ class M_users extends CI_Model {
     // ===== GET SEMUA USER =====
     public function get_all_users() {
         return $this->db
-            ->select('id_user, username, nama_lengkap, role, created_at')
+            ->select('id_user, username, nama_lengkap, role, created_at, status')
             ->from($this->table)
+            ->order_by('status', 'ASC')
             ->order_by('created_at', 'DESC')
             ->get()
             ->result_array();
@@ -54,6 +55,31 @@ class M_users extends CI_Model {
     // ===== HAPUS USER =====
     public function delete_user($id_user) {
         return $this->db->delete($this->table, ['id_user' => $id_user]);
+    }
+
+    // ===== CEK TRANSAKSI =====
+    public function has_transaksi($id_user) {
+        // Cek tabel sales
+        if ($this->db->where('id_user', $id_user)->count_all_results('sales') > 0) return true;
+        // Cek tabel purchases
+        if ($this->db->where('id_user', $id_user)->count_all_results('purchases') > 0) return true;
+        // Cek tabel barang_masuk
+        if ($this->db->where('id_user', $id_user)->count_all_results('purchases') > 0) return true;
+        return false;
+    }
+
+    // ===== SOFT DELETE: NONAKTIFKAN =====
+    public function nonaktifkan($id_user) {
+        return $this->db->update($this->table, [
+            'status' => 'nonaktif'
+        ], ['id_user' => $id_user]);
+    }
+
+    // ===== AKTIFKAN KEMBALI =====
+    public function aktifkan($id_user) {
+        return $this->db->update($this->table, [
+            'status' => 'aktif'
+        ], ['id_user' => $id_user]);
     }
 
     // ===== HITUNG USER BERDASARKAN ROLE =====

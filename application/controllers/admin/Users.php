@@ -24,7 +24,7 @@ class Users extends CI_Controller {
         $data['users'] = $this->M_users->get_all_users();
         $this->load->view('layout/header', $data);
         $this->load->view('layout/sidebar', $data);
-        $this->load->view('admin/v_users', $data);
+        $this->load->view('admin/users/v_users', $data);
         $this->load->view('layout/footer');
     }
 
@@ -118,12 +118,41 @@ class Users extends CI_Controller {
             return;
         }
 
-        if ($this->M_users->delete_user($id_user)) {
-            $this->session->set_flashdata('success', 'User berhasil dihapus!');
+        // Cek apakah user ini masih punya riwayat transaksi
+        if ($this->M_users->has_transaksi($id_user)) {
+            // Tidak bisa dihapus permanen, nonaktifkan saja (soft delete)
+            if ($this->M_users->nonaktifkan($id_user)) {
+                $this->session->set_flashdata('warning', 'Akun tidak dapat dihapus permanen karena memiliki riwayat transaksi. Akun telah <strong>dinonaktifkan</strong> dan tidak akan bisa login lagi.');
+            } else {
+                $this->session->set_flashdata('error', 'Gagal menonaktifkan akun.');
+            }
         } else {
-            $this->session->set_flashdata('error', 'Gagal menghapus user.');
+            // Tidak punya transaksi, aman untuk dihapus permanen
+            if ($this->M_users->delete_user($id_user)) {
+                $this->session->set_flashdata('success', 'User berhasil dihapus secara permanen!');
+            } else {
+                $this->session->set_flashdata('error', 'Gagal menghapus user.');
+            }
         }
 
+        redirect('admin/users');
+    }
+
+    // ===== AKTIFKAN USER =====
+    public function aktifkan() {
+        $id_user = $this->input->post('id_user', TRUE);
+
+        if (empty($id_user)) {
+            $this->session->set_flashdata('error', 'ID User tidak valid.');
+            redirect('admin/users');
+            return;
+        }
+
+        if ($this->M_users->aktifkan($id_user)) {
+            $this->session->set_flashdata('success', 'Akun berhasil diaktifkan kembali.');
+        } else {
+            $this->session->set_flashdata('error', 'Gagal mengaktifkan akun.');
+        }
         redirect('admin/users');
     }
 }

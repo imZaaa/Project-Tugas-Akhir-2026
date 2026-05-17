@@ -113,6 +113,10 @@
                             <div class="info-value"><?= htmlspecialchars(!empty($header['nama_pelanggan']) ? $header['nama_pelanggan'] : 'Umum') ?></div>
                         </div>
                         <div class="info-item">
+                            <div class="info-label">Alamat Pelanggan</div>
+                            <div class="info-value"><?= nl2br(htmlspecialchars(!empty($header['alamat_pelanggan']) ? $header['alamat_pelanggan'] : '-')) ?></div>
+                        </div>
+                        <div class="info-item">
                             <div class="info-label">Kasir</div>
                             <div class="info-value"><?= htmlspecialchars($header['nama_kasir'] ?? '-') ?></div>
                         </div>
@@ -194,6 +198,10 @@
                     </div>
 
                     <div class="summary-row" style="margin-top:14px;">
+                        <span class="label">Metode Pembayaran</span>
+                        <span class="value"><?= strtoupper($header['metode_pembayaran'] ?? 'CASH') ?></span>
+                    </div>
+                    <div class="summary-row">
                         <span class="label">Bayar</span>
                         <span class="value" style="color:#059669;">Rp <?= number_format($header['bayar'] ?? 0, 0, ',', '.') ?></span>
                     </div>

@@ -23,7 +23,7 @@ class Penjualan extends CI_Controller {
 
         $this->load->view('layout/header', $data);
         $this->load->view('layout/sidebar', $data);
-        $this->load->view('admin/v_penjualan', $data);
+        $this->load->view('admin/penjualan/v_penjualan', $data);
         $this->load->view('layout/footer');
     }
 
@@ -35,7 +35,7 @@ class Penjualan extends CI_Controller {
 
         $this->load->view('layout/header', $data);
         $this->load->view('layout/sidebar', $data);
-        $this->load->view('admin/v_penjualan_form', $data);
+        $this->load->view('admin/penjualan/v_penjualan_form', $data);
         $this->load->view('layout/footer');
     }
 
@@ -46,6 +46,8 @@ class Penjualan extends CI_Controller {
         // Menangkap data input, TRUE berarti di-filter dari serangan XSS (Cross Site Scripting)
         $kode_transaksi = $this->input->post('kode_transaksi', TRUE);
         $nama_pelanggan = $this->input->post('nama_pelanggan', TRUE);
+        $alamat_pelanggan = $this->input->post('alamat_pelanggan', TRUE);
+        $metode_pembayaran = $this->input->post('metode_pembayaran', TRUE) ?: 'Cash';
         $bayar          = (float) $this->input->post('bayar', TRUE);
         
         // Data berupa array, karena dalam 1 struk bisa ada banyak produk sekaligus
@@ -133,6 +135,10 @@ class Penjualan extends CI_Controller {
         $grand_total = $total_harga + $ppn;
 
         // [5] VALIDASI LOGIKA PEMBAYARAN KASIR
+        if ($metode_pembayaran === 'Transfer') {
+            $bayar = $grand_total;
+        }
+
         // Mencegah kasir ngasih kembalian jika pembayaran pelanggan kurang
         if ($bayar < $grand_total) {
             $this->session->set_flashdata('error', 'Nominal pembayaran (Rp ' . number_format($bayar, 0, ',', '.') . ') kurang dari total belanja (Rp ' . number_format($grand_total, 0, ',', '.') . ').');
@@ -145,15 +151,19 @@ class Penjualan extends CI_Controller {
         // [6] PENYUSUNAN STRUK HEADER AKHIR (Kunci data ke Database)
         date_default_timezone_set('Asia/Jakarta');
         $header = [
-            'kode_transaksi'  => $kode_transaksi, // TRX-202610xxx
-            'id_user'         => $this->session->userdata('id_user'), // Siapa akun kasirnya? Supaya bs masuk Laporan Komisi Kasir
-            'nama_pelanggan'  => $nama_pelanggan ?: null,
-            'tgl_jual'        => date('Y-m-d H:i:s'), // Tanggal real server skrg
-            'total_harga'     => $grand_total,
-            'bayar'           => $bayar,
-            'kembalian'       => $kembalian,
-            'status'          => 'Lunas', // POS retail default lunas
-            'created_at'      => date('Y-m-d H:i:s'),
+            'kode_transaksi'    => $kode_transaksi,
+            'id_user'           => $this->session->userdata('id_user'),
+            'nama_pelanggan'    => $nama_pelanggan,
+            'alamat_pelanggan'  => $alamat_pelanggan,
+            'tgl_jual'          => date('Y-m-d H:i:s'),
+            'total_harga'       => $grand_total, // Termasuk PPN
+            'bayar'             => $bayar,
+            'kembalian'         => $kembalian,
+            'metode_pembayaran' => $metode_pembayaran,
+            'nomor_referensi'   => $nomor_referensi,
+            'bukti_transfer'    => $bukti_transfer,
+            'status'            => 'Lunas',
+            'created_at'        => date('Y-m-d H:i:s')
         ];
 
         // [7] PENGIRIMAN DATA KE MODEL (DATABASE QUERY)
@@ -185,9 +195,10 @@ class Penjualan extends CI_Controller {
 
         $this->load->view('layout/header', $data);
         $this->load->view('layout/sidebar', $data);
-        $this->load->view('admin/v_penjualan_detail', $data);
+        $this->load->view('admin/penjualan/v_penjualan_detail', $data);
         $this->load->view('layout/footer');
     }
+
 
     // ===== CETAK NOTA / INVOICE =====
     public function cetak($id_sale) {
@@ -202,26 +213,7 @@ class Penjualan extends CI_Controller {
         }
 
         // Load tanpa sidebar/header — layout cetak
-        $this->load->view('admin/v_penjualan_cetak', $data);
-    }
-
-    // ===== VOID TRANSAKSI (PEMBATALAN TRANSAKSI) =====
-    // Fitur krusial bagi Admin untuk membatalkan nota tanpa menghapus histori/jejak auditnya
-    public function void_transaksi() {
-        $id_sale = $this->input->post('id_sale', TRUE);
-
-        // Model `void_transaksi` bertugas:
-        // 1. Ambil list barang di transaksi tsb
-        // 2. Tambahkan kembali isi stok barang tersebut (+) ke database (Restocking)
-        // 3. Ubah status struk di DB jadi 'Batal' (Sistem dilarang sewenang-wenang menghapus rekaman keuangan)
-        if ($this->M_sale->void_transaksi($id_sale)) {
-            $this->session->set_flashdata('success', 'Transaksi berhasil dibatalkan! Stok telah dikembalikan.');
-        } else {
-            $this->session->set_flashdata('error', 'Gagal membatalkan transaksi.');
-        }
-        
-        // Membawa admin kembali ke list data transaksi
-        redirect('admin/penjualan');
+        $this->load->view('admin/penjualan/v_penjualan_cetak', $data);
     }
 
     // ===== AJAX: Get Produk JSON (untuk search real-time) =====

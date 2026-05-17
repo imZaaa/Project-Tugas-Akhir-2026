@@ -4,10 +4,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Laporan Penjualan — <?= date('d M Y', strtotime($tgl_awal)) ?> s/d <?= date('d M Y', strtotime($tgl_akhir)) ?></title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap">
     <style>
         @page { size: A4; margin: 10mm; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: "Arial", sans-serif; font-size: 11px; background: #525659; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        body { font-family: 'DM Sans', 'Segoe UI', "Arial", sans-serif; font-size: 11.5px; background: #525659; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 
         .page {
             max-width: 210mm;
@@ -54,40 +55,41 @@
         .stats-row {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-bottom: 14px;
+            gap: 12px;
+            margin-bottom: 24px;
         }
         .stat-box {
-            border: 1px dashed #000;
-            border-radius: 4px;
-            padding: 10px 12px;
-            text-align: center;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 14px 16px;
+            background: #f8fafc;
         }
-        .stat-box .s-label { font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.3px; color: #555; }
-        .stat-box .s-value { font-size: 15px; font-weight: 800; color: #000; margin-top: 4px; }
-        .stat-box .s-value.blue { color: #0056b3; }
+        .stat-box .s-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; }
+        .stat-box .s-value { font-size: 18px; font-weight: 800; color: #0f172a; margin-top: 6px; }
+        .stat-box .s-value.blue { color: #1d4ed8; }
 
         /* ===== SECTION ===== */
         .section-title {
-            font-size: 11px;
-            font-weight: bold;
+            font-size: 13px;
+            font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            color: #000;
-            margin: 16px 0 6px;
-            padding-bottom: 4px;
-            border-bottom: 1px solid #000;
+            color: #1e3a8a;
+            margin: 24px 0 10px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #e2e8f0;
         }
 
         /* ===== TABLE ===== */
-        table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 10.5px; }
-        th { font-size: 10px; font-weight: bold; text-align: left; padding: 5px 6px; background: #f0f0f0; border-top: 1px solid #000; border-bottom: 1px solid #000; }
-        td { padding: 4px 6px; border-bottom: 1px dashed #ccc; vertical-align: top; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11px; }
+        th { font-size: 10px; font-weight: 700; text-align: left; padding: 10px 8px; background: #f8fafc; border-top: 1px solid #cbd5e1; border-bottom: 2px solid #cbd5e1; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; }
+        td { padding: 9px 8px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; color: #1e293b; }
         tr:last-child td { border-bottom: none; }
+        tr:nth-child(even) td { background: #fafaf9; }
         .text-right { text-align: right; }
         .text-center { text-align: center; }
-        .bold { font-weight: bold; }
-        .total-row td { font-weight: bold; font-size: 11px; border-top: 1px solid #000; border-bottom: 2px solid #000; padding-top: 5px; padding-bottom: 5px; }
+        .bold { font-weight: 700; color: #0f172a; }
+        .total-row td { font-weight: 800; font-size: 12px; border-top: 2px solid #cbd5e1; border-bottom: 3px double #94a3b8; background: #f1f5f9; padding-top: 12px; padding-bottom: 12px; color: #0f172a; }
 
         /* ===== FOOTER / TANDA TANGAN ===== */
         .signatures {
@@ -107,12 +109,8 @@
             font-size: 9px;
             font-family: monospace;
             border-top: 1px dashed #000;
-            margin-top: 20px;
+            margin-top: 50px;
             padding-top: 5px;
-            position: absolute;
-            bottom: 15mm;
-            left: 15mm;
-            right: 15mm;
         }
 
         /* ===== PRINT BUTTONS ===== */
@@ -130,7 +128,6 @@
             body { background: #fff; margin: 0; }
             .page { box-shadow: none; margin: 0; padding: 10mm; min-height: auto; max-width: 100%; }
             .no-print { display: none !important; }
-            .footer-note { position: fixed; bottom: 10mm; left: 10mm; right: 10mm; }
         }
     </style>
 </head>

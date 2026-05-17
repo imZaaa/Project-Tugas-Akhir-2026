@@ -9,7 +9,7 @@ class M_sale extends CI_Model {
     // ===== GET TERBARU UNTUK DASHBOARD =====
     public function get_terbaru($limit = 10) {
         return $this->db
-            ->select('s.id_sale, s.kode_transaksi, s.tgl_jual, s.total_harga, s.bayar, s.kembalian, s.status, u.username AS nama_kasir')
+            ->select('s.id_sale, s.kode_transaksi, s.tgl_jual, s.total_harga, s.bayar, s.kembalian, s.metode_pembayaran, s.nomor_referensi, s.bukti_transfer, s.status, u.username AS nama_kasir')
             ->from($this->tbl_header . ' s')
             ->join('users u', 'u.id_user = s.id_user', 'left')
             ->where('s.status', 'Lunas')
@@ -21,7 +21,7 @@ class M_sale extends CI_Model {
     // ===== GET ALL (admin — audit trail semua kasir) =====
     public function get_all() {
         return $this->db
-            ->select('s.id_sale, s.kode_transaksi, s.tgl_jual, s.total_harga, s.bayar, s.kembalian, s.status, s.created_at, u.username AS nama_kasir')
+            ->select('s.id_sale, s.kode_transaksi, s.tgl_jual, s.total_harga, s.bayar, s.kembalian, s.metode_pembayaran, s.nomor_referensi, s.bukti_transfer, s.status, s.created_at, u.username AS nama_kasir')
             ->from($this->tbl_header . ' s')
             ->join('users u', 'u.id_user = s.id_user', 'left')
             ->order_by('s.created_at', 'DESC')
@@ -31,7 +31,7 @@ class M_sale extends CI_Model {
     // ===== GET BY KASIR (kasir — hanya milik sendiri) =====
     public function get_by_kasir($id_user) {
         return $this->db
-            ->select('s.id_sale, s.kode_transaksi, s.tgl_jual, s.total_harga, s.bayar, s.kembalian, s.status, s.created_at, u.username AS nama_kasir')
+            ->select('s.id_sale, s.kode_transaksi, s.tgl_jual, s.total_harga, s.bayar, s.kembalian, s.metode_pembayaran, s.nomor_referensi, s.bukti_transfer, s.status, s.created_at, u.username AS nama_kasir')
             ->from($this->tbl_header . ' s')
             ->join('users u', 'u.id_user = s.id_user', 'left')
             ->where('s.id_user', $id_user)
@@ -43,7 +43,7 @@ class M_sale extends CI_Model {
     public function get_today_by_kasir($id_user) {
         date_default_timezone_set('Asia/Jakarta');
         return $this->db
-            ->select('s.id_sale, s.kode_transaksi, s.tgl_jual, s.total_harga, s.bayar, s.kembalian, s.status, s.created_at, u.username AS nama_kasir')
+            ->select('s.id_sale, s.kode_transaksi, s.tgl_jual, s.total_harga, s.bayar, s.kembalian, s.metode_pembayaran, s.nomor_referensi, s.bukti_transfer, s.status, s.created_at, u.username AS nama_kasir')
             ->from($this->tbl_header . ' s')
             ->join('users u', 'u.id_user = s.id_user', 'left')
             ->where('s.id_user', $id_user)
@@ -55,7 +55,7 @@ class M_sale extends CI_Model {
     // ===== GET HEADER BY ID =====
     public function get_by_id($id_sale) {
         return $this->db
-            ->select('s.id_sale, s.kode_transaksi, s.nama_pelanggan, s.tgl_jual, s.total_harga, s.bayar, s.kembalian, s.status, s.created_at, u.username AS nama_kasir, u.id_user')
+            ->select('s.id_sale, s.kode_transaksi, s.nama_pelanggan, s.alamat_pelanggan, s.tgl_jual, s.total_harga, s.bayar, s.kembalian, s.metode_pembayaran, s.nomor_referensi, s.bukti_transfer, s.status, s.created_at, u.username AS nama_kasir, u.id_user')
             ->from($this->tbl_header . ' s')
             ->join('users u', 'u.id_user = s.id_user', 'left')
             ->where('s.id_sale', $id_sale)
@@ -65,7 +65,7 @@ class M_sale extends CI_Model {
     // ===== GET DETAIL BY ID_SALE =====
     public function get_detail($id_sale) {
         return $this->db
-            ->select('sd.id_detail, sd.id_sale, sd.id_product, sd.qty, sd.harga_jual, sd.subtotal, p.nama_produk, p.satuan, c.nama_kategori')
+            ->select('sd.id_detail, sd.id_sale, sd.id_product, sd.qty, sd.harga_jual, sd.subtotal, p.nama_produk, p.kode_produk, p.satuan, c.nama_kategori')
             ->from($this->tbl_detail . ' sd')
             ->join('products p',   'p.id_product  = sd.id_product',  'left')
             ->join('categories c', 'c.id_category = p.id_category',  'left')
@@ -139,23 +139,8 @@ class M_sale extends CI_Model {
         return $this->db->trans_status() ? $id_sale : FALSE;
     }
 
-    // ===== VOID TRANSAKSI (admin only — rollback stok, ubah status jadi Batal) =====
-    public function void_transaksi($id_sale) {
-        $this->db->trans_start();
 
-        $details = $this->get_detail($id_sale);
-        foreach ($details as $d) {
-            $this->db->set('stok', 'stok + ' . (int)$d['qty'], FALSE);
-            $this->db->where('id_product', $d['id_product']);
-            $this->db->update('products');
-        }
 
-        // Update status → Batal, bukan hapus (untuk audit trail)
-        $this->db->update($this->tbl_header, ['status' => 'Batal'], ['id_sale' => $id_sale]);
-
-        $this->db->trans_complete();
-        return $this->db->trans_status();
-    }
 
     // ===== STATS =====
     public function omzet_hari_ini() {
@@ -215,7 +200,7 @@ class M_sale extends CI_Model {
     // ===== LAPORAN: GET TRANSAKSI BY DATE RANGE =====
     public function get_laporan($tgl_awal, $tgl_akhir) {
         return $this->db
-            ->select('s.id_sale, s.kode_transaksi, s.tgl_jual, s.total_harga, s.bayar, s.kembalian, s.status, s.created_at, u.username AS nama_kasir')
+            ->select('s.id_sale, s.kode_transaksi, s.tgl_jual, s.total_harga, s.bayar, s.kembalian, s.metode_pembayaran, s.nomor_referensi, s.bukti_transfer, s.status, s.created_at, u.username AS nama_kasir')
             ->from($this->tbl_header . ' s')
             ->join('users u', 'u.id_user = s.id_user', 'left')
             ->where('DATE(s.tgl_jual) >=', $tgl_awal)
@@ -291,7 +276,7 @@ class M_sale extends CI_Model {
     // ===== KASIR REPORT: TRANSAKSI BY DATE RANGE (filtered by kasir) =====
     public function get_laporan_kasir($id_user, $tgl_awal, $tgl_akhir) {
         return $this->db
-            ->select('s.id_sale, s.kode_transaksi, s.tgl_jual, s.total_harga, s.bayar, s.kembalian, s.status, s.created_at')
+            ->select('s.id_sale, s.kode_transaksi, s.tgl_jual, s.total_harga, s.bayar, s.kembalian, s.metode_pembayaran, s.nomor_referensi, s.bukti_transfer, s.status, s.created_at')
             ->from($this->tbl_header . ' s')
             ->where('s.id_user', $id_user)
             ->where('DATE(s.tgl_jual) >=', $tgl_awal)

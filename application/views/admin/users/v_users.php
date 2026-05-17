@@ -132,6 +132,19 @@
     .role-badge.admin .role-dot { background: #1a56db; }
     .role-badge.kasir .role-dot { background: #059669; }
 
+    /* STATUS BADGE */
+    .status-badge {
+        display: inline-flex; align-items: center; gap: 5px;
+        font-size: 11px; font-weight: 700;
+        padding: 3px 10px; border-radius: 20px;
+        text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .status-badge.aktif { background: #f0fdf4; color: #16a34a; }
+    .status-badge.nonaktif { background: #fef2f2; color: #dc2626; }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .status-badge.aktif .status-dot { background: #16a34a; }
+    .status-badge.nonaktif .status-dot { background: #dc2626; }
+
     /* ACTION BUTTONS */
     .btn-action {
         display: inline-flex; align-items: center; gap: 5px;
@@ -148,6 +161,18 @@
     .btn-edit:hover  { background: #dbeafe; color: #1a56db; }
     .btn-delete { background: #fef2f2; color: #dc2626; }
     .btn-delete:hover { background: #fee2e2; color: #dc2626; }
+    .btn-aktif  { background: #f0fdf4; color: #16a34a; }
+    .btn-aktif:hover { background: #dcfce7; color: #16a34a; }
+
+    /* NONAKTIF SECTION */
+    .badge-nonaktif { display: inline-flex; align-items: center; gap: 4px; background: #fef2f2; color: #dc2626; font-size: 10.5px; font-weight: 700; padding: 3px 8px; border-radius: 20px; border: 1px solid #fecaca; }
+    .section-nonaktif { margin: 0 24px 28px; background: #fff; border-radius: 14px; border: 1.5px dashed #fecaca; box-shadow: 0 2px 8px rgba(220,38,38,0.05); overflow: hidden; }
+    .section-nonaktif .card-toolbar { border-bottom: 1px solid #fef2f2; background: #fffbeb; }
+    .section-nonaktif .users-table th { background: #fff8f8; }
+    .sn-title { font-size: 14px; font-weight: 700; color: #b45309; }
+    .sn-title i { margin-right: 6px; color: #dc2626; }
+    .sn-count { display: inline-flex; align-items: center; gap: 4px; background: #fef2f2; color: #dc2626; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; border: 1px solid #fecaca; }
+    .sn-count i { font-size: 10px; }
 
     /* ===== DETAIL MODAL — Two-Panel Side-by-Side ===== */
     .detail-modal-box {
@@ -633,6 +658,15 @@
     }
     .alert-custom.success { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
     .alert-custom.error   { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+    .alert-custom.warning { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%       { transform: translateX(-6px); }
+      40%       { transform: translateX(6px); }
+      60%       { transform: translateX(-4px); }
+      80%       { transform: translateX(4px); }
+    }
 
     /* RESPONSIVE */
     @media (max-width: 768px) {
@@ -668,15 +702,25 @@
         <?= $this->session->flashdata('error') ?>
     </div>
     <?php endif; ?>
+    <?php if ($this->session->flashdata('warning')): ?>
+    <div class="alert-custom warning">
+        <i class="fas fa-info-circle"></i>
+        <?= $this->session->flashdata('warning') ?>
+    </div>
+    <?php endif; ?>
 
     <!-- ===== TABLE CARD ===== -->
+    <?php
+        $users_aktif    = array_values(array_filter($users, fn($u) => ($u['status'] ?? 'aktif') === 'aktif'));
+        $users_nonaktif = array_values(array_filter($users, fn($u) => ($u['status'] ?? 'aktif') === 'nonaktif'));
+    ?>
     <div class="users-card">
         <div class="card-toolbar">
             <div class="card-toolbar-left">
-                <span style="font-size:14px; font-weight:700; color:#111827;">Daftar User</span>
+                <span style="font-size:14px; font-weight:700; color:#111827;">Daftar User Aktif</span>
                 <span class="user-count-badge">
                     <i class="fas fa-users" style="font-size:10px;"></i>
-                    <?= count($users) ?> akun
+                    <?= count($users_aktif) ?> akun
                 </span>
             </div>
             <div class="search-box">
@@ -691,13 +735,14 @@
                     <th>#</th>
                     <th>Nama / Username</th>
                     <th>Role</th>
+                    <th>Status</th>
                     <th>Dibuat</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
-                <?php if (!empty($users)): ?>
-                    <?php foreach ($users as $i => $u): ?>
+                <?php if (!empty($users_aktif)): ?>
+                    <?php foreach ($users_aktif as $i => $u): ?>
                     <tr>
                         <td style="color:#9ca3af; font-size:12px; width:40px;"><?= $i + 1 ?></td>
                         <td>
@@ -715,6 +760,12 @@
                             <span class="role-badge <?= $u['role'] ?>">
                                 <span class="role-dot"></span>
                                 <?= ucfirst($u['role']) ?>
+                            </span>
+                        </td>
+                        <td>
+                            <span class="status-badge <?= $u['status'] ?>">
+                                <span class="status-dot"></span>
+                                <?= ucfirst($u['status']) ?>
                             </span>
                         </td>
                         <td style="color:#9ca3af; font-size:12px;">
@@ -762,6 +813,78 @@
         </table>
     </div>
 
+    <!-- ===== SECTION USER NONAKTIF ===== -->
+    <?php if (!empty($users_nonaktif)): ?>
+    <div class="section-nonaktif">
+        <div class="card-toolbar">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span class="sn-title"><i class="fas fa-user-slash"></i>User Nonaktif</span>
+                <span class="sn-count">
+                    <i class="fas fa-exclamation-circle"></i><?= count($users_nonaktif) ?> akun
+                </span>
+            </div>
+            <span style="font-size:11.5px; color:#9ca3af;">Akun ini memiliki riwayat transaksi sehingga tidak dapat dihapus permanen.</span>
+        </div>
+        <table class="users-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nama / Username</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($users_nonaktif as $i => $u): ?>
+                <tr style="opacity:0.8;">
+                    <td style="color:#9ca3af; font-size:12px; width:40px;"><?= $i + 1 ?></td>
+                    <td>
+                        <div class="user-name-wrap">
+                            <div class="table-avatar" style="background:linear-gradient(135deg,#9ca3af,#6b7280);">
+                                <?= strtoupper(substr($u['nama_lengkap'], 0, 1)) ?>
+                            </div>
+                            <div>
+                                <span class="user-name-text" style="color:#6b7280;"><?= htmlspecialchars($u['nama_lengkap']) ?></span>
+                                <span class="user-username-text">@<?= htmlspecialchars($u['username']) ?></span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="role-badge <?= $u['role'] ?>" style="opacity:0.7">
+                            <span class="role-dot"></span><?= ucfirst($u['role']) ?>
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge-nonaktif"><i class="fas fa-ban" style="font-size:9px;"></i> Nonaktif</span>
+                    </td>
+                    <td>
+                        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                            <button class="btn-action btn-detail"
+                                onclick="openModalDetail(
+                                    '<?= htmlspecialchars($u['nama_lengkap'], ENT_QUOTES) ?>',
+                                    '<?= htmlspecialchars($u['username'], ENT_QUOTES) ?>',
+                                    '<?= $u['role'] ?>',
+                                    '<?= date('d F Y, H:i', strtotime($u['created_at'])) ?>',
+                                    '<?= $u['id_user'] ?>'
+                                )">
+                                <i class="fas fa-eye"></i> Detail
+                            </button>
+                            <form action="<?= site_url('admin/users/aktifkan') ?>" method="post" style="display:inline;">
+                                <input type="hidden" name="id_user" value="<?= $u['id_user'] ?>">
+                                <button type="submit" class="btn-action btn-aktif">
+                                    <i class="fas fa-undo"></i> Aktifkan
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <?php endif; ?>
+
 
     <!-- ===== MODAL TAMBAH ===== -->
     <div class="modal-overlay" id="modalTambah">
@@ -770,14 +893,19 @@
                 <h4><i class="fas fa-user-plus" style="color:#1a56db; margin-right:8px;"></i>Tambah User Baru</h4>
                 <button class="modal-close" onclick="closeModal('modalTambah')"><i class="fas fa-times"></i></button>
             </div>
-            <form action="<?= site_url('admin/users/tambah') ?>" method="post">
+            <form action="<?= site_url('admin/users/tambah') ?>" method="post" id="formTambahUser" onsubmit="return validateFormTambah()">
                 <div class="modal-body">
+
+                    <div id="alertTambahUser" class="alert-custom error" style="display: none; margin: 0 0 16px 0; padding: 10px 14px; font-size: 12.5px;">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>Semua field wajib diisi!</span>
+                    </div>
 
                     <div class="form-group-custom">
                         <label class="form-label-custom">Nama Lengkap <span>*</span></label>
                         <div class="input-wrap">
                             <i class="fas fa-id-card input-icon"></i>
-                            <input type="text" name="nama_lengkap" class="form-control-custom" placeholder="Contoh: Budi Santoso" required>
+                            <input type="text" name="nama_lengkap" class="form-control-custom" placeholder="Contoh: Budi Santoso">
                         </div>
                     </div>
 
@@ -785,7 +913,7 @@
                         <label class="form-label-custom">Username <span>*</span></label>
                         <div class="input-wrap">
                             <i class="fas fa-at input-icon"></i>
-                            <input type="text" name="username" class="form-control-custom" placeholder="Contoh: budi_santoso" required>
+                            <input type="text" name="username" class="form-control-custom" placeholder="Contoh: budi_santoso">
                         </div>
                     </div>
 
@@ -793,7 +921,7 @@
                         <label class="form-label-custom">Password <span>*</span></label>
                         <div class="input-wrap">
                             <i class="fas fa-lock input-icon"></i>
-                            <input type="password" name="password" id="pw_tambah" class="form-control-custom has-toggle" placeholder="Masukkan password" required>
+                            <input type="password" name="password" id="pw_tambah" class="form-control-custom has-toggle" placeholder="Masukkan password">
                             <i class="fas fa-eye toggle-pw" onclick="togglePw('pw_tambah', this)"></i>
                         </div>
                         <span class="form-hint">Minimal 6 karakter</span>
@@ -803,7 +931,7 @@
                         <label class="form-label-custom">Role <span>*</span></label>
                         <div class="input-wrap">
                             <i class="fas fa-shield-alt input-icon"></i>
-                            <select name="role" class="form-control-custom" required>
+                            <select name="role" class="form-control-custom">
                                 <option value="" disabled selected>-- Pilih Role --</option>
                                 <option value="admin">Admin</option>
                                 <option value="kasir">Kasir</option>
@@ -895,7 +1023,13 @@
                 <div class="delete-modal-body">
                     <div class="delete-icon"><i class="fas fa-exclamation-triangle"></i></div>
                     <h5>Apakah Anda yakin ingin menghapus akun ini?</h5>
-                    <p>Akun <strong id="delete_nama"></strong> akan dihapus secara permanen dan tidak dapat dipulihkan kembali.</p>
+                    <p style="margin-bottom: 12px;">Akun <strong id="delete_nama"></strong> akan dihapus dari sistem.</p>
+                    
+                    <div style="background:#fffbeb; padding:10px; border-radius:8px; border:1px solid #fde68a; text-align:left;">
+                        <span style="font-size:11.5px; color:#b45309; line-height:1.5; display:block;">
+                            <i class="fas fa-info-circle"></i> <strong>Penting:</strong> Jika akun ini memiliki riwayat transaksi, akun <strong>tidak akan terhapus</strong> melainkan hanya akan <strong>dinonaktifkan</strong> untuk menjaga integritas data riwayat transaksi Anda.
+                        </span>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-cancel" onclick="closeModal('modalDelete')">Batal</button>
@@ -976,11 +1110,27 @@
 
             </div>
         </div>
-    </div>
-
-
 <script>
     // ===== MODAL FUNCTIONS =====
+    function validateFormTambah() {
+        var form = document.getElementById('formTambahUser');
+        var alertBox = document.getElementById('alertTambahUser');
+        var nama = form.querySelector('input[name="nama_lengkap"]').value.trim();
+        var username = form.querySelector('input[name="username"]').value.trim();
+        var pass = document.getElementById('pw_tambah').value.trim();
+        var role = form.querySelector('select[name="role"]').value;
+
+        if (!nama || !username || !pass || !role) {
+            alertBox.style.display = 'flex';
+            alertBox.style.animation = 'none';
+            alertBox.offsetHeight; /* trigger reflow */
+            alertBox.style.animation = 'shake 0.4s ease';
+            return false;
+        }
+        alertBox.style.display = 'none';
+        return true;
+    }
+
     function openModalTambah() {
         document.getElementById('modalTambah').classList.add('show');
     }

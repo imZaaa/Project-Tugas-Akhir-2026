@@ -52,7 +52,7 @@ class Laporan_kasir extends CI_Controller {
 
         $this->load->view('layout/header', $data);
         $this->load->view('layout/sidebar', $data);
-        $this->load->view('kasir/v_laporan_kasir', $data);
+        $this->load->view('kasir/laporan/v_laporan_kasir', $data);
         $this->load->view('layout/footer');
     }
 
@@ -73,6 +73,6 @@ class Laporan_kasir extends CI_Controller {
         $data['total_trx']    = $this->M_sale->count_kasir_range($id_user, $tgl_awal, $tgl_akhir);
         $data['top_produk']   = $this->M_sale->get_top_produk_kasir($id_user, $tgl_awal, $tgl_akhir, 10);
 
-        $this->load->view('kasir/v_laporan_kasir_cetak', $data);
+        $this->load->view('kasir/laporan/v_laporan_kasir_cetak', $data);
     }
 }

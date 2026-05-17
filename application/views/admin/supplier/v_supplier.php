@@ -133,6 +133,19 @@
     .section-nonaktif .card-toolbar { border-bottom: 1px solid #fef2f2; background: #fffbeb; }
     .section-nonaktif .data-table th { background: #fff8f8; }
 
+    .sn-title { font-size: 14px; font-weight: 700; color: #b45309; }
+    .sn-title i { margin-right: 6px; color: #dc2626; }
+    .sn-count { display: inline-flex; align-items: center; gap: 4px; background: #fef2f2; color: #dc2626; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; border: 1px solid #fecaca; }
+    .sn-count i { font-size: 10px; }
+
+    /* DARK MODE OVERRIDES */
+    body.dark-mode .section-nonaktif { background: #1a1e27; border-color: rgba(220, 38, 38, 0.4); box-shadow: none; }
+    body.dark-mode .section-nonaktif .card-toolbar { background: rgba(220, 38, 38, 0.1); border-bottom-color: rgba(220, 38, 38, 0.2); }
+    body.dark-mode .section-nonaktif .data-table th { background: rgba(220, 38, 38, 0.05); color: #9ca3af; }
+    body.dark-mode .badge-nonaktif { background: rgba(220, 38, 38, 0.15); color: #fca5a5; border-color: rgba(220, 38, 38, 0.3); }
+    body.dark-mode .sn-title { color: #fca5a5; }
+    body.dark-mode .sn-count { background: rgba(220, 38, 38, 0.15); border-color: rgba(220, 38, 38, 0.3); color: #fca5a5; }
+
     @media (max-width: 900px) {
         .supplier-stats { grid-template-columns: 1fr; }
         .form-row { grid-template-columns: 1fr; }
@@ -301,9 +314,9 @@
     <div class="section-nonaktif">
         <div class="card-toolbar">
             <div style="display:flex; align-items:center; gap:10px;">
-                <span style="font-size:14px; font-weight:700; color:#b45309;"><i class="fas fa-ban" style="margin-right:6px; color:#dc2626;"></i>Supplier Nonaktif</span>
-                <span style="display:inline-flex; align-items:center; gap:4px; background:#fef2f2; color:#dc2626; font-size:12px; font-weight:600; padding:4px 10px; border-radius:20px; border:1px solid #fecaca;">
-                    <i class="fas fa-exclamation-circle" style="font-size:10px;"></i><?= count($suppliers_nonaktif) ?> supplier
+                <span class="sn-title"><i class="fas fa-ban"></i>Supplier Nonaktif</span>
+                <span class="sn-count">
+                    <i class="fas fa-exclamation-circle"></i><?= count($suppliers_nonaktif) ?> supplier
                 </span>
             </div>
             <span style="font-size:11.5px; color:#9ca3af;">Supplier ini memiliki riwayat transaksi sehingga tidak dapat dihapus permanen.</span>

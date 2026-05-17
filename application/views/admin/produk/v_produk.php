@@ -99,6 +99,8 @@
     .ap-btn { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; padding: 7px 12px; border-radius: 9px; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; text-decoration: none; }
     .ap-btn-stok { background: linear-gradient(135deg, #ecfdf5, #d1fae5); color: #059669; }
     .ap-btn-stok:hover { background: linear-gradient(135deg, #d1fae5, #a7f3d0); transform: translateY(-1px); box-shadow: 0 3px 10px rgba(5,150,105,0.15); }
+    .btn-cetak-lap { display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px; background: #ecfdf5; color: #059669; border: 1.5px solid #a7f3d0; border-radius: 8px; font-size: 12.5px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; text-decoration: none !important; transition: background 0.15s; }
+    .btn-cetak-lap:hover { background: #d1fae5; color: #059669; }
     .ap-btn-edit { background: #eff6ff; color: #1a56db; }
     .ap-btn-edit:hover { background: #dbeafe; transform: translateY(-1px); box-shadow: 0 3px 10px rgba(26,86,219,0.12); }
     .ap-btn-delete { background: #fef2f2; color: #dc2626; }
@@ -168,15 +170,39 @@
         .form-row { grid-template-columns: 1fr; }
     }
     @media (max-width: 480px) { .ap-stats { grid-template-columns: 1fr; } }
+
+    /* ===== NONAKTIF SECTION ===== */
+    .section-nonaktif { margin: 0 28px 28px; background: #fff; border-radius: 16px; border: 1.5px dashed #fecaca; box-shadow: 0 2px 8px rgba(220,38,38,0.05); overflow: hidden; }
+    .section-nonaktif .ap-toolbar { border-bottom: 1px solid #fef2f2; background: #fffbeb; }
+    .section-nonaktif .ap-table th { background: #fff8f8; }
+    .sn-title { font-size: 14px; font-weight: 700; color: #b45309; }
+    .sn-title i { margin-right: 6px; color: #dc2626; }
+    .sn-count { display: inline-flex; align-items: center; gap: 4px; background: #fef2f2; color: #dc2626; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; border: 1px solid #fecaca; }
+    .sn-count i { font-size: 10px; }
+    .badge-nonaktif { display: inline-flex; align-items: center; gap: 4px; background: #fef2f2; color: #dc2626; font-size: 10.5px; font-weight: 700; padding: 3px 8px; border-radius: 20px; border: 1px solid #fecaca; }
+    .ap-btn-reaktif { background: linear-gradient(135deg, #ecfdf5, #d1fae5); color: #059669; }
+    .ap-btn-reaktif:hover { background: linear-gradient(135deg, #d1fae5, #a7f3d0); transform: translateY(-1px); box-shadow: 0 3px 10px rgba(5,150,105,0.15); }
+
+    /* DARK MODE OVERRIDES */
+    body.dark-mode .section-nonaktif { background: #1a1e27; border-color: rgba(220, 38, 38, 0.4); box-shadow: none; }
+    body.dark-mode .section-nonaktif .ap-toolbar { background: rgba(220, 38, 38, 0.1); border-bottom-color: rgba(220, 38, 38, 0.2); }
+    body.dark-mode .section-nonaktif .ap-table th { background: rgba(220, 38, 38, 0.05); color: #9ca3af; }
+    body.dark-mode .badge-nonaktif { background: rgba(220, 38, 38, 0.15); color: #fca5a5; border-color: rgba(220, 38, 38, 0.3); }
+    body.dark-mode .sn-title { color: #fca5a5; }
+    body.dark-mode .sn-count { background: rgba(220, 38, 38, 0.15); border-color: rgba(220, 38, 38, 0.3); color: #fca5a5; }
 </style>
 
     <?php
-        // Hitung statistik
-        $total_produk   = count($produk);
-        $stok_aman      = count(array_filter($produk, fn($p) => (int)$p['stok'] > 10));
-        $stok_menipis_c = count(array_filter($produk, fn($p) => (int)$p['stok'] > 0 && (int)$p['stok'] <= 10));
-        $stok_habis_c   = count(array_filter($produk, fn($p) => (int)$p['stok'] === 0));
-        $produk_habis_list = array_filter($produk, fn($p) => (int)$p['stok'] === 0);
+        // Pisahkan produk aktif dan nonaktif
+        $produk_aktif    = array_values(array_filter($produk, fn($p) => ($p['status'] ?? 'aktif') === 'aktif'));
+        $produk_nonaktif = array_values(array_filter($produk, fn($p) => ($p['status'] ?? 'aktif') === 'nonaktif'));
+
+        // Hitung statistik (hanya produk aktif)
+        $total_produk   = count($produk_aktif);
+        $stok_aman      = count(array_filter($produk_aktif, fn($p) => (int)$p['stok'] > 10));
+        $stok_menipis_c = count(array_filter($produk_aktif, fn($p) => (int)$p['stok'] > 0 && (int)$p['stok'] <= 10));
+        $stok_habis_c   = count(array_filter($produk_aktif, fn($p) => (int)$p['stok'] === 0));
+        $produk_habis_list = array_filter($produk_aktif, fn($p) => (int)$p['stok'] === 0);
     ?>
 
     <!-- PAGE HEADER -->
@@ -188,6 +214,9 @@
         <div class="ap-header-actions">
             <a href="<?= site_url('admin/kategori') ?>" class="btn-back">
                 <i class="fas fa-tag"></i> Kategori
+            </a>
+            <a href="<?= site_url('admin/produk/cetak' . (!empty($this->input->get('id_category')) ? '?id_category=' . $this->input->get('id_category') : '')) ?>" class="btn-cetak-lap" target="_blank">
+                <i class="fas fa-print"></i> Cetak Laporan
             </a>
             <button class="btn-primary-custom" onclick="openModal('modalTambah')">
                 <i class="fas fa-plus"></i> Tambah Produk
@@ -263,6 +292,9 @@
     <?php if ($this->session->flashdata('error')): ?>
     <div class="alert-custom error"><i class="fas fa-exclamation-circle"></i><?= $this->session->flashdata('error') ?></div>
     <?php endif; ?>
+    <?php if ($this->session->flashdata('warning')): ?>
+    <div class="alert-custom" style="background:#fffbeb; color:#b45309; border:1px solid #fde68a;"><i class="fas fa-exclamation-triangle"></i> <div><?= $this->session->flashdata('warning') ?></div></div>
+    <?php endif; ?>
 
     <!-- MAIN TABLE -->
     <div class="ap-card">
@@ -281,16 +313,18 @@
             <thead>
                 <tr>
                     <th>#</th>
+                    <th>Kode</th>
                     <th>Produk</th>
                     <th>Kategori</th>
+                    <th>Harga Beli</th>
                     <th>Harga Jual</th>
                     <th>Stok</th>
                     <th style="text-align:center;">Aksi</th>
                 </tr>
             </thead>
             <tbody>
-                <?php if (!empty($produk)): ?>
-                    <?php foreach ($produk as $i => $p): ?>
+                <?php if (!empty($produk_aktif)): ?>
+                    <?php foreach ($produk_aktif as $i => $p): ?>
                     <?php
                         $stok = (int) $p['stok'];
                         if ($stok === 0)      { $stokClass = 'habis';    $barPct = 0; }
@@ -302,6 +336,7 @@
                     ?>
                     <tr class="<?= $stok === 0 ? 'stok-habis-row' : '' ?>">
                         <td style="color:#9ca3af; font-size:12px; width:40px;"><?= $i + 1 ?></td>
+                        <td><span style="font-family:'Courier New', monospace; font-size:12px; font-weight:700; color:#1a56db;"><?= htmlspecialchars($p['kode_produk']) ?></span></td>
                         <td>
                             <div class="ap-produk-cell">
                                 <div class="ap-produk-avatar <?= $avatarClass ?>"><?= strtoupper(substr($p['nama_produk'], 0, 1)) ?></div>
@@ -311,6 +346,7 @@
                             </div>
                         </td>
                         <td><span class="ap-kat-pill"><i class="fas fa-tag" style="font-size:8px;"></i><?= htmlspecialchars($p['nama_kategori']) ?></span></td>
+                        <td><span class="ap-price" style="color:#6b7280; font-size:12.5px;">Rp <?= number_format($p['harga_beli'] ?? 0, 0, ',', '.') ?></span></td>
                         <td><span class="ap-price">Rp <?= number_format($p['harga_jual'], 0, ',', '.') ?></span></td>
                         <td>
                             <?php if ($stok === 0): ?>
@@ -323,7 +359,7 @@
                                         <div class="ap-stok-bar-fill <?= $stokClass ?>" style="width:<?= $barPct ?>%"></div>
                                     </div>
                                     <span class="ap-stok-num <?= $stokClass ?>"><?= $stok ?></span>
-                                    <span class="ap-stok-satuan"><?= htmlspecialchars($p['satuan']) ?>/pcs</span>
+                                    <span class="ap-stok-satuan"><?= htmlspecialchars($p['satuan']) ?></span>
                                 </div>
                             <?php endif; ?>
                         </td>
@@ -337,8 +373,10 @@
                                 <button class="ap-btn ap-btn-edit"
                                     onclick="openModalEdit(
                                         '<?= $p['id_product'] ?>',
+                                        '<?= htmlspecialchars($p['kode_produk'] ?? '', ENT_QUOTES) ?>',
                                         '<?= htmlspecialchars($p['nama_produk'], ENT_QUOTES) ?>',
                                         '<?= $p['id_category'] ?>',
+                                        '<?= $p['harga_beli'] ?? 0 ?>',
                                         '<?= $p['harga_jual'] ?>',
                                         '<?= $p['stok'] ?>',
                                         '<?= htmlspecialchars($p['satuan'], ENT_QUOTES) ?>'
@@ -373,6 +411,61 @@
         </div>
     </div>
 
+    <!-- ===== SECTION PRODUK NONAKTIF ===== -->
+    <?php if (!empty($produk_nonaktif)): ?>
+    <div class="section-nonaktif">
+        <div class="ap-toolbar">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span class="sn-title"><i class="fas fa-ban"></i>Produk Nonaktif</span>
+                <span class="sn-count">
+                    <i class="fas fa-exclamation-circle"></i><?= count($produk_nonaktif) ?> produk
+                </span>
+            </div>
+            <span style="font-size:11.5px; color:#9ca3af;">Produk ini memiliki riwayat transaksi sehingga tidak dapat dihapus permanen.</span>
+        </div>
+        <table class="ap-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Kode</th>
+                    <th>Produk</th>
+                    <th>Kategori</th>
+                    <th>Harga Jual</th>
+                    <th>Status</th>
+                    <th style="text-align:center;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($produk_nonaktif as $i => $p): ?>
+                <tr style="opacity:0.8;">
+                    <td style="color:#9ca3af; font-size:12px; width:40px;"><?= $i + 1 ?></td>
+                    <td><span style="font-family:'Courier New', monospace; font-size:12px; font-weight:700; color:#9ca3af;"><?= htmlspecialchars($p['kode_produk']) ?></span></td>
+                    <td>
+                        <div class="ap-produk-cell">
+                            <div class="ap-produk-avatar" style="background:linear-gradient(135deg,#9ca3af,#6b7280);"><?= strtoupper(substr($p['nama_produk'], 0, 1)) ?></div>
+                            <div>
+                                <span class="ap-produk-name" style="color:#6b7280;"><?= htmlspecialchars($p['nama_produk']) ?></span>
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="ap-kat-pill" style="background:#f3f4f6; color:#9ca3af;"><i class="fas fa-tag" style="font-size:8px;"></i><?= htmlspecialchars($p['nama_kategori']) ?></span></td>
+                    <td><span class="ap-price" style="color:#9ca3af;">Rp <?= number_format($p['harga_jual'], 0, ',', '.') ?></span></td>
+                    <td><span class="badge-nonaktif"><i class="fas fa-ban" style="font-size:9px;"></i> Nonaktif</span></td>
+                    <td>
+                        <div class="ap-actions">
+                            <button class="ap-btn ap-btn-reaktif"
+                                onclick="openAktifkan('<?= $p['id_product'] ?>', '<?= htmlspecialchars($p['nama_produk'], ENT_QUOTES) ?>')">
+                                <i class="fas fa-redo"></i> Aktifkan
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <?php endif; ?>
+
     <!-- MODAL TAMBAH -->
     <div class="modal-overlay" id="modalTambah">
         <div class="modal-box">
@@ -403,12 +496,20 @@
                     </div>
                     <div class="form-row">
                         <div class="form-group-custom">
+                            <label class="form-label-custom">Harga Beli <span>*</span></label>
+                            <div class="input-wrap">
+                                <i class="fas fa-money-bill-wave input-icon"></i>
+                                <input type="number" name="harga_beli" id="tambah_harga_beli" class="form-control-custom" placeholder="0" min="0" oninput="hitungHargaJual(this, 'tambah_harga_jual')" required>
+                            </div>
+                        </div>
+                        <div class="form-group-custom">
                             <label class="form-label-custom">Harga Jual <span>*</span></label>
                             <div class="input-wrap">
                                 <i class="fas fa-money-bill input-icon"></i>
-                                <input type="number" name="harga_jual" class="form-control-custom" placeholder="0" min="0" required>
+                                <input type="number" name="harga_jual" id="tambah_harga_jual" class="form-control-custom" placeholder="0" min="0" required>
                             </div>
                         </div>
+                    </div>
                         <div class="form-group-custom">
                             <label class="form-label-custom">Stok Awal <span>*</span></label>
                             <div class="input-wrap">
@@ -416,7 +517,6 @@
                                 <input type="number" name="stok" class="form-control-custom" placeholder="0" min="0" required>
                             </div>
                         </div>
-                    </div>
                     <div class="form-group-custom">
                         <label class="form-label-custom">Satuan <span>*</span></label>
                         <div class="input-wrap">
@@ -444,6 +544,13 @@
                 <input type="hidden" name="id_product" id="edit_id">
                 <div class="modal-body">
                     <div class="form-group-custom">
+                        <label class="form-label-custom">Kode Produk</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-barcode input-icon"></i>
+                            <input type="text" id="edit_kode" class="form-control-custom" readonly style="background:#f3f4f6; color:#9ca3af; cursor:not-allowed;">
+                        </div>
+                    </div>
+                    <div class="form-group-custom">
                         <label class="form-label-custom">Nama Produk <span>*</span></label>
                         <div class="input-wrap">
                             <i class="fas fa-box input-icon"></i>
@@ -463,12 +570,20 @@
                     </div>
                     <div class="form-row">
                         <div class="form-group-custom">
+                            <label class="form-label-custom">Harga Beli <span>*</span></label>
+                            <div class="input-wrap">
+                                <i class="fas fa-money-bill-wave input-icon"></i>
+                                <input type="number" name="harga_beli" id="edit_harga_beli" class="form-control-custom" min="0" oninput="hitungHargaJual(this, 'edit_harga')" required>
+                            </div>
+                        </div>
+                        <div class="form-group-custom">
                             <label class="form-label-custom">Harga Jual <span>*</span></label>
                             <div class="input-wrap">
                                 <i class="fas fa-money-bill input-icon"></i>
                                 <input type="number" name="harga_jual" id="edit_harga" class="form-control-custom" min="0" required>
                             </div>
                         </div>
+                    </div>
                         <div class="form-group-custom">
                             <label class="form-label-custom">Stok <span>*</span></label>
                             <div class="input-wrap">
@@ -476,7 +591,6 @@
                                 <input type="number" name="stok" id="edit_stok" class="form-control-custom" min="0" required>
                             </div>
                         </div>
-                    </div>
                     <div class="form-group-custom">
                         <label class="form-label-custom">Satuan <span>*</span></label>
                         <div class="input-wrap">
@@ -510,6 +624,28 @@
                 <div class="modal-footer">
                     <button type="button" class="btn-cancel" onclick="closeModal('modalDelete')">Batal</button>
                     <button type="submit" class="btn-delete-confirm"><i class="fas fa-trash"></i> Ya, Hapus</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL AKTIFKAN -->
+    <div class="modal-overlay" id="modalAktifkan">
+        <div class="modal-box modal-sm">
+            <div class="modal-header">
+                <h4><i class="fas fa-redo" style="color:#059669; margin-right:8px;"></i>Aktifkan Produk</h4>
+                <button class="modal-close" onclick="closeModal('modalAktifkan')"><i class="fas fa-times"></i></button>
+            </div>
+            <form action="<?= site_url('admin/produk/aktifkan') ?>" method="post">
+                <input type="hidden" name="id_product" id="aktif_id">
+                <div class="delete-modal-body">
+                    <div class="delete-icon" style="background:#f0fdf4; color:#059669;"><i class="fas fa-redo"></i></div>
+                    <h5>Aktifkan Kembali Produk?</h5>
+                    <p>Produk <strong id="aktif_nama"></strong> akan diaktifkan dan dapat dipilih kembali di form transaksi baru.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeModal('modalAktifkan')">Batal</button>
+                    <button type="submit" class="btn-submit" style="background:linear-gradient(135deg,#059669,#047857); box-shadow:0 4px 14px rgba(5,150,105,0.3);"><i class="fas fa-check"></i> Ya, Aktifkan</button>
                 </div>
             </form>
         </div>
@@ -612,14 +748,26 @@
     function openModal(id) { document.getElementById(id).classList.add('show'); }
     function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 
-    function openModalEdit(id, nama, katId, harga, stok, satuan) {
+    function openModalEdit(id, kode, nama, katId, hargaBeli, hargaJual, stok, satuan) {
         document.getElementById('edit_id').value     = id;
+        document.getElementById('edit_kode').value   = kode;
         document.getElementById('edit_nama').value   = nama;
         document.getElementById('edit_kat').value    = katId;
-        document.getElementById('edit_harga').value  = harga;
+        document.getElementById('edit_harga_beli').value = hargaBeli;
+        document.getElementById('edit_harga').value  = hargaJual;
         document.getElementById('edit_stok').value   = stok;
         document.getElementById('edit_satuan').value = satuan;
         openModal('modalEdit');
+    }
+
+    function hitungHargaJual(beliEl, jualId) {
+        var beli = parseFloat(beliEl.value);
+        if (!isNaN(beli) && beli > 0) {
+            var jual = beli * 1.15; // Keuntungan 15%
+            document.getElementById(jualId).value = Math.round(jual);
+        } else {
+            document.getElementById(jualId).value = '';
+        }
     }
 
     function openModalDelete(id, nama) {
@@ -635,6 +783,13 @@
         document.getElementById('stok_new').value                  = stok;
         document.getElementById('stok_satuan_hint').textContent    = 'Satuan: ' + satuan;
         openModal('modalEditStok');
+    }
+
+
+    function openAktifkan(id, nama) {
+        document.getElementById('aktif_id').value         = id;
+        document.getElementById('aktif_nama').textContent = nama;
+        openModal('modalAktifkan');
     }
 
 

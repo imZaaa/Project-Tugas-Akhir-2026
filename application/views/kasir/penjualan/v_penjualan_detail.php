@@ -365,6 +365,7 @@
                         <div><div class="info-label">Kode Transaksi</div><div class="info-value code"><?= htmlspecialchars($header['kode_transaksi']) ?></div></div>
                         <div><div class="info-label">Tanggal</div><div class="info-value"><?= date('d M Y — H:i', strtotime($header['tgl_jual'])) ?></div></div>
                         <div><div class="info-label">Nama Pelanggan</div><div class="info-value"><?= htmlspecialchars(!empty($header['nama_pelanggan']) ? $header['nama_pelanggan'] : 'Umum') ?></div></div>
+                        <div style="grid-column: 1 / -1;"><div class="info-label">Alamat Pelanggan</div><div class="info-value" style="font-weight: 500;"><?= nl2br(htmlspecialchars(!empty($header['alamat_pelanggan']) ? $header['alamat_pelanggan'] : '-')) ?></div></div>
                         <div><div class="info-label">Kasir</div><div class="info-value"><?= htmlspecialchars($header['nama_kasir'] ?? '-') ?></div></div>
                         <div><div class="info-label">Status</div><div><?php if ($header['status'] === 'Lunas'): ?><span class="status-badge status-lunas"><i class="fas fa-check-circle" style="font-size:10px;"></i> Lunas</span><?php else: ?><span class="status-badge status-batal"><i class="fas fa-times-circle" style="font-size:10px;"></i> Batal</span><?php endif; ?></div></div>
                     </div>
@@ -400,7 +401,14 @@
                     <div class="summary-row"><span class="label">Total Item</span><span class="value"><?= count($detail) ?> produk</span></div>
                     <div class="summary-row"><span class="label">Total Qty</span><span class="value"><?= array_sum(array_column($detail, 'qty')) ?></span></div>
                     <div class="summary-total" style="background: linear-gradient(135deg, #1a56db, #0d3fa6);"><div class="label" style="color:rgba(255,255,255,0.8);">Total Harga</div><div class="value" style="color:#fff;">Rp <?= number_format($header['total_harga'], 0, ',', '.') ?></div></div>
-                    <div class="summary-row" style="margin-top:14px;"><span class="label">Bayar</span><span class="value" style="color:#059669;">Rp <?= number_format($header['bayar'] ?? 0, 0, ',', '.') ?></span></div>
+                    <div class="summary-row" style="margin-top:14px;"><span class="label">Metode Pembayaran</span><span class="value"><?= strtoupper($header['metode_pembayaran'] ?? 'CASH') ?></span></div>
+                    <?php if (isset($header['metode_pembayaran']) && $header['metode_pembayaran'] === 'Transfer'): ?>
+                    <div class="summary-row"><span class="label">Nomor Referensi</span><span class="value"><?= htmlspecialchars($header['nomor_referensi'] ?? '-') ?></span></div>
+                    <?php if (!empty($header['bukti_transfer'])): ?>
+                    <a href="<?= base_url('uploads/bukti_transfer/' . $header['bukti_transfer']) ?>" target="_blank" class="btn-action-lg" style="background:#eff6ff; color:#1a56db; border: 1.5px dashed #bfdbfe; margin-bottom:8px;"><i class="fas fa-image"></i> Lihat Bukti Transfer</a>
+                    <?php endif; ?>
+                    <?php endif; ?>
+                    <div class="summary-row"><span class="label">Bayar</span><span class="value" style="color:#059669;">Rp <?= number_format($header['bayar'] ?? 0, 0, ',', '.') ?></span></div>
                     <div class="summary-row"><span class="label">Kembalian</span><span class="value" style="color:#059669;">Rp <?= number_format($header['kembalian'] ?? 0, 0, ',', '.') ?></span></div>
                     <a href="<?= site_url('kasir/penjualan/cetak/' . $header['id_sale']) ?>" class="btn-action-lg btn-cetak" target="_blank"><i class="fas fa-print"></i> Cetak Nota</a>
                     <a href="<?= site_url('kasir/penjualan') ?>" class="btn-action-lg btn-kembali"><i class="fas fa-arrow-left"></i> Kembali</a>

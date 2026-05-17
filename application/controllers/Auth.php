@@ -9,7 +9,6 @@ class Auth extends CI_Controller {
     }
 
     public function index() {
-        // Kalau udah login, langsung tendang ke dashboard biar gak bisa buka halaman login lagi
         if ($this->session->userdata('role') == 'admin') {
             redirect('admin/admin'); 
         } elseif ($this->session->userdata('role') == 'kasir') {
@@ -23,10 +22,15 @@ class Auth extends CI_Controller {
     $username = $this->input->post('username', TRUE);
     $password = $this->input->post('password', TRUE);
 
-    $user = $this->M_auth->cek_login($username);
+    $user = $this->M_auth->cek_login($username); 
 
     if ($user) {
-        // BANDINGIN LANGSUNG (TANPA HASH)
+        if (isset($user->status) && $user->status == 'nonaktif') {
+            $this->session->set_flashdata('pesan', 'Akun Anda telah dinonaktifkan. Silakan hubungi Administrator.');
+            redirect('auth');
+            return;
+        }
+
         if ($password == $user->password) {
 
          date_default_timezone_set('Asia/Jakarta');
@@ -47,17 +51,16 @@ class Auth extends CI_Controller {
                 redirect('kasir');
             }
         } else {
-            $this->session->set_flashdata('pesan', '<div class="alert alert-danger">Password yang dimasukkan salah.</div>');
+            $this->session->set_flashdata('pesan', 'Password salah');
             redirect('auth');
         }
     } else {
-        $this->session->set_flashdata('pesan', '<div class="alert alert-danger">Username tidak ditemukan.</div>');
+        $this->session->set_flashdata('pesan', 'Username tidak ditemukan');
         redirect('auth');
     }
 }
 
     public function logout() {
-        // Hancurkan session saat logout
         $this->session->sess_destroy();
         redirect('auth');
     }

@@ -44,10 +44,10 @@
         table.items th { border-bottom: 1px solid #000; border-top: 1px solid #000; font-weight: normal; }
         table.items th:nth-child(1), table.items td:nth-child(1) { text-align: left; width: 15%; }
         table.items th:nth-child(2), table.items td:nth-child(2) { text-align: center; width: 5%; }
-        table.items th:nth-child(3), table.items td:nth-child(3) { text-align: left; width: 45%; }
+        table.items th:nth-child(3), table.items td:nth-child(3) { text-align: left; width: 35%; }
         table.items th:nth-child(4), table.items td:nth-child(4) { text-align: center; width: 10%; }
-        table.items th:nth-child(5), table.items td:nth-child(5) { width: 10%; }
-        table.items th:nth-child(6), table.items td:nth-child(6) { width: 15%; }
+        table.items th:nth-child(5), table.items td:nth-child(5) { width: 15%; }
+        table.items th:nth-child(6), table.items td:nth-child(6) { width: 20%; }
 
         .totals-container { display: flex; justify-content: flex-end; margin-bottom: 20px; font-size: 11px; }
         .totals { width: 40%; }
@@ -133,13 +133,13 @@
                 </div>
             </div>
             <div class="header-right">
-                <h3>KONFIRMASI PENJUALAN</h3>
+                <h3>INVOICE</h3>
                 <div class="info-box">
                     <div>
                         <div class="label">Tanggal</div>
                         <div class="value"><?= date('d M Y', strtotime($header['tgl_jual'])) ?></div>
-                        <div class="label">T.O.P</div>
-                        <div class="value">C.O.D</div>
+                        <div class="label">T.O.P (Metode)</div>
+                        <div class="value"><?= strtoupper($header['metode_pembayaran'] ?? 'CASH') ?></div>
                     </div>
                     <div>
                         <div class="label">Nomor Kontrak</div>
@@ -154,7 +154,7 @@
         <!-- KEPADA -->
         <div class="kepada">
             <div><span>Kepada :</span> <strong><?= htmlspecialchars(!empty($header['nama_pelanggan']) ? $header['nama_pelanggan'] : 'UMUM') ?></strong></div>
-            <div style="margin-left: 60px;">-</div>
+            <div style="margin-left: 60px;"><?= nl2br(htmlspecialchars(!empty($header['alamat_pelanggan']) ? $header['alamat_pelanggan'] : '-')) ?></div>
         </div>
 
         <!-- ITEMS -->
@@ -172,7 +172,7 @@
             <tbody>
                 <?php $no=1; foreach($detail as $d): ?>
                 <tr>
-                    <td><?= htmlspecialchars($d['kode_barang'] ?? 'BRG-'.str_pad($no, 3, '0', STR_PAD_LEFT)) ?></td>
+                    <td><?= htmlspecialchars($d['kode_produk'] ?? '-') ?></td>
                     <td><?= $no++ ?></td>
                     <td><?= htmlspecialchars($d['nama_produk'] ?? '-') ?></td>
                     <td><?= $d['qty'] ?></td>

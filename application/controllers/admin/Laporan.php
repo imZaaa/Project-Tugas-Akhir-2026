@@ -72,7 +72,7 @@ class Laporan extends CI_Controller {
 
         $this->load->view('layout/header', $data);
         $this->load->view('layout/sidebar', $data);
-        $this->load->view('admin/v_laporan', $data);
+        $this->load->view('admin/laporan/v_laporan', $data);
         $this->load->view('layout/footer');
     }
 
@@ -93,6 +93,6 @@ class Laporan extends CI_Controller {
         $data['per_kasir']    = $this->M_sale->omzet_per_kasir($tgl_awal, $tgl_akhir);
 
         // Load tanpa sidebar/header — layout cetak
-        $this->load->view('admin/v_laporan_cetak', $data);
+        $this->load->view('admin/laporan/v_laporan_cetak', $data);
     }
 }

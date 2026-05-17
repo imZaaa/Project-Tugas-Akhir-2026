@@ -21,7 +21,7 @@ class Supplier extends CI_Controller {
 
         $this->load->view('layout/header', $data);
         $this->load->view('layout/sidebar', $data);
-        $this->load->view('kasir/v_supplier', $data);
+        $this->load->view('kasir/supplier/v_supplier', $data);
         $this->load->view('layout/footer');
     }
 }

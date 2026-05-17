@@ -106,6 +106,16 @@
                         <span class="info-value"><?= htmlspecialchars($header['keterangan']) ?></span>
                     </div>
                     <?php endif; ?>
+                    <?php if (!empty($header['surat_jalan'])): ?>
+                    <div class="info-cell" style="grid-column:1/-1;">
+                        <span class="info-label"><i class="fas fa-file-invoice" style="margin-right:4px;"></i>Surat Jalan</span>
+                        <span class="info-value">
+                            <a href="<?= base_url('uploads/surat_jalan/' . $header['surat_jalan']) ?>" target="_blank" style="color:#1a56db; text-decoration:none; display:inline-flex; align-items:center; gap:6px; background:#eff6ff; padding:6px 12px; border-radius:6px; font-size:12px; font-weight:600;">
+                                <i class="fas fa-external-link-alt"></i> Lihat Dokumen
+                            </a>
+                        </span>
+                    </div>
+                    <?php endif; ?>
                 </div>
             </div>
 

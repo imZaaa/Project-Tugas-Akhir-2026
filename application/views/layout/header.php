@@ -282,9 +282,9 @@
       <li class="nav-item" style="display:flex; align-items:center;">
 
         <!-- Dark Mode Toggle -->
-        <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle Dark Mode">
+        <!-- <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle Dark Mode">
           <i class="fas fa-moon" id="darkModeIcon"></i>
-        </button>
+        </button> -->
 
         <div class="account-dropdown-wrap">
 

@@ -22,17 +22,18 @@ class Produk extends CI_Controller {
         $data['kategori'] = $this->M_kategori->get_all();
         $data['filter_kategori'] = '';
 
+        // Admin melihat semua produk (aktif + nonaktif)
         if (!empty($id_category)) {
-            $data['produk'] = $this->M_produk->get_by_category($id_category);
+            $data['produk'] = $this->M_produk->get_by_category_including_nonaktif($id_category);
             $kat = $this->M_kategori->get_by_id($id_category);
             $data['filter_kategori'] = $kat ? $kat['nama_kategori'] : '';
         } else {
-            $data['produk'] = $this->M_produk->get_all();
+            $data['produk'] = $this->M_produk->get_all_including_nonaktif();
         }
 
         $this->load->view('layout/header', $data);
         $this->load->view('layout/sidebar', $data);
-        $this->load->view('admin/v_produk', $data);
+        $this->load->view('admin/produk/v_produk', $data);
         $this->load->view('layout/footer');
     }
 
@@ -58,6 +59,9 @@ class Produk extends CI_Controller {
                 redirect('admin/produk'); return;
             }
         }
+        
+        // Generate kode unik setelah lolos validasi input dasar
+        $data['kode_produk'] = $this->M_produk->generate_kode($data['id_category']);
         
         // VALIDASI ANTI JUAL RUGI
         if ($data['harga_jual'] <= $data['harga_beli']) {
@@ -136,19 +140,68 @@ class Produk extends CI_Controller {
         redirect('admin/produk');
     }
 
-    // ===== HAPUS PRODUK PERMANEN =====
-    // (Peringatan: Jika produk ini pernah dijual, penghapusan gagal jika ada foreign key restrict dari tb_penjualan)
+    // ===== HAPUS PRODUK =====
+    // Jika produk punya riwayat transaksi, nonaktifkan saja (soft delete)
+    // Jika tidak, hapus permanen
     public function hapus() {
-        // Ambil ID dari "Hidden Input" yang dikirim oleh tombol Modal Hapus
         $id = $this->input->post('id_product', TRUE);
-        
-        // Minta model eksekusi query DELETE FROM products
-        if ($this->M_produk->delete($id)) {
-            $this->session->set_flashdata('success', 'Identitas barang telah ditarik permanen dari katalog.');
+
+        if (empty($id)) {
+            $this->session->set_flashdata('error', 'ID produk tidak valid.');
+            redirect('admin/produk');
+            return;
+        }
+
+        // Cek apakah produk ini pernah ada di transaksi penjualan/barang masuk
+        if ($this->M_produk->has_transaksi($id)) {
+            // Tidak bisa dihapus permanen, nonaktifkan saja (soft delete)
+            if ($this->M_produk->nonaktifkan($id)) {
+                $this->session->set_flashdata('warning', 'Produk tidak dapat dihapus permanen karena memiliki riwayat transaksi. Produk telah <strong>dinonaktifkan</strong> dan tidak akan muncul di form transaksi baru.');
+            } else {
+                $this->session->set_flashdata('error', 'Gagal menonaktifkan produk.');
+            }
         } else {
-            // Bisa error jika ForeignKey Cascade di database tidak mengizinkan (Constraint protect)
-            $this->session->set_flashdata('error', 'Gagal membuang barang, kemungkinan data barang beririsan dengan nota penjualan lama.');
+            // Tidak punya transaksi, aman untuk dihapus permanen
+            if ($this->M_produk->delete($id)) {
+                $this->session->set_flashdata('success', 'Produk berhasil dihapus secara permanen dari katalog.');
+            } else {
+                $this->session->set_flashdata('error', 'Gagal menghapus produk.');
+            }
         }
         redirect('admin/produk');
+    }
+
+    // ===== AKTIFKAN PRODUK =====
+    public function aktifkan() {
+        $id = $this->input->post('id_product', TRUE);
+
+        if (empty($id)) {
+            $this->session->set_flashdata('error', 'ID produk tidak valid.');
+            redirect('admin/produk');
+            return;
+        }
+
+        if ($this->M_produk->aktifkan($id)) {
+            $this->session->set_flashdata('success', 'Produk berhasil diaktifkan kembali.');
+        } else {
+            $this->session->set_flashdata('error', 'Gagal mengaktifkan produk.');
+        }
+        redirect('admin/produk');
+    }
+
+    // ===== CETAK LAPORAN PRODUK =====
+    public function cetak() {
+        $id_category = $this->input->get('id_category', TRUE);
+
+        if (!empty($id_category)) {
+            $data['produk'] = $this->M_produk->get_by_category($id_category);
+            $kat = $this->M_kategori->get_by_id($id_category);
+            $data['filter_kategori'] = $kat ? $kat['nama_kategori'] : '';
+        } else {
+            $data['produk'] = $this->M_produk->get_all();
+            $data['filter_kategori'] = '';
+        }
+
+        $this->load->view('admin/produk/v_produk_cetak', $data);
     }
 }

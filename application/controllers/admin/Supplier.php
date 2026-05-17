@@ -20,7 +20,7 @@ class Supplier extends CI_Controller {
         $data['suppliers'] = $this->M_supplier->get_all_including_nonaktif();
         $this->load->view('layout/header', $data);
         $this->load->view('layout/sidebar', $data);
-        $this->load->view('admin/v_supplier', $data);
+        $this->load->view('admin/supplier/v_supplier', $data);
         $this->load->view('layout/footer');
     }
 

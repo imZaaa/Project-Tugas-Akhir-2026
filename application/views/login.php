@@ -575,8 +575,7 @@
         </div>
       <?php endif; ?>
 
-      <!-- Form — action TIDAK DIUBAH -->
-      <form action="<?= site_url('auth/proses') ?>" method="post" id="loginForm">
+      <form action="<?= site_url('auth/proses') ?>" method="post" id="loginForm" novalidate>
 
         <div class="input-group-custom">
           <label class="input-label" for="username">Username</label>
@@ -612,7 +611,7 @@
 
         <button type="submit" class="btn-login" id="btnLogin">
           <span class="spinner" id="btnSpinner"></span>
-          <span id="btnText">Masuk ke Sistem</span>
+          <span id="btnText">Login</span>
           <i class="fas fa-arrow-right" id="btnArrow"></i>
         </button>
 
@@ -631,6 +630,7 @@
 
 </body>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
   /* ── Floating particles (left panel only) ── */
   (function () {
@@ -703,8 +703,22 @@
     }
   });
 
-  /* ── Loading state on submit — TIDAK DIUBAH ── */
-  document.getElementById('loginForm').addEventListener('submit', function () {
+  /* ── Loading state and Validation on submit ── */
+  document.getElementById('loginForm').addEventListener('submit', function (e) {
+    var username = document.getElementById('username').value.trim();
+    var password = document.getElementById('password').value.trim();
+
+    if (!username || !password) {
+      e.preventDefault();
+      Swal.fire({
+        icon: 'warning',
+        title: 'Peringatan',
+        text: 'Username dan Password tidak boleh kosong!',
+        confirmButtonColor: '#2563eb'
+      });
+      return;
+    }
+
     var btn     = document.getElementById('btnLogin');
     var spinner = document.getElementById('btnSpinner');
     var text    = document.getElementById('btnText');

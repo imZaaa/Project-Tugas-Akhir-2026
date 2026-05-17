@@ -369,6 +369,20 @@
         </div>
     </div>
 
+    <!-- ===== FLASH MESSAGE ===== -->
+    <?php if ($this->session->flashdata('error')): ?>
+    <div style="margin: 16px 24px 0; padding: 11px 16px; border-radius: 10px; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 9px; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;">
+        <i class="fas fa-exclamation-circle"></i>
+        <?= $this->session->flashdata('error') ?>
+    </div>
+    <?php endif; ?>
+    <?php if ($this->session->flashdata('success')): ?>
+    <div style="margin: 16px 24px 0; padding: 11px 16px; border-radius: 10px; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 9px; background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0;">
+        <i class="fas fa-check-circle"></i>
+        <?= $this->session->flashdata('success') ?>
+    </div>
+    <?php endif; ?>
+
     <!-- ===== STAT CARDS ===== -->
     <div class="kasir-cards-section">
         <div class="kasir-stats-grid">

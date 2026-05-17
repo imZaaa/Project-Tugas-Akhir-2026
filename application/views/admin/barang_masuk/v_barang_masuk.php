@@ -172,9 +172,6 @@
                                 <a href="<?= site_url('admin/barang_masuk/detail/' . $p['id_purchase']) ?>" class="btn-action btn-detail">
                                     <i class="fas fa-eye"></i> Detail
                                 </a>
-                                <button class="btn-action btn-delete" onclick="openDelete('<?= $p['id_purchase'] ?>', '<?= htmlspecialchars($p['no_faktur'], ENT_QUOTES) ?>')">
-                                    <i class="fas fa-trash"></i> Hapus
-                                </button>
                             </div>
                         </td>
                     </tr>
@@ -197,35 +194,7 @@
         </div>
     </div>
 
-    <!-- MODAL HAPUS -->
-    <div class="modal-overlay" id="modalDelete">
-        <div class="modal-box">
-            <div class="modal-header">
-                <h4><i class="fas fa-trash" style="color:#dc2626; margin-right:8px;"></i>Hapus Transaksi</h4>
-                <button class="modal-close" onclick="document.getElementById('modalDelete').classList.remove('show')"><i class="fas fa-times"></i></button>
-            </div>
-            <form action="<?= site_url('admin/barang_masuk/hapus') ?>" method="post">
-                <input type="hidden" name="id_purchase" id="del_id">
-                <div class="delete-modal-body">
-                    <div class="delete-icon"><i class="fas fa-exclamation-triangle"></i></div>
-                    <h5>Hapus Transaksi?</h5>
-                    <p>Nota <strong id="del_faktur"></strong> akan dihapus.<br>
-                    <span style="color:#dc2626; font-weight:600;">⚠ Stok produk akan dikurangi kembali sesuai qty transaksi ini.</span></p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-cancel" onclick="document.getElementById('modalDelete').classList.remove('show')">Batal</button>
-                    <button type="submit" class="btn-delete-confirm"><i class="fas fa-trash"></i> Ya, Hapus</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
 <script>
-    function openDelete(id, faktur) {
-        document.getElementById('del_id').value           = id;
-        document.getElementById('del_faktur').textContent = faktur;
-        document.getElementById('modalDelete').classList.add('show');
-    }
     document.querySelectorAll('.modal-overlay').forEach(function(o) {
         o.addEventListener('click', function(e) { if (e.target === o) o.classList.remove('show'); });
     });

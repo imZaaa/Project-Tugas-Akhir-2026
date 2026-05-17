@@ -22,7 +22,7 @@ class Barang_masuk extends CI_Controller {
 
         $this->load->view('layout/header', $data);
         $this->load->view('layout/sidebar', $data);
-        $this->load->view('admin/v_barang_masuk', $data);
+        $this->load->view('admin/barang_masuk/v_barang_masuk', $data);
         $this->load->view('layout/footer');
     }
 
@@ -35,7 +35,7 @@ class Barang_masuk extends CI_Controller {
 
         $this->load->view('layout/header', $data);
         $this->load->view('layout/sidebar', $data);
-        $this->load->view('admin/v_barang_masuk_form', $data);
+        $this->load->view('admin/barang_masuk/v_barang_masuk_form', $data);
         $this->load->view('layout/footer');
     }
 
@@ -110,6 +110,24 @@ class Barang_masuk extends CI_Controller {
         $supplier_data = $this->M_supplier->get_by_id($id_supplier);
         $nama_supplier_snapshot = $supplier_data['nama_supplier'] ?? '';
 
+        $surat_jalan = NULL;
+        if (!empty($_FILES['surat_jalan']['name'])) {
+            $config['upload_path']   = './uploads/surat_jalan/';
+            $config['allowed_types'] = 'gif|jpg|png|jpeg|pdf';
+            $config['max_size']      = 5120; // 5MB
+            $config['file_name']     = 'SJ_' . preg_replace('/[^A-Za-z0-9\-]/', '_', $no_faktur) . '_' . time();
+
+            $this->load->library('upload', $config);
+
+            if ($this->upload->do_upload('surat_jalan')) {
+                $upload_data = $this->upload->data();
+                $surat_jalan = $upload_data['file_name'];
+            } else {
+                $this->session->set_flashdata('error', 'Gagal upload surat jalan: ' . $this->upload->display_errors('',''));
+                redirect('admin/barang_masuk/create'); return;
+            }
+        }
+
         $header = [
             'no_faktur'               => $no_faktur,
             'id_supplier'             => $id_supplier,
@@ -118,6 +136,7 @@ class Barang_masuk extends CI_Controller {
             'tgl_beli'                => $tgl_beli,
             'total_bayar'             => $total_bayar, // Menentukan pencatatan beban piutang/uang keluar
             'keterangan'              => $keterangan,
+            'surat_jalan'             => $surat_jalan, // Simpan nama file surat jalan
             'created_at'              => date('Y-m-d H:i:s'), // Waktu aktual disistem
         ];
 
@@ -149,21 +168,15 @@ class Barang_masuk extends CI_Controller {
 
         $this->load->view('layout/header', $data);
         $this->load->view('layout/sidebar', $data);
-        $this->load->view('admin/v_barang_masuk_detail', $data);
+        $this->load->view('admin/barang_masuk/v_barang_masuk_detail', $data);
         $this->load->view('layout/footer');
     }
 
     // ===== HAPUS / PEMBATALAN BARANG MASUK =====
-    // Berfungsi layaknya "Void / Retur". Jika Admin menghapus rekaman kulakan, barang di gudang akan otomatis dikurangi (-)
     public function hapus() {
-        $id = $this->input->post('id_purchase', TRUE);
-        
-        // Operasi database hapus ditanggung oleh Model
-        if ($this->M_purchase->hapus_transaksi($id)) {
-            $this->session->set_flashdata('success', 'Transaksi berhasil dihapus dan jumlah stok yang tadinya masuk telah ditarik kembali.');
-        } else {
-            $this->session->set_flashdata('error', 'Gagal menghapus blok transaksi.');
-        }
+        // Demi menjaga integritas data dan riwayat stok,
+        // transaksi barang masuk yang sudah tercatat tidak boleh dihapus.
+        $this->session->set_flashdata('error', 'Transaksi barang masuk tidak dapat dihapus untuk menjaga integritas riwayat stok.');
         redirect('admin/barang_masuk');
     }
 }

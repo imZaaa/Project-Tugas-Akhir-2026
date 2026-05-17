@@ -19,7 +19,7 @@ class Kategori extends CI_Controller {
         $data['kategori'] = $this->M_kategori->get_all();
         $this->load->view('layout/header', $data);
         $this->load->view('layout/sidebar', $data);
-        $this->load->view('admin/v_kategori', $data);
+        $this->load->view('admin/kategori/v_kategori', $data);
         $this->load->view('layout/footer');
     }
 
@@ -93,7 +93,7 @@ class Kategori extends CI_Controller {
 
         $this->load->view('layout/header', $data);
         $this->load->view('layout/sidebar', $data);
-        $this->load->view('admin/v_kategori_detail', $data);
+        $this->load->view('admin/kategori/v_kategori_detail', $data);
         $this->load->view('layout/footer');
     }
 }
